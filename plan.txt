@@ -1,0 +1,349 @@
+================================================================================
+  TYPING ADVENTURE - KẾ HOẠCH PHÁT TRIỂN
+  Website luyện gõ phím cho trẻ em
+================================================================================
+
+TRẠNG THÁI HIỆN TẠI
+────────────────────
+- Gõ phím từng ký tự với visual feedback (đúng=xanh, sai=đỏ)
+- 3 độ khó: Dễ / Trung bình / Khó (10 từ mỗi lượt)
+- Bàn phím ảo QWERTY với hướng dẫn ngón tay (viền màu)
+- Âm thanh: oscillator (beep/buzz) + Web Speech API (đọc chữ cái/từ)
+- 3 chế độ âm thanh: Mặc định / Đọc chữ cái / Đọc từ
+- Stats realtime: Timer, CPS, WPM, Accuracy
+- Hiệu ứng: sao nhấp nháy, particles, confetti khi hoàn thành
+- Settings: chữ hoa/chữ thường trên bàn phím + phần hiển thị từ
+- Responsive cho mobile (breakpoint 700px, 480px)
+
+
+================================================================================
+  GIAI ĐOẠN 1: NỀN TẢNG DỮ LIỆU
+================================================================================
+
+Mục tiêu: Lưu trữ dữ liệu người dùng, settings, lịch sử chơi
+Ưu tiên: CAO
+Độ phức tạp: THẤP
+
+[1.1] localStorage — Lưu settings
+─────────────────────────────────
+- Lưu settings.keyboardCase vào localStorage
+- Lưu state.level, state.soundMode
+- Khôi phục khi reload trang
+- Key: 'typingAdventure_settings'
+
+[1.2] localStorage — Lưu lịch sử chơi
+──────────────────────────────────────
+- Mỗi lần hoàn thành lưu 1 record:
+  { date, level, wpm, cps, accuracy, time, wordCount }
+- Giới hạn 100 records gần nhất
+- Key: 'typingAdventure_history'
+
+[1.3] localStorage — Lưu kỷ lục cá nhân
+────────────────────────────────────────
+- Best WPM (theo từng level)
+- Best accuracy (theo từng level)
+- Tổng số lần chơi
+- Tổng số từ đã gõ
+- Streak ngày chơi liên tiếp
+- Key: 'typingAdventure_records'
+
+
+================================================================================
+  GIAI ĐOẠN 2: HỆ THỐNG ĐIỂM & ENGAGEMENT
+================================================================================
+
+Mục tiêu: Tạo động lực chơi tiếp, cảm giác tiến bộ
+Ưu tiên: CAO
+Độ phức tạp: TRUNG BÌNH
+
+[2.1] Combo Streak
+──────────────────
+- Gõ đúng liên tục: streak +1
+- Hiển thị combo counter trên màn hình (ví dụ: "x5 🔥")
+- Mốc combo: x5, x10, x20, x50 → hiệu ứng visual leo thang
+- Gõ sai → reset streak về 0
+- Combo ảnh hưởng điểm: điểm = base × (1 + combo × 0.1)
+
+[2.2] Hệ thống điểm
+────────────────────
+- Công thức: score = (correctChars × 10) × comboMultiplier × accuracyBonus
+- accuracyBonus: 100%=x2, 95%+=x1.5, 90%+=x1.2, <90%=x1
+- Hiển thị điểm realtime trên stats bar
+- Lưu high score theo từng level
+
+[2.3] Đánh giá sao (1-3 sao)
+─────────────────────────────
+- 3 sao: accuracy >= 95% VÀ WPM >= ngưỡng level
+- 2 sao: accuracy >= 85% HOẶC WPM >= ngưỡng × 0.7
+- 1 sao: hoàn thành
+- Ngưỡng WPM: easy=20, medium=15, hard=10
+- Hiển thị sao trên màn hình kết quả với animation
+
+
+================================================================================
+  GIAI ĐOẠN 3: MÀN HÌNH KẾT QUẢ CHI TIẾT
+================================================================================
+
+Mục tiêu: Feedback có ý nghĩa, motivation loop
+Ưu tiên: CAO
+Độ phức tạp: TRUNG BÌNH
+
+[3.1] So sánh với kỷ lục
+─────────────────────────
+- "Kỷ lục mới! 🏆" nếu vượt best WPM/accuracy
+- "Còn X WPM nữa là phá kỷ lục!" nếu gần
+- Hiển thị WPM lần này vs best WPM
+
+[3.2] Phân tích lỗi
+────────────────────
+- Đếm số lần gõ sai theo từng ký tự
+- Hiển thị "Chữ cái hay sai nhất: q, z, x"
+- Gợi ý: "Hãy luyện thêm chữ Q và Z!"
+
+[3.3] Nút hành động sau kết quả
+────────────────────────────────
+- "Chơi lại" (cùng level)
+- "Thử level khó hơn" (nếu đạt 3 sao)
+- "Luyện chữ cái yếu" (tạo bài tập với chữ hay sai)
+
+
+================================================================================
+  GIAI ĐOẠN 4: MỞ RỘNG SETTINGS
+================================================================================
+
+Mục tiêu: Cá nhân hóa trải nghiệm
+Ưu tiên: TRUNG BÌNH
+Độ phức tạp: THẤP
+
+[4.1] Tốc độ đọc (Speech Rate)
+───────────────────────────────
+- 3 mức: Chậm (0.6) / Vừa (0.85) / Nhanh (1.1)
+- Áp dụng cho cả chế độ đọc chữ cái và đọc từ
+- Lưu vào localStorage
+
+[4.2] Số lượng từ mỗi lượt
+───────────────────────────
+- Tùy chọn: 5 / 10 / 15 / 20 từ
+- Mặc định: 10 (giữ nguyên)
+- Lưu vào localStorage
+
+[4.3] Hiện/ẩn hướng dẫn ngón tay
+─────────────────────────────────
+- Toggle viền màu dưới phím bàn phím
+- Mặc định: hiện
+- Thêm class .keyboard--hide-fingers để ẩn viền
+
+[4.4] Theme (giao diện)
+────────────────────────
+- Tối (mặc định, hiện tại)
+- Sáng: nền trắng kem, chữ tối, phím sáng
+- Colorful: nền gradient tím-hồng, phím nhiều màu
+- Dùng CSS custom properties, swap bộ giá trị theo data-theme
+
+
+================================================================================
+  GIAI ĐOẠN 5: CHẾ ĐỘ CHƠI ĐA DẠNG
+================================================================================
+
+Mục tiêu: Tăng chiều sâu, phù hợp nhiều mục đích luyện tập
+Ưu tiên: TRUNG BÌNH
+Độ phức tạp: CAO
+
+[5.1] Chế độ bài học (Lesson Mode)
+───────────────────────────────────
+- Bài 1: Home Row — a s d f g h j k l ;
+- Bài 2: Top Row — q w e r t y u i o p
+- Bài 3: Bottom Row — z x c v b n m
+- Bài 4: Kết hợp Home + Top
+- Bài 5: Kết hợp tất cả
+- Mỗi bài tạo từ chỉ dùng chữ cái trong nhóm đó
+- Từ được sinh ngẫu nhiên hoặc từ bộ từ riêng
+
+[5.2] Chế độ đua thời gian (Time Attack)
+─────────────────────────────────────────
+- Đếm ngược 30s / 60s / 120s
+- Gõ được bao nhiêu từ trong thời gian đó
+- Từ mới xuất hiện ngay khi gõ xong từ trước
+- Hiển thị đếm ngược thay vì đếm xuôi
+
+[5.3] Chế độ thử thách (Challenge Mode)
+────────────────────────────────────────
+- Bắt đầu với từ ngắn (3 chữ), dần dài hơn
+- Mỗi 5 từ tăng 1 cấp độ dài
+- Tốc độ yêu cầu tăng dần (nếu quá chậm → game over)
+- "Lives" system: 3 mạng, sai 3 lần → mất 1 mạng
+
+
+================================================================================
+  GIAI ĐOẠN 6: THEO DÕI TIẾN BỘ
+================================================================================
+
+Mục tiêu: Dữ liệu dài hạn, giữ chân người dùng
+Ưu tiên: TRUNG BÌNH
+Độ phức tạp: TRUNG BÌNH
+
+[6.1] Trang lịch sử (History Page)
+───────────────────────────────────
+- Danh sách 20 lần chơi gần nhất
+- Mỗi dòng: ngày, level, WPM, accuracy, sao
+- Nút "Xem chi tiết" từng lần
+
+[6.2] Biểu đồ tiến bộ
+──────────────────────
+- Biểu đồ đường WPM theo thời gian (canvas hoặc SVG)
+- Biểu đồ accuracy theo thời gian
+- Hiển thị trend: đang tiến bộ / ổn định / cần cải thiện
+
+[6.3] Streak ngày chơi
+──────────────────────
+- Đếm số ngày chơi liên tiếp
+- Hiển thị trên header: "🔥 5 ngày liên tiếp"
+- Streak bị reset nếu bỏ 1 ngày
+- Lưu vào localStorage
+
+
+================================================================================
+  GIAI ĐOẠN 7: HOÀN THIỆN & MỞ RỘNG
+================================================================================
+
+Mục tiêu: Polish, thêm chiều sâu
+Ưu tiên: THẤP
+Độ phức tạp: TRUNG BÌNH - CAO
+
+[7.1] Hệ thống huy hiệu (Achievements)
+────────────────────────────────────────
+Huy hiệu mở khóa:
+- 🌟 Lần đầu chơi
+- 🔥 Streak 3 ngày / 7 ngày / 30 ngày
+- 💨 WPM 20 / 40 / 60 / 80 / 100
+- 🎯 Accuracy 100% (perfect game)
+- 📚 Hoàn thành 10 / 50 / 100 lượt chơi
+- 🏆 3 sao ở tất cả level
+- ⚡ CPS >= 5
+- 🦸 Combo streak >= 50
+
+[7.2] Hồ sơ người chơi
+──────────────────────
+- Nhập tên (hiển thị "Chào, [Tên]!")
+- Chọn avatar từ danh sách emoji
+- Cho phép nhiều profile (anh/chị/em dùng chung)
+- Switch profile từ header
+
+[7.3] Hướng dẫn ngón tay nâng cao
+──────────────────────────────────
+- Hình bàn tay SVG bên dưới keyboard
+- Highlight ngón tay cần dùng cho phím hiện tại
+- Animation ngón tay di chuyển theo phím
+
+[7.4] Cải thiện Mobile
+──────────────────────
+- Touch support cho phím Space, Backspace trên bàn phím ảo
+- Vibration feedback (navigator.vibrate)
+- Landscape mode tối ưu
+- Swipe gesture để chuyển page
+
+[7.5] Adaptive Difficulty
+─────────────────────────
+- Theo dõi accuracy + WPM qua 5 lần chơi gần nhất
+- Accuracy > 95% + WPM > ngưỡng → đề xuất lên level
+- Accuracy < 70% → đề xuất xuống level
+- Popup nhẹ nhàng: "Bạn giỏi lắm! Thử level Trung bình nhé?"
+
+
+================================================================================
+  KIẾN TRÚC KỸ THUẬT ĐỀ XUẤT
+================================================================================
+
+CẤU TRÚC FILE HIỆN TẠI
+───────────────────────
+  keyboad_with_sound/
+  ├── index.html      (1 file, ~110 dòng)
+  ├── style.css       (1 file, ~760 dòng)
+  └── app.js          (1 file, ~690 dòng)
+
+CẤU TRÚC FILE ĐỀ XUẤT (khi project lớn hơn)
+─────────────────────────────────────────────
+  keyboad_with_sound/
+  ├── index.html
+  ├── styles/
+  │   ├── base.css            (reset, variables, typography)
+  │   ├── components.css      (buttons, cards, inputs)
+  │   ├── keyboard.css        (bàn phím ảo)
+  │   ├── game.css            (word display, stats, celebration)
+  │   ├── settings.css        (settings panel)
+  │   ├── history.css         (trang lịch sử, biểu đồ)
+  │   └── themes/
+  │       ├── dark.css
+  │       ├── light.css
+  │       └── colorful.css
+  ├── js/
+  │   ├── app.js              (khởi tạo, event listeners)
+  │   ├── game.js             (game state, handleKey, resetGame)
+  │   ├── keyboard.js         (buildKeyboard, highlightKey, flashKey)
+  │   ├── sound.js            (SoundEngine class)
+  │   ├── speech.js           (SpeechEngine class)
+  │   ├── storage.js          (localStorage wrapper)
+  │   ├── stats.js            (scoring, streaks, achievements)
+  │   ├── settings.js         (settings panel logic)
+  │   ├── history.js          (history page, charts)
+  │   └── words.js            (word lists, lesson generator)
+  └── assets/
+      └── (hình ảnh nếu cần)
+
+LƯU Ý: Có thể giữ cấu trúc đơn giản (3 file) cho đến khi
+app.js vượt quá ~800 dòng, sau đó tách dần.
+
+
+QUẢN LÝ STATE ĐỀ XUẤT
+──────────────────────
+  const AppState = {
+    // Game
+    game: {
+      text, currentIndex, startTime, timerInterval,
+      totalKeystrokes, correctKeystrokes, isFinished,
+      level, soundMode, wordBoundaries,
+      combo, score, mistakeMap
+    },
+    // Settings (persist to localStorage)
+    settings: {
+      keyboardCase, speechRate, wordCount,
+      showFingerGuide, theme, playerName, avatar
+    },
+    // Records (persist to localStorage)
+    records: {
+      bestWpm: { easy, medium, hard },
+      bestAccuracy: { easy, medium, hard },
+      totalGames, totalWords,
+      dayStreak, lastPlayDate
+    },
+    // History (persist to localStorage)
+    history: [
+      { date, level, wpm, cps, accuracy, time, score, stars }
+    ]
+  };
+
+
+================================================================================
+  TIMELINE ƯỚC TÍNH
+================================================================================
+
+  Giai đoạn 1 (Nền tảng dữ liệu)      — Nhanh
+  Giai đoạn 2 (Điểm & Engagement)       — Nhanh
+  Giai đoạn 3 (Kết quả chi tiết)        — Nhanh
+  Giai đoạn 4 (Mở rộng Settings)        — Nhanh
+  Giai đoạn 5 (Chế độ chơi)             — Trung bình
+  Giai đoạn 6 (Theo dõi tiến bộ)        — Trung bình
+  Giai đoạn 7 (Hoàn thiện)              — Dài hạn
+
+
+================================================================================
+  GHI CHÚ
+================================================================================
+
+- Giữ vanilla HTML/CSS/JS, không thêm framework
+- Tất cả dữ liệu lưu localStorage (không cần backend)
+- Ưu tiên trải nghiệm trẻ em: màu sắc, animation, âm thanh vui
+- Test trên Chrome, Safari, Firefox
+- Responsive cho mobile nhưng ưu tiên desktop (bàn phím vật lý)
+- Mỗi giai đoạn có thể triển khai độc lập, không phụ thuộc nhau
+  (trừ giai đoạn 2-3 cần giai đoạn 1 làm nền tảng lưu trữ)

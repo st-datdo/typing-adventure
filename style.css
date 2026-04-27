@@ -116,7 +116,7 @@ body {
 /* ── Stats Bar ── */
 .stats-bar {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 12px;
 }
 
@@ -167,6 +167,8 @@ body {
 .stat-cps .stat-value { color: #ffeb3b; }
 .stat-wpm .stat-value { color: #ff9800; }
 .stat-accuracy .stat-value { color: #69f0ae; }
+.stat-best .stat-value { color: #e040fb; }
+.stat-streak .stat-value { color: #ff5252; }
 
 /* ── Word Display ── */
 .word-display-section {
@@ -670,6 +672,27 @@ body {
   line-height: 1.8;
 }
 
+.new-record {
+  display: inline-block;
+  margin-top: 4px;
+  padding: 4px 14px;
+  background: linear-gradient(135deg, rgba(255, 215, 0, 0.25), rgba(224, 64, 251, 0.25));
+  border: 1px solid rgba(255, 215, 0, 0.4);
+  border-radius: 20px;
+  color: #ffd700;
+  font-weight: 700;
+  font-size: 1rem;
+  animation: popIn 500ms var(--ease-bounce);
+}
+
+.record-info {
+  display: inline-block;
+  margin-top: 2px;
+  font-size: 0.85rem;
+  color: var(--color-text-dim);
+  opacity: 0.8;
+}
+
 /* ── Confetti ── */
 .confetti {
   position: fixed;
@@ -716,7 +739,7 @@ body {
 /* ── Responsive ── */
 @media (max-width: 700px) {
   .stats-bar {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(3, 1fr);
   }
 
   .key {
@@ -750,7 +773,7 @@ body {
 @media (max-width: 480px) {
   .stats-bar {
     grid-template-columns: repeat(2, 1fr);
-    gap: 8px;
+    gap: 6px;
   }
 
   .stat-card {

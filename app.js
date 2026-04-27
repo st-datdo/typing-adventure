@@ -91,6 +91,92 @@ const KEYBOARD_ROWS = [
   ],
 ];
 
+/* ── Storage (localStorage wrapper) ── */
+const STORAGE_KEYS = {
+  settings: 'typingAdventure_settings',
+  history: 'typingAdventure_history',
+  records: 'typingAdventure_records',
+};
+
+const MAX_HISTORY = 100;
+
+const Storage = {
+  _get(key) {
+    try {
+      const raw = localStorage.getItem(key);
+      return raw ? JSON.parse(raw) : null;
+    } catch {
+      return null;
+    }
+  },
+
+  _set(key, value) {
+    try {
+      localStorage.setItem(key, JSON.stringify(value));
+    } catch {
+      // localStorage full or unavailable
+    }
+  },
+
+  // ── Settings ──
+  loadSettings() {
+    return this._get(STORAGE_KEYS.settings) || {};
+  },
+
+  saveSettings(settingsObj) {
+    this._set(STORAGE_KEYS.settings, settingsObj);
+  },
+
+  // ── History ──
+  loadHistory() {
+    return this._get(STORAGE_KEYS.history) || [];
+  },
+
+  addHistory(entry) {
+    const history = this.loadHistory();
+    history.unshift(entry);
+    if (history.length > MAX_HISTORY) {
+      history.length = MAX_HISTORY;
+    }
+    this._set(STORAGE_KEYS.history, history);
+    return history;
+  },
+
+  // ── Records ──
+  loadRecords() {
+    return this._get(STORAGE_KEYS.records) || {
+      bestWpm: { easy: 0, medium: 0, hard: 0 },
+      bestAccuracy: { easy: 0, medium: 0, hard: 0 },
+      totalGames: 0,
+      totalWords: 0,
+      dayStreak: 0,
+      lastPlayDate: null,
+    };
+  },
+
+  updateRecords(level, wpm, accuracy, wordCount) {
+    const rec = this.loadRecords();
+    const isNewBestWpm = wpm > (rec.bestWpm[level] || 0);
+    const isNewBestAcc = accuracy > (rec.bestAccuracy[level] || 0);
+
+    if (isNewBestWpm) rec.bestWpm[level] = wpm;
+    if (isNewBestAcc) rec.bestAccuracy[level] = accuracy;
+    rec.totalGames++;
+    rec.totalWords += wordCount;
+
+    // Streak calculation
+    const today = new Date().toISOString().slice(0, 10);
+    if (rec.lastPlayDate !== today) {
+      const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
+      rec.dayStreak = rec.lastPlayDate === yesterday ? rec.dayStreak + 1 : 1;
+      rec.lastPlayDate = today;
+    }
+
+    this._set(STORAGE_KEYS.records, rec);
+    return { records: rec, isNewBestWpm, isNewBestAcc };
+  },
+};
+
 /* ── Audio Context (Web Audio API for typing sounds) ── */
 class SoundEngine {
   constructor() {
@@ -201,10 +287,15 @@ class SpeechEngine {
   }
 }
 
-/* ── Settings ── */
-const settings = {
-  keyboardCase: 'lower', // 'lower' | 'upper'
+/* ── Settings (loaded from localStorage) ── */
+const DEFAULT_SETTINGS = {
+  keyboardCase: 'lower',
+  level: 'easy',
+  soundMode: 'default',
+  soundEnabled: true,
 };
+
+const settings = { ...DEFAULT_SETTINGS, ...Storage.loadSettings() };
 
 /* ── Game State ── */
 const state = {
@@ -215,8 +306,8 @@ const state = {
   totalKeystrokes: 0,
   correctKeystrokes: 0,
   isFinished: false,
-  level: 'easy',
-  soundMode: 'default',
+  level: settings.level,
+  soundMode: settings.soundMode,
   wordBoundaries: [],
 };
 
@@ -240,6 +331,8 @@ const $celebration = document.getElementById('celebration');
 const $celebrationStats = document.getElementById('celebrationStats');
 const $hiddenInput = document.getElementById('hiddenInput');
 const $stars = document.getElementById('stars');
+const $bestWpm = document.getElementById('bestWpm');
+const $dayStreak = document.getElementById('dayStreak');
 const $btnSettings = document.getElementById('btnSettings');
 const $settingsPanel = document.getElementById('settingsPanel');
 const $settingsClose = document.getElementById('settingsClose');
@@ -527,13 +620,40 @@ function finishGame() {
   const acc = state.totalKeystrokes > 0
     ? Math.round((state.correctKeystrokes / state.totalKeystrokes) * 100)
     : 100;
+  const wordCount = state.wordBoundaries.length;
 
-  $celebrationStats.innerHTML = `
+  // Save history
+  Storage.addHistory({
+    date: new Date().toISOString(),
+    level: state.level,
+    wpm: Number(wpm),
+    cps: Number(cps),
+    accuracy: acc,
+    time: Number(elapsed.toFixed(1)),
+    wordCount,
+  });
+
+  // Update records
+  const { records, isNewBestWpm, isNewBestAcc } = Storage.updateRecords(
+    state.level, Number(wpm), acc, wordCount
+  );
+
+  // Build celebration message
+  let statsHtml = `
     ⏱️ Thời gian: <strong>${formatTime(elapsed)}</strong><br>
     ⚡ CPS: <strong>${cps}</strong><br>
     🏎️ WPM: <strong>${wpm}</strong><br>
     🎯 Chính xác: <strong>${acc}%</strong>
   `;
+
+  if (isNewBestWpm || isNewBestAcc) {
+    statsHtml += '<br><span class="new-record">🏆 Kỷ lục mới!</span>';
+  }
+
+  statsHtml += `<br><span class="record-info">🎮 Tổng: ${records.totalGames} lần | 🔥 Streak: ${records.dayStreak} ngày</span>`;
+
+  $celebrationStats.innerHTML = statsHtml;
+  refreshRecordsDisplay();
 
   $celebration.classList.add('celebration--visible');
   launchConfetti();
@@ -576,6 +696,7 @@ function resetGame() {
   $accuracy.textContent = '100%';
   $celebration.classList.remove('celebration--visible');
 
+  refreshRecordsDisplay();
   renderText();
   focusInput();
 }
@@ -583,6 +704,19 @@ function resetGame() {
 /* ── Focus Management ── */
 function focusInput() {
   $hiddenInput.focus();
+}
+
+/* ── Persist Settings ── */
+function persistSettings() {
+  Storage.saveSettings(settings);
+}
+
+/* ── Refresh Records Display ── */
+function refreshRecordsDisplay() {
+  const rec = Storage.loadRecords();
+  const bestWpm = rec.bestWpm[state.level] || 0;
+  $bestWpm.textContent = bestWpm;
+  $dayStreak.textContent = `${rec.dayStreak} ngày`;
 }
 
 /* ── Event Listeners ── */
@@ -648,16 +782,22 @@ $btnPlayAgain.addEventListener('click', resetGame);
 $btnSound.addEventListener('click', () => {
   sound.init();
   const enabled = sound.toggle();
+  settings.soundEnabled = enabled;
+  persistSettings();
   $btnSound.textContent = enabled ? '🔊' : '🔇';
 });
 
 $levelSelect.addEventListener('change', (e) => {
   state.level = e.target.value;
+  settings.level = e.target.value;
+  persistSettings();
   resetGame();
 });
 
 $soundModeSelect.addEventListener('change', (e) => {
   state.soundMode = e.target.value;
+  settings.soundMode = e.target.value;
+  persistSettings();
 });
 
 /* ── Settings Panel ── */
@@ -677,11 +817,21 @@ $settingsPanel.addEventListener('click', (e) => {
 
 $keyboardCaseSelect.addEventListener('change', (e) => {
   settings.keyboardCase = e.target.value;
+  persistSettings();
   buildKeyboard();
   renderText();
 });
 
 /* ── Init ── */
+// Restore saved settings to UI controls
+$levelSelect.value = settings.level;
+$soundModeSelect.value = settings.soundMode;
+$keyboardCaseSelect.value = settings.keyboardCase;
+if (!settings.soundEnabled) {
+  sound.enabled = false;
+  $btnSound.textContent = '🔇';
+}
+
 createStars();
 buildKeyboard();
 resetGame();
