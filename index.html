@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Typing Adventure - Luyện Gõ Phím</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="stars" id="stars"></div>
+
+  <header class="header">
+    <h1 class="title">
+      <span class="title-icon">⌨️</span>
+      Typing Adventure
+      <span class="title-icon">🚀</span>
+    </h1>
+    <p class="subtitle">Luyện gõ phím siêu tốc!</p>
+  </header>
+
+  <main class="main">
+    <!-- Stats Bar -->
+    <section class="stats-bar">
+      <div class="stat-card stat-time">
+        <div class="stat-icon">⏱️</div>
+        <div class="stat-info">
+          <span class="stat-label">Thời gian</span>
+          <span class="stat-value" id="timer">0:00</span>
+        </div>
+      </div>
+      <div class="stat-card stat-cps">
+        <div class="stat-icon">⚡</div>
+        <div class="stat-info">
+          <span class="stat-label">CPS</span>
+          <span class="stat-value" id="cps">0.00</span>
+        </div>
+      </div>
+      <div class="stat-card stat-wpm">
+        <div class="stat-icon">🏎️</div>
+        <div class="stat-info">
+          <span class="stat-label">WPM</span>
+          <span class="stat-value" id="wpm">0</span>
+        </div>
+      </div>
+      <div class="stat-card stat-accuracy">
+        <div class="stat-icon">🎯</div>
+        <div class="stat-info">
+          <span class="stat-label">Chính xác</span>
+          <span class="stat-value" id="accuracy">100%</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Word Display -->
+    <section class="word-display-section">
+      <div class="word-display" id="wordDisplay"></div>
+      <div class="progress-bar">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+    </section>
+
+    <!-- Keyboard -->
+    <section class="keyboard-section">
+      <div class="keyboard" id="keyboard"></div>
+    </section>
+
+    <!-- Controls -->
+    <section class="controls">
+      <button class="btn btn-restart" id="btnRestart" title="Chơi lại">
+        🔄 Chơi lại
+      </button>
+      <select class="btn btn-level" id="levelSelect" title="Chọn độ khó">
+        <option value="easy">🌱 Dễ</option>
+        <option value="medium">🌿 Trung bình</option>
+        <option value="hard">🌳 Khó</option>
+      </select>
+      <select class="btn btn-sound-mode" id="soundModeSelect" title="Chế độ âm thanh">
+        <option value="default">🔔 Mặc định</option>
+        <option value="character">🔤 Đọc chữ cái</option>
+        <option value="word">📖 Đọc từ</option>
+      </select>
+      <button class="btn btn-sound" id="btnSound" title="Bật/tắt âm thanh">
+        🔊
+      </button>
+    </section>
+  </main>
+
+  <!-- Celebration overlay -->
+  <div class="celebration" id="celebration">
+    <div class="celebration-content">
+      <div class="celebration-emoji">🎉</div>
+      <h2>Tuyệt vời!</h2>
+      <p id="celebrationStats"></p>
+      <button class="btn btn-restart" id="btnPlayAgain">🚀 Chơi tiếp</button>
+    </div>
+  </div>
+
+  <input type="text" id="hiddenInput" class="hidden-input" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+
+  <script src="app.js"></script>
+</body>
+</html>
