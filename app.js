@@ -201,6 +201,11 @@ class SpeechEngine {
   }
 }
 
+/* ── Settings ── */
+const settings = {
+  keyboardCase: 'lower', // 'lower' | 'upper'
+};
+
 /* ── Game State ── */
 const state = {
   text: '',
@@ -235,6 +240,10 @@ const $celebration = document.getElementById('celebration');
 const $celebrationStats = document.getElementById('celebrationStats');
 const $hiddenInput = document.getElementById('hiddenInput');
 const $stars = document.getElementById('stars');
+const $btnSettings = document.getElementById('btnSettings');
+const $settingsPanel = document.getElementById('settingsPanel');
+const $settingsClose = document.getElementById('settingsClose');
+const $keyboardCaseSelect = document.getElementById('keyboardCaseSelect');
 
 /* ── Stars Background ── */
 function createStars() {
@@ -256,6 +265,7 @@ const keyElements = new Map();
 
 function buildKeyboard() {
   $keyboard.innerHTML = '';
+  keyElements.clear();
   for (const row of KEYBOARD_ROWS) {
     const rowEl = document.createElement('div');
     rowEl.classList.add('keyboard-row');
@@ -264,7 +274,10 @@ function buildKeyboard() {
       keyEl.classList.add('key');
       if (k.cls) keyEl.classList.add(`key--${k.cls}`);
       if (k.finger) keyEl.classList.add(`key--finger-${k.finger}`);
-      keyEl.textContent = k.label || k.key;
+      const displayText = k.label || k.key;
+      keyEl.textContent = settings.keyboardCase === 'upper'
+        ? displayText.toUpperCase()
+        : displayText;
       keyEl.dataset.key = k.key.toLowerCase();
       keyElements.set(k.key.toLowerCase(), keyEl);
       rowEl.appendChild(keyEl);
@@ -295,13 +308,16 @@ function renderText() {
   for (let i = 0; i < state.text.length; i++) {
     const span = document.createElement('span');
     span.classList.add('char');
-    if (state.text[i] === ' ') {
+    const ch = state.text[i];
+    if (ch === ' ') {
       span.classList.add('char--space');
       span.innerHTML = '&nbsp;';
     } else {
-      span.textContent = state.text[i];
+      span.textContent = settings.keyboardCase === 'upper' ? ch.toUpperCase() : ch;
     }
-    if (i === 0) {
+    if (i < state.currentIndex) {
+      span.classList.add('char--correct');
+    } else if (i === state.currentIndex) {
       span.classList.add('char--active');
     } else {
       span.classList.add('char--pending');
@@ -642,6 +658,27 @@ $levelSelect.addEventListener('change', (e) => {
 
 $soundModeSelect.addEventListener('change', (e) => {
   state.soundMode = e.target.value;
+});
+
+/* ── Settings Panel ── */
+$btnSettings.addEventListener('click', () => {
+  $settingsPanel.classList.add('settings--visible');
+});
+
+$settingsClose.addEventListener('click', () => {
+  $settingsPanel.classList.remove('settings--visible');
+});
+
+$settingsPanel.addEventListener('click', (e) => {
+  if (e.target === $settingsPanel) {
+    $settingsPanel.classList.remove('settings--visible');
+  }
+});
+
+$keyboardCaseSelect.addEventListener('change', (e) => {
+  settings.keyboardCase = e.target.value;
+  buildKeyboard();
+  renderText();
 });
 
 /* ── Init ── */
