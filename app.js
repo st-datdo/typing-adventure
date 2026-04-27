@@ -325,6 +325,7 @@ const state = {
   combo: 0,
   maxCombo: 0,
   score: 0,
+  mistakeMap: {},
 };
 
 const sound = new SoundEngine();
@@ -339,7 +340,6 @@ const $wpm = document.getElementById('wpm');
 const $accuracy = document.getElementById('accuracy');
 const $keyboard = document.getElementById('keyboard');
 const $btnRestart = document.getElementById('btnRestart');
-const $btnPlayAgain = document.getElementById('btnPlayAgain');
 const $btnSound = document.getElementById('btnSound');
 const $levelSelect = document.getElementById('levelSelect');
 const $soundModeSelect = document.getElementById('soundModeSelect');
@@ -677,9 +677,12 @@ function handleKey(inputChar) {
     nextEl.classList.add('char--active');
     highlightKey();
   } else {
-    // Wrong — reset combo
+    // Wrong — reset combo + track mistake
     state.combo = 0;
     updateComboDisplay();
+    if (expected !== ' ') {
+      state.mistakeMap[expected] = (state.mistakeMap[expected] || 0) + 1;
+    }
 
     currentEl.classList.add('char--wrong');
     flashKey(keyName, false);
@@ -718,8 +721,12 @@ function finishGame() {
   state.score = finalScore;
 
   // Star rating
-  const stars = calculateStars(Number(wpm), acc, state.level);
-  const starDisplay = '★'.repeat(stars) + '☆'.repeat(3 - stars);
+  const starCount = calculateStars(Number(wpm), acc, state.level);
+  const starDisplay = '★'.repeat(starCount) + '☆'.repeat(3 - starCount);
+
+  // Load previous best BEFORE saving (for comparison)
+  const prevRecords = Storage.loadRecords();
+  const prevBestWpm = prevRecords.bestWpm[state.level] || 0;
 
   // Save history
   Storage.addHistory({
@@ -731,7 +738,7 @@ function finishGame() {
     time: Number(elapsed.toFixed(1)),
     wordCount,
     score: finalScore,
-    stars,
+    stars: starCount,
     maxCombo: state.maxCombo,
   });
 
@@ -740,26 +747,90 @@ function finishGame() {
     state.level, Number(wpm), acc, wordCount, finalScore
   );
 
-  // Build celebration message
-  let statsHtml = `
-    <div class="celebration-stars">${starDisplay}</div>
-    <div class="celebration-score">${finalScore.toLocaleString()} điểm</div>
-    ⏱️ Thời gian: <strong>${formatTime(elapsed)}</strong><br>
-    ⚡ CPS: <strong>${cps}</strong><br>
-    🏎️ WPM: <strong>${wpm}</strong><br>
-    🎯 Chính xác: <strong>${acc}%</strong><br>
-    🔥 Max Combo: <strong>x${state.maxCombo}</strong>
+  // ── Stars ──
+  document.getElementById('celebrationStars').innerHTML = starDisplay;
+
+  // ── Score ──
+  document.getElementById('celebrationScore').textContent = `${finalScore.toLocaleString()} điểm`;
+
+  // ── Record comparison ──
+  let recordHtml = '';
+  if (isNewBestWpm || isNewBestAcc || isNewBestScore) {
+    recordHtml = '<span class="new-record">🏆 Kỷ lục mới!</span>';
+  } else if (prevBestWpm > 0) {
+    const diff = prevBestWpm - Number(wpm);
+    if (diff <= 5 && diff > 0) {
+      recordHtml = `<span class="record-close">Còn ${diff} WPM nữa là phá kỷ lục!</span>`;
+    } else if (diff > 5) {
+      recordHtml = `<span class="record-info">Kỷ lục: ${prevBestWpm} WPM</span>`;
+    }
+  }
+  recordHtml += `<span class="record-info">🎮 ${records.totalGames} lần chơi | 🔥 ${records.dayStreak} ngày liên tiếp</span>`;
+  document.getElementById('celebrationRecord').innerHTML = recordHtml;
+
+  // ── Stats grid ──
+  document.getElementById('celebrationStats').innerHTML = `
+    <div class="cstat"><span class="cstat-val">${formatTime(elapsed)}</span><span class="cstat-lbl">Thời gian</span></div>
+    <div class="cstat"><span class="cstat-val">${cps}</span><span class="cstat-lbl">CPS</span></div>
+    <div class="cstat"><span class="cstat-val">${wpm}</span><span class="cstat-lbl">WPM</span></div>
+    <div class="cstat"><span class="cstat-val">${acc}%</span><span class="cstat-lbl">Chính xác</span></div>
+    <div class="cstat"><span class="cstat-val">x${state.maxCombo}</span><span class="cstat-lbl">Max Combo</span></div>
+    <div class="cstat"><span class="cstat-val">${finalScore.toLocaleString()}</span><span class="cstat-lbl">Điểm</span></div>
   `;
 
-  if (isNewBestWpm || isNewBestAcc || isNewBestScore) {
-    statsHtml += '<br><span class="new-record">🏆 Kỷ lục mới!</span>';
+  // ── Mistake analysis ──
+  const mistakes = Object.entries(state.mistakeMap).sort((a, b) => b[1] - a[1]);
+  const $mistakes = document.getElementById('celebrationMistakes');
+  if (mistakes.length > 0) {
+    const top3 = mistakes.slice(0, 3);
+    const chars = top3.map(([ch, count]) =>
+      `<span class="mistake-char">${ch.toUpperCase()} <small>(${count}x)</small></span>`
+    ).join(' ');
+    $mistakes.innerHTML = `
+      <div class="mistakes-title">Chữ cái hay sai nhất</div>
+      <div class="mistakes-list">${chars}</div>
+      <div class="mistakes-tip">Hãy luyện thêm chữ ${top3.map(([ch]) => ch.toUpperCase()).join(', ')}!</div>
+    `;
+  } else {
+    $mistakes.innerHTML = '<div class="mistakes-title perfect">Hoàn hảo! Không sai chữ nào!</div>';
   }
 
-  statsHtml += `<br><span class="record-info">🎮 Tổng: ${records.totalGames} lần | 🔥 Streak: ${records.dayStreak} ngày</span>`;
+  // ── Action buttons ──
+  const $actions = document.getElementById('celebrationActions');
+  let actionsHtml = '<button class="btn btn-restart" id="btnPlayAgain">🔄 Chơi lại</button>';
 
-  $celebrationStats.innerHTML = statsHtml;
+  // "Thử level khó hơn" if 3 stars
+  const nextLevel = { easy: 'medium', medium: 'hard' };
+  if (starCount === 3 && nextLevel[state.level]) {
+    const nlKey = nextLevel[state.level];
+    const nlLabel = { medium: 'Trung bình', hard: 'Khó' };
+    actionsHtml += `<button class="btn btn-level-up" data-level="${nlKey}">🚀 Thử ${nlLabel[nlKey]}</button>`;
+  }
+
+  // "Luyện chữ yếu" if there are mistakes
+  if (mistakes.length > 0) {
+    const weakChars = mistakes.slice(0, 5).map(([ch]) => ch).join(',');
+    actionsHtml += `<button class="btn btn-practice" data-chars="${weakChars}">🎯 Luyện chữ yếu</button>`;
+  }
+
+  $actions.innerHTML = actionsHtml;
+
+  // Bind action buttons
+  $actions.querySelector('#btnPlayAgain')?.addEventListener('click', resetGame);
+  $actions.querySelector('.btn-level-up')?.addEventListener('click', (e) => {
+    const newLevel = e.target.dataset.level;
+    state.level = newLevel;
+    settings.level = newLevel;
+    persistSettings();
+    $levelSelect.value = newLevel;
+    resetGame();
+  });
+  $actions.querySelector('.btn-practice')?.addEventListener('click', (e) => {
+    const chars = e.target.dataset.chars.split(',');
+    startPracticeMode(chars);
+  });
+
   refreshRecordsDisplay();
-
   $celebration.classList.add('celebration--visible');
   launchConfetti();
 
@@ -767,6 +838,60 @@ function finishGame() {
   for (const [, el] of keyElements) {
     el.classList.remove('key--highlight');
   }
+}
+
+/* ── Practice Mode: generate words focusing on weak characters ── */
+function startPracticeMode(weakChars) {
+  const allWords = [...WORDS.easy, ...WORDS.medium, ...WORDS.hard];
+  const matching = allWords.filter(w =>
+    weakChars.some(ch => w.includes(ch))
+  );
+  // Pick up to WORD_COUNT words that contain weak chars, fill rest randomly
+  const picked = [];
+  const used = new Set();
+  const pool = matching.length > 0 ? matching : allWords;
+  while (picked.length < WORD_COUNT && used.size < pool.length) {
+    const idx = Math.floor(Math.random() * pool.length);
+    if (!used.has(idx)) {
+      used.add(idx);
+      picked.push(pool[idx]);
+    }
+  }
+
+  $celebration.classList.remove('celebration--visible');
+
+  state.currentIndex = 0;
+  state.startTime = null;
+  state.totalKeystrokes = 0;
+  state.correctKeystrokes = 0;
+  state.isFinished = false;
+  state.combo = 0;
+  state.maxCombo = 0;
+  state.score = 0;
+  state.mistakeMap = {};
+  stopTimer();
+
+  state.text = picked.join(' ');
+
+  // Precompute word boundaries
+  state.wordBoundaries = [];
+  let pos = 0;
+  for (const word of state.text.split(' ')) {
+    state.wordBoundaries.push({ word, startIndex: pos, endIndex: pos + word.length });
+    pos += word.length + 1;
+  }
+
+  $timer.textContent = '0:00';
+  $cps.textContent = '0.00';
+  $wpm.textContent = '0';
+  $accuracy.textContent = '100%';
+  updateComboDisplay();
+  const $score = document.getElementById('score');
+  if ($score) $score.textContent = '0';
+
+  refreshRecordsDisplay();
+  renderText();
+  focusInput();
 }
 
 /* ── Reset Game ── */
@@ -782,6 +907,7 @@ function resetGame() {
   state.combo = 0;
   state.maxCombo = 0;
   state.score = 0;
+  state.mistakeMap = {};
   stopTimer();
 
   state.text = pickWords(state.level);
@@ -888,7 +1014,6 @@ document.addEventListener('click', (e) => {
 });
 
 $btnRestart.addEventListener('click', resetGame);
-$btnPlayAgain.addEventListener('click', resetGame);
 
 $btnSound.addEventListener('click', () => {
   sound.init();

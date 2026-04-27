@@ -753,8 +753,17 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 16px;
+  gap: 12px;
+  max-width: 420px;
+  width: 90%;
+  padding: 28px 24px;
+  background: linear-gradient(145deg, rgba(30, 27, 75, 0.95), rgba(36, 36, 62, 0.95));
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.6);
   animation: popIn 500ms var(--ease-bounce);
+  max-height: 90vh;
+  overflow-y: auto;
 }
 
 @keyframes popIn {
@@ -763,33 +772,35 @@ body {
 }
 
 .celebration-emoji {
-  font-size: 5rem;
+  font-size: 4rem;
   animation: bounce 600ms var(--ease-bounce) infinite alternate;
 }
 
 @keyframes bounce {
   from { transform: translateY(0); }
-  to { transform: translateY(-16px); }
+  to { transform: translateY(-12px); }
 }
 
 .celebration-content h2 {
-  font-size: 2.5rem;
+  font-size: 2rem;
   background: linear-gradient(135deg, #ffeb3b, #ff9800, #e040fb);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
+  margin: 0;
 }
 
-.celebration-content p {
-  font-size: 1.1rem;
-  color: var(--color-text-dim);
-  line-height: 1.8;
+/* ── Celebration Record Section ── */
+.celebration-record {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
 }
 
 .new-record {
   display: inline-block;
-  margin-top: 4px;
-  padding: 4px 14px;
+  padding: 5px 16px;
   background: linear-gradient(135deg, rgba(255, 215, 0, 0.25), rgba(224, 64, 251, 0.25));
   border: 1px solid rgba(255, 215, 0, 0.4);
   border-radius: 20px;
@@ -799,12 +810,144 @@ body {
   animation: popIn 500ms var(--ease-bounce);
 }
 
-.record-info {
+.record-close {
   display: inline-block;
-  margin-top: 2px;
+  padding: 4px 14px;
+  background: rgba(255, 152, 0, 0.15);
+  border: 1px solid rgba(255, 152, 0, 0.3);
+  border-radius: 20px;
+  color: #ffb74d;
+  font-weight: 600;
   font-size: 0.85rem;
+}
+
+.record-info {
+  display: block;
+  font-size: 0.8rem;
   color: var(--color-text-dim);
   opacity: 0.8;
+}
+
+/* ── Celebration Stats Grid ── */
+.celebration-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  width: 100%;
+}
+
+.cstat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 8px 4px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: var(--radius-sm);
+}
+
+.cstat-val {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--color-text);
+  font-variant-numeric: tabular-nums;
+}
+
+.cstat-lbl {
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--color-text-dim);
+  font-weight: 600;
+}
+
+/* ── Celebration Mistakes Section ── */
+.celebration-mistakes {
+  width: 100%;
+  padding: 10px 14px;
+  background: rgba(255, 82, 82, 0.06);
+  border: 1px solid rgba(255, 82, 82, 0.12);
+  border-radius: var(--radius-sm);
+}
+
+.mistakes-title {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--color-text-dim);
+  margin-bottom: 6px;
+}
+
+.mistakes-title.perfect {
+  color: var(--color-correct);
+  text-align: center;
+  margin-bottom: 0;
+}
+
+.mistakes-list {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.mistake-char {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 3px;
+  padding: 3px 10px;
+  background: rgba(255, 82, 82, 0.15);
+  border: 1px solid rgba(255, 82, 82, 0.25);
+  border-radius: 6px;
+  color: #ff8a80;
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+.mistake-char small {
+  font-size: 0.7rem;
+  font-weight: 500;
+  opacity: 0.7;
+}
+
+.mistakes-tip {
+  font-size: 0.75rem;
+  color: var(--color-text-dim);
+  text-align: center;
+  font-style: italic;
+}
+
+/* ── Celebration Action Buttons ── */
+.celebration-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: center;
+  width: 100%;
+  margin-top: 4px;
+}
+
+.celebration-actions .btn {
+  font-size: 0.85rem;
+  padding: 9px 16px;
+}
+
+.btn-level-up {
+  background: rgba(0, 230, 118, 0.2) !important;
+  border-color: rgba(0, 230, 118, 0.3) !important;
+}
+
+.btn-level-up:hover {
+  background: rgba(0, 230, 118, 0.35) !important;
+}
+
+.btn-practice {
+  background: rgba(255, 152, 0, 0.2) !important;
+  border-color: rgba(255, 152, 0, 0.3) !important;
+}
+
+.btn-practice:hover {
+  background: rgba(255, 152, 0, 0.35) !important;
 }
 
 /* ── Confetti ── */
