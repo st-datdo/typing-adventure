@@ -1299,6 +1299,184 @@ $timeAttackSelect.addEventListener('change', (e) => {
   resetGame();
 });
 
+/* ── History Panel ── */
+const $btnHistory = document.getElementById('btnHistory');
+const $historyPanel = document.getElementById('historyPanel');
+const $historyClose = document.getElementById('historyClose');
+
+$btnHistory.addEventListener('click', () => {
+  renderHistoryPanel();
+  $historyPanel.classList.add('settings--visible');
+});
+
+$historyClose.addEventListener('click', () => {
+  $historyPanel.classList.remove('settings--visible');
+});
+
+$historyPanel.addEventListener('click', (e) => {
+  if (e.target === $historyPanel) {
+    $historyPanel.classList.remove('settings--visible');
+  }
+});
+
+function renderHistoryPanel() {
+  const history = Storage.loadHistory();
+  const records = Storage.loadRecords();
+
+  // ── Streak banner ──
+  const $streak = document.getElementById('historyStreak');
+  if (records.dayStreak > 0) {
+    $streak.innerHTML = `<span class="streak-fire">🔥</span> ${records.dayStreak} ngày liên tiếp <span class="streak-sub">| ${records.totalGames} lần chơi | ${records.totalWords} từ đã gõ</span>`;
+    $streak.classList.remove('hidden');
+  } else {
+    $streak.innerHTML = `<span class="streak-sub">🎮 ${records.totalGames} lần chơi | ${records.totalWords} từ đã gõ</span>`;
+    $streak.classList.remove('hidden');
+  }
+
+  // ── Table ──
+  const $tbody = document.getElementById('historyTableBody');
+  const $empty = document.getElementById('historyEmpty');
+  const recent = history.slice(0, 20);
+
+  if (recent.length === 0) {
+    $tbody.innerHTML = '';
+    $empty.classList.remove('hidden');
+  } else {
+    $empty.classList.add('hidden');
+    const levelLabels = { easy: '🌱', medium: '🌿', hard: '🌳' };
+    $tbody.innerHTML = recent.map(h => {
+      const d = new Date(h.date);
+      const dateStr = `${d.getDate()}/${d.getMonth() + 1}`;
+      const starsStr = '★'.repeat(h.stars || 0) + '☆'.repeat(3 - (h.stars || 0));
+      return `<tr>
+        <td>${dateStr}</td>
+        <td>${levelLabels[h.level] || h.level}</td>
+        <td>${h.wpm}</td>
+        <td>${h.accuracy}%</td>
+        <td class="stars-cell">${starsStr}</td>
+      </tr>`;
+    }).join('');
+  }
+
+  // ── SVG Chart (WPM over time) ──
+  renderChart(history.slice(0, 20).reverse());
+
+  // ── Trend ──
+  renderTrend(history.slice(0, 10));
+}
+
+function renderChart(data) {
+  const svg = document.getElementById('historyChart');
+  if (data.length < 2) {
+    svg.innerHTML = '<text x="190" y="85" text-anchor="middle" fill="var(--color-text-dim)" font-size="12">Cần ít nhất 2 lần chơi</text>';
+    return;
+  }
+
+  const W = 380, H = 160;
+  const padL = 35, padR = 10, padT = 15, padB = 25;
+  const chartW = W - padL - padR;
+  const chartH = H - padT - padB;
+
+  const wpmValues = data.map(d => d.wpm || 0);
+  const accValues = data.map(d => d.accuracy || 0);
+  const maxWpm = Math.max(...wpmValues, 10);
+  const n = data.length;
+
+  const xStep = chartW / (n - 1);
+
+  // Build WPM polyline points
+  const wpmPoints = wpmValues.map((v, i) => {
+    const x = padL + i * xStep;
+    const y = padT + chartH - (v / maxWpm) * chartH;
+    return `${x},${y}`;
+  });
+
+  // Build accuracy polyline points (scale 0-100)
+  const accPoints = accValues.map((v, i) => {
+    const x = padL + i * xStep;
+    const y = padT + chartH - (v / 100) * chartH;
+    return `${x},${y}`;
+  });
+
+  // Y-axis labels
+  const yLabels = [0, Math.round(maxWpm / 2), maxWpm];
+
+  let html = '';
+
+  // Grid lines
+  for (const val of yLabels) {
+    const y = padT + chartH - (val / maxWpm) * chartH;
+    html += `<line x1="${padL}" y1="${y}" x2="${W - padR}" y2="${y}" stroke="var(--color-text-dim)" stroke-opacity="0.15" stroke-dasharray="3,3"/>`;
+    html += `<text x="${padL - 4}" y="${y + 4}" text-anchor="end" fill="var(--color-text-dim)" font-size="9">${val}</text>`;
+  }
+
+  // WPM area fill
+  const areaWpm = `M${padL},${padT + chartH} L${wpmPoints.join(' L')} L${padL + (n - 1) * xStep},${padT + chartH} Z`;
+  html += `<path d="${areaWpm}" fill="url(#wpmGrad)" opacity="0.3"/>`;
+
+  // Gradients
+  html += `<defs>
+    <linearGradient id="wpmGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#7c4dff"/>
+      <stop offset="100%" stop-color="#7c4dff" stop-opacity="0"/>
+    </linearGradient>
+  </defs>`;
+
+  // WPM line
+  html += `<polyline points="${wpmPoints.join(' ')}" fill="none" stroke="#7c4dff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>`;
+
+  // Accuracy line (dashed, green)
+  html += `<polyline points="${accPoints.join(' ')}" fill="none" stroke="#00e676" stroke-width="1.5" stroke-dasharray="4,3" stroke-linecap="round" stroke-linejoin="round" opacity="0.7"/>`;
+
+  // Data points for WPM
+  wpmValues.forEach((v, i) => {
+    const x = padL + i * xStep;
+    const y = padT + chartH - (v / maxWpm) * chartH;
+    html += `<circle cx="${x}" cy="${y}" r="3" fill="#7c4dff" stroke="var(--color-text)" stroke-width="1"/>`;
+  });
+
+  // Legend
+  html += `<rect x="${padL}" y="${H - 8}" width="10" height="3" rx="1" fill="#7c4dff"/>`;
+  html += `<text x="${padL + 14}" y="${H - 5}" fill="var(--color-text-dim)" font-size="8">WPM</text>`;
+  html += `<line x1="${padL + 50}" y1="${H - 6.5}" x2="${padL + 60}" y2="${H - 6.5}" stroke="#00e676" stroke-width="1.5" stroke-dasharray="3,2"/>`;
+  html += `<text x="${padL + 64}" y="${H - 5}" fill="var(--color-text-dim)" font-size="8">Accuracy</text>`;
+
+  svg.innerHTML = html;
+}
+
+function renderTrend(recentHistory) {
+  const $trend = document.getElementById('historyTrend');
+  if (recentHistory.length < 3) {
+    $trend.innerHTML = '';
+    return;
+  }
+
+  const wpms = recentHistory.map(h => h.wpm || 0);
+  const firstHalf = wpms.slice(Math.floor(wpms.length / 2));
+  const secondHalf = wpms.slice(0, Math.floor(wpms.length / 2));
+  const avgRecent = secondHalf.reduce((a, b) => a + b, 0) / secondHalf.length;
+  const avgOlder = firstHalf.reduce((a, b) => a + b, 0) / firstHalf.length;
+  const diff = avgRecent - avgOlder;
+
+  let icon, text, cls;
+  if (diff > 3) {
+    icon = '📈';
+    text = `Đang tiến bộ! WPM tăng ${Math.round(diff)} so với trước`;
+    cls = 'trend--up';
+  } else if (diff < -3) {
+    icon = '📉';
+    text = `Cần cố gắng hơn! WPM giảm ${Math.round(Math.abs(diff))}`;
+    cls = 'trend--down';
+  } else {
+    icon = '➡️';
+    text = `Ổn định — tiếp tục luyện tập!`;
+    cls = 'trend--stable';
+  }
+
+  $trend.innerHTML = `<span class="trend-icon">${icon}</span> <span class="trend-text">${text}</span>`;
+  $trend.className = `history-trend ${cls}`;
+}
+
 /* ── Init ── */
 // Restore saved settings to UI controls
 $levelSelect.value = settings.level;

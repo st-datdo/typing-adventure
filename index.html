@@ -126,8 +126,51 @@
       <button class="btn btn-settings" id="btnSettings" title="Cài đặt">
         ⚙️ Cài đặt
       </button>
+      <button class="btn btn-history" id="btnHistory" title="Lịch sử">
+        📊 Lịch sử
+      </button>
     </section>
   </main>
+
+  <!-- History Panel -->
+  <div class="settings-overlay" id="historyPanel">
+    <div class="settings-panel history-panel">
+      <div class="settings-header">
+        <h2 class="settings-title">📊 Lịch sử & Tiến bộ</h2>
+        <button class="settings-close" id="historyClose">✕</button>
+      </div>
+      <div class="settings-body">
+        <!-- Streak banner -->
+        <div class="history-streak" id="historyStreak"></div>
+        <!-- Chart -->
+        <div class="history-chart-section">
+          <h3 class="history-section-title">Biểu đồ WPM</h3>
+          <svg id="historyChart" class="history-chart" viewBox="0 0 380 160"></svg>
+        </div>
+        <!-- Trend -->
+        <div class="history-trend" id="historyTrend"></div>
+        <!-- Table -->
+        <div class="history-table-section">
+          <h3 class="history-section-title">Lần chơi gần đây</h3>
+          <div class="history-table-wrap">
+            <table class="history-table" id="historyTable">
+              <thead>
+                <tr>
+                  <th>Ngày</th>
+                  <th>Level</th>
+                  <th>WPM</th>
+                  <th>Chính xác</th>
+                  <th>Sao</th>
+                </tr>
+              </thead>
+              <tbody id="historyTableBody"></tbody>
+            </table>
+          </div>
+          <p class="history-empty hidden" id="historyEmpty">Chưa có lịch sử chơi nào.</p>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <!-- Settings Panel -->
   <div class="settings-overlay" id="settingsPanel">
