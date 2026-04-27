@@ -16,6 +16,7 @@
       <span class="title-icon">🚀</span>
     </h1>
     <p class="subtitle">Luyện gõ phím siêu tốc!</p>
+    <p class="profile-greeting hidden" id="profileGreeting"></p>
   </header>
 
   <main class="main">
@@ -85,6 +86,7 @@
     <!-- Keyboard -->
     <section class="keyboard-section">
       <div class="keyboard" id="keyboard"></div>
+      <div class="finger-hint" id="fingerHint"></div>
     </section>
 
     <!-- Controls -->
@@ -181,6 +183,24 @@
       </div>
       <div class="settings-body">
         <div class="setting-group">
+          <label class="setting-label">Hồ sơ</label>
+          <p class="setting-desc">Tên và avatar của bạn</p>
+          <div class="profile-row">
+            <select class="setting-control profile-avatar-select" id="profileAvatar">
+              <option value="🧒">🧒</option><option value="👦">👦</option><option value="👧">👧</option>
+              <option value="🦊">🦊</option><option value="🐱">🐱</option><option value="🐶">🐶</option>
+              <option value="🦄">🦄</option><option value="🐼">🐼</option><option value="🐸">🐸</option>
+              <option value="🦁">🦁</option><option value="🐯">🐯</option><option value="🐰">🐰</option>
+            </select>
+            <input type="text" class="setting-control profile-name-input" id="profileName" placeholder="Nhập tên..." maxlength="20">
+          </div>
+        </div>
+        <div class="setting-group">
+          <label class="setting-label">Huy hiệu</label>
+          <p class="setting-desc">Xem huy hiệu đã mở khóa</p>
+          <button class="btn btn-achievements" id="btnAchievements">🏅 Xem huy hiệu</button>
+        </div>
+        <div class="setting-group">
           <label class="setting-label" for="themeSelect">Giao diện</label>
           <p class="setting-desc">Chọn theme phù hợp</p>
           <select class="setting-control" id="themeSelect">
@@ -225,6 +245,19 @@
             <span class="toggle-label" id="fingerGuideLabel">Bật</span>
           </label>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Achievements Panel -->
+  <div class="settings-overlay" id="achievementsPanel">
+    <div class="settings-panel">
+      <div class="settings-header">
+        <h2 class="settings-title">🏅 Huy hiệu</h2>
+        <button class="settings-close" id="achievementsClose">✕</button>
+      </div>
+      <div class="settings-body">
+        <div class="achievements-grid" id="achievementsGrid"></div>
       </div>
     </div>
   </div>

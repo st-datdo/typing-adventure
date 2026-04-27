@@ -166,11 +166,36 @@ const KEYBOARD_ROWS = [
   ],
 ];
 
+/* ── Achievements ── */
+const ACHIEVEMENTS = [
+  { id: 'first_game', icon: '🌟', name: 'Lần đầu chơi', desc: 'Hoàn thành lượt chơi đầu tiên', check: (r) => r.totalGames >= 1 },
+  { id: 'games_10', icon: '📚', name: '10 lượt chơi', desc: 'Hoàn thành 10 lượt chơi', check: (r) => r.totalGames >= 10 },
+  { id: 'games_50', icon: '📖', name: '50 lượt chơi', desc: 'Hoàn thành 50 lượt chơi', check: (r) => r.totalGames >= 50 },
+  { id: 'games_100', icon: '🏅', name: '100 lượt chơi', desc: 'Hoàn thành 100 lượt chơi', check: (r) => r.totalGames >= 100 },
+  { id: 'streak_3', icon: '🔥', name: '3 ngày liên tiếp', desc: 'Chơi 3 ngày liên tiếp', check: (r) => r.dayStreak >= 3 },
+  { id: 'streak_7', icon: '🔥', name: '7 ngày liên tiếp', desc: 'Chơi 7 ngày liên tiếp', check: (r) => r.dayStreak >= 7 },
+  { id: 'streak_30', icon: '🌋', name: '30 ngày liên tiếp', desc: 'Chơi 30 ngày liên tiếp', check: (r) => r.dayStreak >= 30 },
+  { id: 'wpm_20', icon: '💨', name: 'WPM 20', desc: 'Đạt 20 WPM', check: (r) => Math.max(r.bestWpm.easy || 0, r.bestWpm.medium || 0, r.bestWpm.hard || 0) >= 20 },
+  { id: 'wpm_40', icon: '💨', name: 'WPM 40', desc: 'Đạt 40 WPM', check: (r) => Math.max(r.bestWpm.easy || 0, r.bestWpm.medium || 0, r.bestWpm.hard || 0) >= 40 },
+  { id: 'wpm_60', icon: '🚀', name: 'WPM 60', desc: 'Đạt 60 WPM', check: (r) => Math.max(r.bestWpm.easy || 0, r.bestWpm.medium || 0, r.bestWpm.hard || 0) >= 60 },
+  { id: 'wpm_80', icon: '🚀', name: 'WPM 80', desc: 'Đạt 80 WPM', check: (r) => Math.max(r.bestWpm.easy || 0, r.bestWpm.medium || 0, r.bestWpm.hard || 0) >= 80 },
+  { id: 'wpm_100', icon: '⚡', name: 'WPM 100', desc: 'Đạt 100 WPM', check: (r) => Math.max(r.bestWpm.easy || 0, r.bestWpm.medium || 0, r.bestWpm.hard || 0) >= 100 },
+  { id: 'perfect', icon: '🎯', name: 'Hoàn hảo!', desc: 'Accuracy 100% trong 1 lượt', check: (r, h) => h.some(g => g.accuracy === 100) },
+  { id: 'three_star_all', icon: '🏆', name: 'Ba sao tất cả', desc: '3 sao ở cả Easy, Medium, Hard', check: (r, h) => {
+    const levels = ['easy', 'medium', 'hard'];
+    return levels.every(l => h.some(g => g.level === l && g.stars === 3));
+  }},
+  { id: 'combo_50', icon: '🦸', name: 'Combo 50', desc: 'Đạt combo streak 50', check: (r, h) => h.some(g => (g.maxCombo || 0) >= 50) },
+  { id: 'cps_5', icon: '⚡', name: 'CPS 5', desc: 'Đạt tốc độ 5 ký tự/giây', check: (r, h) => h.some(g => Number(g.cps) >= 5) },
+];
+
 /* ── Storage (localStorage wrapper) ── */
 const STORAGE_KEYS = {
   settings: 'typingAdventure_settings',
   history: 'typingAdventure_history',
   records: 'typingAdventure_records',
+  achievements: 'typingAdventure_achievements',
+  profile: 'typingAdventure_profile',
 };
 
 const MAX_HISTORY = 100;
@@ -253,6 +278,24 @@ const Storage = {
 
     this._set(STORAGE_KEYS.records, rec);
     return { records: rec, isNewBestWpm, isNewBestAcc, isNewBestScore };
+  },
+
+  // ── Achievements ──
+  loadAchievements() {
+    return this._get(STORAGE_KEYS.achievements) || [];
+  },
+
+  saveAchievements(list) {
+    this._set(STORAGE_KEYS.achievements, list);
+  },
+
+  // ── Profile ──
+  loadProfile() {
+    return this._get(STORAGE_KEYS.profile) || { name: '', avatar: '🧒' };
+  },
+
+  saveProfile(profile) {
+    this._set(STORAGE_KEYS.profile, profile);
   },
 };
 
@@ -996,6 +1039,10 @@ function finishGame() {
   for (const [, el] of keyElements) {
     el.classList.remove('key--highlight');
   }
+
+  // Post-game checks
+  checkAchievements();
+  setTimeout(checkAdaptiveDifficulty, 1500);
 }
 
 /* ── Practice Mode: generate words focusing on weak characters ── */
@@ -1142,6 +1189,101 @@ function refreshRecordsDisplay() {
   $dayStreak.textContent = `${rec.dayStreak} ngày`;
 }
 
+/* ── Profile Display ── */
+function refreshProfileDisplay() {
+  const profile = Storage.loadProfile();
+  const $greeting = document.getElementById('profileGreeting');
+  if ($greeting && profile.name) {
+    $greeting.textContent = `${profile.avatar} Chào, ${profile.name}!`;
+    $greeting.classList.remove('hidden');
+  } else if ($greeting) {
+    $greeting.classList.add('hidden');
+  }
+}
+
+/* ── Achievements ── */
+function checkAchievements() {
+  const records = Storage.loadRecords();
+  const history = Storage.loadHistory();
+  const unlocked = Storage.loadAchievements();
+  const newUnlocks = [];
+
+  for (const ach of ACHIEVEMENTS) {
+    if (unlocked.includes(ach.id)) continue;
+    if (ach.check(records, history)) {
+      unlocked.push(ach.id);
+      newUnlocks.push(ach);
+    }
+  }
+
+  if (newUnlocks.length > 0) {
+    Storage.saveAchievements(unlocked);
+    newUnlocks.forEach((ach, i) => {
+      setTimeout(() => showAchievementPopup(ach), i * 1200);
+    });
+  }
+}
+
+function showAchievementPopup(ach) {
+  const popup = document.createElement('div');
+  popup.classList.add('achievement-popup');
+  popup.innerHTML = `<span class="ach-icon">${ach.icon}</span><div class="ach-info"><strong>${ach.name}</strong><span>${ach.desc}</span></div>`;
+  document.body.appendChild(popup);
+  popup.addEventListener('animationend', () => popup.remove());
+}
+
+/* ── Adaptive Difficulty ── */
+function checkAdaptiveDifficulty() {
+  const history = Storage.loadHistory();
+  const recent = history.slice(0, 5).filter(h => h.level === state.level);
+  if (recent.length < 3) return;
+
+  const avgWpm = recent.reduce((s, h) => s + h.wpm, 0) / recent.length;
+  const avgAcc = recent.reduce((s, h) => s + h.accuracy, 0) / recent.length;
+  const threshold = STAR_THRESHOLDS[state.level] || STAR_THRESHOLDS.easy;
+
+  const nextLevel = { easy: 'medium', medium: 'hard' };
+  const prevLevel = { medium: 'easy', hard: 'medium' };
+  const levelLabels = { easy: 'Dễ', medium: 'Trung bình', hard: 'Khó' };
+
+  if (avgAcc >= 95 && avgWpm >= threshold.wpm && nextLevel[state.level]) {
+    showAdaptivePopup(`Bạn giỏi lắm! Thử level ${levelLabels[nextLevel[state.level]]} nhé?`, nextLevel[state.level]);
+  } else if (avgAcc < 70 && prevLevel[state.level]) {
+    showAdaptivePopup(`Hãy thử level ${levelLabels[prevLevel[state.level]]} để luyện thêm nhé!`, prevLevel[state.level]);
+  }
+}
+
+function showAdaptivePopup(message, suggestedLevel) {
+  const existing = document.querySelector('.adaptive-popup');
+  if (existing) existing.remove();
+
+  const popup = document.createElement('div');
+  popup.classList.add('adaptive-popup');
+  popup.innerHTML = `
+    <p>${message}</p>
+    <div class="adaptive-actions">
+      <button class="btn adaptive-yes">Đồng ý</button>
+      <button class="btn adaptive-no">Để sau</button>
+    </div>
+  `;
+  document.body.appendChild(popup);
+
+  popup.querySelector('.adaptive-yes').addEventListener('click', () => {
+    state.level = suggestedLevel;
+    settings.level = suggestedLevel;
+    persistSettings();
+    $levelSelect.value = suggestedLevel;
+    popup.remove();
+    resetGame();
+  });
+
+  popup.querySelector('.adaptive-no').addEventListener('click', () => {
+    popup.remove();
+  });
+
+  setTimeout(() => { if (popup.parentNode) popup.remove(); }, 8000);
+}
+
 /* ── Event Listeners ── */
 
 // Hidden input captures all keystrokes
@@ -1189,6 +1331,8 @@ $keyboard.addEventListener('pointerdown', (e) => {
   const key = keyEl.dataset.key;
   if (!key || key.length !== 1) return;
   handleKey(key);
+  // Vibration feedback on mobile
+  if (navigator.vibrate) navigator.vibrate(10);
   focusInput();
 });
 
@@ -1477,6 +1621,111 @@ function renderTrend(recentHistory) {
   $trend.className = `history-trend ${cls}`;
 }
 
+/* ── Profile ── */
+const $profileName = document.getElementById('profileName');
+const $profileAvatar = document.getElementById('profileAvatar');
+const savedProfile = Storage.loadProfile();
+
+$profileName.value = savedProfile.name || '';
+$profileAvatar.value = savedProfile.avatar || '🧒';
+
+$profileName.addEventListener('input', () => {
+  const profile = Storage.loadProfile();
+  profile.name = $profileName.value.trim();
+  Storage.saveProfile(profile);
+  refreshProfileDisplay();
+});
+
+$profileAvatar.addEventListener('change', () => {
+  const profile = Storage.loadProfile();
+  profile.avatar = $profileAvatar.value;
+  Storage.saveProfile(profile);
+  refreshProfileDisplay();
+});
+
+/* ── Achievements Panel ── */
+const $btnAchievements = document.getElementById('btnAchievements');
+const $achievementsPanel = document.getElementById('achievementsPanel');
+const $achievementsClose = document.getElementById('achievementsClose');
+
+$btnAchievements.addEventListener('click', () => {
+  renderAchievementsPanel();
+  $settingsPanel.classList.remove('settings--visible');
+  $achievementsPanel.classList.add('settings--visible');
+});
+
+$achievementsClose.addEventListener('click', () => {
+  $achievementsPanel.classList.remove('settings--visible');
+});
+
+$achievementsPanel.addEventListener('click', (e) => {
+  if (e.target === $achievementsPanel) {
+    $achievementsPanel.classList.remove('settings--visible');
+  }
+});
+
+function renderAchievementsPanel() {
+  const unlocked = Storage.loadAchievements();
+  const $grid = document.getElementById('achievementsGrid');
+  $grid.innerHTML = ACHIEVEMENTS.map(ach => {
+    const isUnlocked = unlocked.includes(ach.id);
+    return `<div class="ach-card ${isUnlocked ? 'ach--unlocked' : 'ach--locked'}">
+      <span class="ach-card-icon">${isUnlocked ? ach.icon : '🔒'}</span>
+      <strong class="ach-card-name">${ach.name}</strong>
+      <span class="ach-card-desc">${ach.desc}</span>
+    </div>`;
+  }).join('');
+}
+
+/* ── Finger Hint ── */
+const FINGER_NAMES = {
+  'left-pinky': 'Út trái',
+  'left-ring': 'Áp út trái',
+  'left-middle': 'Giữa trái',
+  'left-index': 'Trỏ trái',
+  'right-index': 'Trỏ phải',
+  'right-middle': 'Giữa phải',
+  'right-ring': 'Áp út phải',
+  'right-pinky': 'Út phải',
+  'thumb': 'Ngón cái',
+};
+
+const KEY_FINGER_MAP = {};
+for (const row of KEYBOARD_ROWS) {
+  for (const k of row) {
+    if (k.finger) {
+      KEY_FINGER_MAP[k.key.toLowerCase()] = k.finger;
+    }
+  }
+}
+
+function updateFingerHint() {
+  const $hint = document.getElementById('fingerHint');
+  if (!$hint || !settings.fingerGuide) {
+    if ($hint) $hint.textContent = '';
+    return;
+  }
+  if (state.currentIndex >= state.text.length) {
+    $hint.textContent = '';
+    return;
+  }
+  const expected = state.text[state.currentIndex];
+  const keyName = expected === ' ' ? ' ' : expected.toLowerCase();
+  const finger = KEY_FINGER_MAP[keyName];
+  if (finger) {
+    $hint.textContent = `👆 ${FINGER_NAMES[finger] || finger}`;
+  } else {
+    $hint.textContent = '';
+  }
+}
+
+// Patch highlightKey to also update finger hint
+const _origHighlightKey = highlightKey;
+highlightKey = function() {
+  _origHighlightKey();
+  updateFingerHint();
+};
+
 /* ── Init ── */
 // Restore saved settings to UI controls
 $levelSelect.value = settings.level;
@@ -1496,9 +1745,12 @@ if (!settings.soundEnabled) {
 applyTheme(settings.theme || 'dark');
 updateModeSubSelectors();
 
+refreshProfileDisplay();
+
 createStars();
 buildKeyboard();
 if (!settings.fingerGuide && settings.fingerGuide !== undefined) {
   $keyboard.classList.add('keyboard--hide-fingers');
 }
 resetGame();
+checkAchievements();
