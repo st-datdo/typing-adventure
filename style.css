@@ -237,6 +237,30 @@ body {
   text-shadow: 0 0 10px rgba(0, 230, 118, 0.4);
 }
 
+/* Character mode: each letter pops up big then settles */
+.char--pop {
+  animation: charPop 400ms var(--ease-bounce);
+}
+
+@keyframes charPop {
+  0% { transform: scale(1); }
+  30% { transform: scale(1.8) rotate(-5deg); text-shadow: 0 0 24px rgba(0, 230, 118, 0.8); }
+  60% { transform: scale(1.3) rotate(3deg); }
+  100% { transform: scale(1) rotate(0deg); }
+}
+
+/* Word mode: wave burst across all chars of the completed word */
+.char--word-burst {
+  animation: wordBurst 600ms var(--ease-bounce) both;
+}
+
+@keyframes wordBurst {
+  0% { transform: scale(1) translateY(0); opacity: 1; }
+  25% { transform: scale(1.5) translateY(-12px); color: #69f0ae; text-shadow: 0 0 20px rgba(105, 240, 174, 0.8), 0 6px 16px rgba(0, 0, 0, 0.3); }
+  50% { transform: scale(1.2) translateY(-6px); }
+  100% { transform: scale(1) translateY(0); text-shadow: 0 0 10px rgba(0, 230, 118, 0.4); }
+}
+
 .char--wrong {
   color: var(--color-wrong);
   text-shadow: 0 0 10px rgba(255, 82, 82, 0.4);

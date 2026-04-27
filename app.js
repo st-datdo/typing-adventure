@@ -628,6 +628,11 @@ function handleKey(inputChar) {
     flashKey(keyName, true);
     sound.play('correct');
 
+    // Character mode: pop animation on the typed char
+    if (state.soundMode === 'character') {
+      currentEl.classList.add('char--pop');
+    }
+
     // Combo milestone effects
     if (COMBO_MILESTONES.includes(state.combo)) {
       showComboMilestone(state.combo);
@@ -637,12 +642,26 @@ function handleKey(inputChar) {
     state.currentIndex++;
 
     // Speech synthesis based on sound mode
-    if (state.soundMode === 'character') {
+    if (state.soundMode === 'character' && expected !== ' ') {
       speech.speakLetter(expected);
     } else if (state.soundMode === 'word') {
       const completedWord = getCompletedWord(state.currentIndex - 1);
       if (completedWord) {
         speech.speakWord(completedWord);
+        // Word mode: wave burst across all chars of the completed word
+        const wordBoundary = state.wordBoundaries.find(b =>
+          b.word === completedWord &&
+          (state.currentIndex - 1 === b.endIndex || state.currentIndex - 1 === b.endIndex - 1)
+        );
+        if (wordBoundary) {
+          for (let i = wordBoundary.startIndex; i < wordBoundary.endIndex; i++) {
+            const charEl = charEls[i];
+            if (charEl) {
+              charEl.style.animationDelay = `${(i - wordBoundary.startIndex) * 60}ms`;
+              charEl.classList.add('char--word-burst');
+            }
+          }
+        }
       }
     }
 
