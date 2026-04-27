@@ -32,6 +32,72 @@ const STAR_THRESHOLDS = {
   hard: { wpm: 10 },
 };
 
+/* ── Game Modes ── */
+const GAME_MODES = {
+  classic: { label: 'Cổ điển', icon: '📝' },
+  lesson: { label: 'Bài học', icon: '📚' },
+  timeAttack: { label: 'Đua tốc độ', icon: '⏱️' },
+  challenge: { label: 'Thử thách', icon: '💀' },
+};
+
+const LESSONS = [
+  { name: 'Home Row', chars: 'asdfghjkl' },
+  { name: 'Top Row', chars: 'qwertyuiop' },
+  { name: 'Bottom Row', chars: 'zxcvbnm' },
+  { name: 'Home + Top', chars: 'asdfghjklqwertyuiop' },
+  { name: 'Tất cả', chars: 'abcdefghijklmnopqrstuvwxyz' },
+];
+
+const TIME_ATTACK_DURATIONS = [30, 60, 120];
+
+const CHALLENGE_LIVES = 3;
+const CHALLENGE_MISTAKES_PER_LIFE = 3;
+
+/* ── Generate words from allowed characters ── */
+function generateLessonWords(chars, count) {
+  const charArr = chars.split('');
+  const allWords = [...WORDS.easy, ...WORDS.medium, ...WORDS.hard];
+  const matching = allWords.filter(w =>
+    [...w].every(ch => charArr.includes(ch))
+  );
+  const picked = [];
+  const used = new Set();
+  const pool = matching.length >= count ? matching : matching.length > 0 ? matching : allWords;
+  while (picked.length < count && used.size < pool.length) {
+    const idx = Math.floor(Math.random() * pool.length);
+    if (!used.has(idx)) {
+      used.add(idx);
+      picked.push(pool[idx]);
+    }
+  }
+  // If not enough real words, generate random pseudo-words
+  while (picked.length < count) {
+    const len = 3 + Math.floor(Math.random() * 4);
+    let word = '';
+    for (let i = 0; i < len; i++) {
+      word += charArr[Math.floor(Math.random() * charArr.length)];
+    }
+    picked.push(word);
+  }
+  return picked;
+}
+
+/* ── Generate progressively harder words for challenge mode ── */
+function generateChallengeWords(count) {
+  const all = [...WORDS.easy, ...WORDS.medium, ...WORDS.hard];
+  const sorted = [...all].sort((a, b) => a.length - b.length);
+  const picked = [];
+  for (let i = 0; i < count; i++) {
+    // Progress through sorted list: start short, get longer
+    const progress = i / count;
+    const rangeStart = Math.floor(progress * sorted.length * 0.5);
+    const rangeEnd = Math.min(rangeStart + Math.ceil(sorted.length * 0.3), sorted.length);
+    const idx = rangeStart + Math.floor(Math.random() * (rangeEnd - rangeStart));
+    picked.push(sorted[Math.min(idx, sorted.length - 1)]);
+  }
+  return picked;
+}
+
 /* ── Keyboard Layout ── */
 const KEYBOARD_ROWS = [
   [
@@ -335,6 +401,13 @@ const state = {
   maxCombo: 0,
   score: 0,
   mistakeMap: {},
+  gameMode: 'classic',
+  lives: CHALLENGE_LIVES,
+  challengeMistakes: 0,
+  timeAttackDuration: 60,
+  timeRemaining: 0,
+  lessonIndex: 0,
+  wordsCompleted: 0,
 };
 
 const sound = new SoundEngine();
@@ -368,6 +441,9 @@ const $wordCountSelect = document.getElementById('wordCountSelect');
 const $fingerGuideToggle = document.getElementById('fingerGuideToggle');
 const $fingerGuideLabel = document.getElementById('fingerGuideLabel');
 const $themeSelect = document.getElementById('themeSelect');
+const $gameModeSelect = document.getElementById('gameModeSelect');
+const $lessonSelect = document.getElementById('lessonSelect');
+const $timeAttackSelect = document.getElementById('timeAttackSelect');
 
 /* ── Stars Background ── */
 function createStars() {
@@ -491,7 +567,18 @@ function formatTime(seconds) {
 
 function updateStats() {
   const elapsed = getElapsedSeconds();
-  $timer.textContent = formatTime(elapsed);
+
+  // Time Attack: countdown
+  if (state.gameMode === 'timeAttack') {
+    state.timeRemaining = Math.max(0, state.timeAttackDuration - elapsed);
+    $timer.textContent = formatTime(state.timeRemaining);
+    if (state.timeRemaining <= 0 && !state.isFinished) {
+      finishGame();
+      return;
+    }
+  } else {
+    $timer.textContent = formatTime(elapsed);
+  }
 
   const cps = elapsed > 0 ? (state.correctKeystrokes / elapsed) : 0;
   $cps.textContent = cps.toFixed(2);
@@ -608,6 +695,17 @@ function showComboMilestone(combo) {
   popup.addEventListener('animationend', () => popup.remove());
 }
 
+function updateLivesDisplay() {
+  const $lives = document.getElementById('livesDisplay');
+  if (!$lives) return;
+  if (state.gameMode === 'challenge') {
+    $lives.innerHTML = '❤️'.repeat(state.lives) + '🖤'.repeat(CHALLENGE_LIVES - state.lives);
+    $lives.classList.add('lives--visible');
+  } else {
+    $lives.classList.remove('lives--visible');
+  }
+}
+
 function calculateStars(wpm, accuracy, level) {
   const threshold = STAR_THRESHOLDS[level] || STAR_THRESHOLDS.easy;
   if (accuracy >= 95 && wpm >= threshold.wpm) return 3;
@@ -657,6 +755,12 @@ function handleKey(inputChar) {
     updateComboDisplay();
     state.currentIndex++;
 
+    // Track word completion
+    const justCompleted = getCompletedWord(state.currentIndex - 1);
+    if (justCompleted) {
+      state.wordsCompleted++;
+    }
+
     // Speech synthesis based on sound mode
     if (state.soundMode === 'character' && expected !== ' ') {
       speech.speakLetter(expected);
@@ -704,6 +808,20 @@ function handleKey(inputChar) {
     flashKey(keyName, false);
     sound.play('wrong');
 
+    // Challenge mode: lose a life after N mistakes
+    if (state.gameMode === 'challenge') {
+      state.challengeMistakes++;
+      if (state.challengeMistakes >= CHALLENGE_MISTAKES_PER_LIFE) {
+        state.challengeMistakes = 0;
+        state.lives--;
+        updateLivesDisplay();
+        if (state.lives <= 0) {
+          finishGame();
+          return;
+        }
+      }
+    }
+
     setTimeout(() => {
       currentEl.classList.remove('char--wrong');
     }, 400);
@@ -719,6 +837,20 @@ function finishGame() {
   stopTimer();
   updateStats();
   sound.play('complete');
+
+  // Dynamic title based on game mode outcome
+  const $cEmoji = document.querySelector('.celebration-emoji');
+  const $cTitle = document.querySelector('.celebration-content h2');
+  if (state.gameMode === 'challenge' && state.lives <= 0) {
+    $cEmoji.textContent = '💔';
+    $cTitle.textContent = 'Hết mạng!';
+  } else if (state.gameMode === 'timeAttack') {
+    $cEmoji.textContent = '⏱️';
+    $cTitle.textContent = 'Hết giờ!';
+  } else {
+    $cEmoji.textContent = '🎉';
+    $cTitle.textContent = 'Tuyệt vời!';
+  }
 
   const elapsed = getElapsedSeconds();
   const cps = elapsed > 0 ? (state.correctKeystrokes / elapsed).toFixed(2) : 0;
@@ -785,6 +917,15 @@ function finishGame() {
   document.getElementById('celebrationRecord').innerHTML = recordHtml;
 
   // ── Stats grid ──
+  let modeStatHtml = '';
+  if (state.gameMode === 'timeAttack') {
+    modeStatHtml = `<div class="cstat"><span class="cstat-val">${state.wordsCompleted}</span><span class="cstat-lbl">Từ hoàn thành</span></div>`;
+  } else if (state.gameMode === 'challenge') {
+    modeStatHtml = `<div class="cstat"><span class="cstat-val">${'❤️'.repeat(state.lives)}</span><span class="cstat-lbl">Mạng còn</span></div>`;
+  } else if (state.gameMode === 'lesson') {
+    const lessonName = (LESSONS[state.lessonIndex] || LESSONS[0]).name;
+    modeStatHtml = `<div class="cstat"><span class="cstat-val">${lessonName}</span><span class="cstat-lbl">Bài học</span></div>`;
+  }
   document.getElementById('celebrationStats').innerHTML = `
     <div class="cstat"><span class="cstat-val">${formatTime(elapsed)}</span><span class="cstat-lbl">Thời gian</span></div>
     <div class="cstat"><span class="cstat-val">${cps}</span><span class="cstat-lbl">CPS</span></div>
@@ -792,6 +933,7 @@ function finishGame() {
     <div class="cstat"><span class="cstat-val">${acc}%</span><span class="cstat-lbl">Chính xác</span></div>
     <div class="cstat"><span class="cstat-val">x${state.maxCombo}</span><span class="cstat-lbl">Max Combo</span></div>
     <div class="cstat"><span class="cstat-val">${finalScore.toLocaleString()}</span><span class="cstat-lbl">Điểm</span></div>
+    ${modeStatHtml}
   `;
 
   // ── Mistake analysis ──
@@ -924,9 +1066,30 @@ function resetGame() {
   state.maxCombo = 0;
   state.score = 0;
   state.mistakeMap = {};
+  state.wordsCompleted = 0;
+  state.lives = CHALLENGE_LIVES;
+  state.challengeMistakes = 0;
   stopTimer();
 
-  state.text = pickWords(state.level);
+  // Generate text based on game mode
+  const count = settings.wordCount || WORD_COUNT;
+  if (state.gameMode === 'lesson') {
+    const lesson = LESSONS[state.lessonIndex] || LESSONS[0];
+    const words = generateLessonWords(lesson.chars, count);
+    state.text = words.join(' ');
+  } else if (state.gameMode === 'timeAttack') {
+    // Generate more words for time attack (3x normal)
+    const words = pickWords(state.level);
+    const extra1 = pickWords(state.level);
+    const extra2 = pickWords(state.level);
+    state.text = words + ' ' + extra1 + ' ' + extra2;
+    state.timeRemaining = state.timeAttackDuration;
+  } else if (state.gameMode === 'challenge') {
+    const words = generateChallengeWords(count + 10);
+    state.text = words.join(' ');
+  } else {
+    state.text = pickWords(state.level);
+  }
 
   // Precompute word boundaries
   state.wordBoundaries = [];
@@ -940,12 +1103,19 @@ function resetGame() {
     pos += word.length + 1;
   }
 
-  $timer.textContent = '0:00';
+  // Update timer display based on mode
+  if (state.gameMode === 'timeAttack') {
+    $timer.textContent = formatTime(state.timeAttackDuration);
+  } else {
+    $timer.textContent = '0:00';
+  }
+
   $cps.textContent = '0.00';
   $wpm.textContent = '0';
   $accuracy.textContent = '100%';
   $celebration.classList.remove('celebration--visible');
   updateComboDisplay();
+  updateLivesDisplay();
   const $score = document.getElementById('score');
   if ($score) $score.textContent = '0';
 
@@ -1107,6 +1277,28 @@ function applyTheme(theme) {
   }
 }
 
+function updateModeSubSelectors() {
+  $lessonSelect.classList.toggle('hidden', state.gameMode !== 'lesson');
+  $timeAttackSelect.classList.toggle('hidden', state.gameMode !== 'timeAttack');
+}
+
+/* ── Game Mode Selectors ── */
+$gameModeSelect.addEventListener('change', (e) => {
+  state.gameMode = e.target.value;
+  updateModeSubSelectors();
+  resetGame();
+});
+
+$lessonSelect.addEventListener('change', (e) => {
+  state.lessonIndex = Number(e.target.value);
+  resetGame();
+});
+
+$timeAttackSelect.addEventListener('change', (e) => {
+  state.timeAttackDuration = Number(e.target.value);
+  resetGame();
+});
+
 /* ── Init ── */
 // Restore saved settings to UI controls
 $levelSelect.value = settings.level;
@@ -1124,6 +1316,7 @@ if (!settings.soundEnabled) {
 }
 
 applyTheme(settings.theme || 'dark');
+updateModeSubSelectors();
 
 createStars();
 buildKeyboard();

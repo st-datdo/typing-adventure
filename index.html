@@ -75,6 +75,7 @@
     <!-- Word Display -->
     <section class="word-display-section">
       <div class="combo-display" id="comboDisplay"></div>
+      <div class="lives-display" id="livesDisplay"></div>
       <div class="word-display" id="wordDisplay"></div>
       <div class="progress-bar">
         <div class="progress-fill" id="progressFill"></div>
@@ -88,6 +89,24 @@
 
     <!-- Controls -->
     <section class="controls">
+      <select class="btn btn-game-mode" id="gameModeSelect" title="Chế độ chơi">
+        <option value="classic">📝 Cổ điển</option>
+        <option value="lesson">📚 Bài học</option>
+        <option value="timeAttack">⏱️ Đua tốc độ</option>
+        <option value="challenge">💀 Thử thách</option>
+      </select>
+      <select class="btn btn-mode-sub hidden" id="lessonSelect" title="Chọn bài học">
+        <option value="0">Home Row (asdfjkl)</option>
+        <option value="1">Top Row (qwerty)</option>
+        <option value="2">Bottom Row (zxcvbnm)</option>
+        <option value="3">Home + Top</option>
+        <option value="4">Tất cả</option>
+      </select>
+      <select class="btn btn-mode-sub hidden" id="timeAttackSelect" title="Thời gian">
+        <option value="30">30 giây</option>
+        <option value="60">60 giây</option>
+        <option value="120">120 giây</option>
+      </select>
       <button class="btn btn-restart" id="btnRestart" title="Chơi lại">
         🔄 Chơi lại
       </button>

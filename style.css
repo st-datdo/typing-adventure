@@ -780,6 +780,46 @@ body {
   background: rgba(255, 255, 255, 0.18);
 }
 
+.btn-game-mode {
+  background: rgba(255, 152, 0, 0.15);
+  border-color: rgba(255, 152, 0, 0.25);
+}
+
+.btn-game-mode:hover {
+  background: rgba(255, 152, 0, 0.3);
+}
+
+.btn-mode-sub {
+  background: rgba(128, 216, 255, 0.12);
+  border-color: rgba(128, 216, 255, 0.25);
+  font-size: 0.85rem;
+}
+
+.btn-mode-sub:hover {
+  background: rgba(128, 216, 255, 0.25);
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* ── Lives Display ── */
+.lives-display {
+  position: absolute;
+  top: 8px;
+  left: 16px;
+  font-size: 1.2rem;
+  letter-spacing: 2px;
+  opacity: 0;
+  transition: opacity var(--duration-fast) ease;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.lives-display.lives--visible {
+  opacity: 1;
+}
+
 /* ── Settings Panel ── */
 .settings-overlay {
   position: fixed;
