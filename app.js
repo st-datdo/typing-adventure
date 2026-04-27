@@ -23,6 +23,15 @@ const WORDS = {
 
 const WORD_COUNT = 10;
 
+/* ── Scoring Constants ── */
+const SCORE_PER_CHAR = 10;
+const COMBO_MILESTONES = [5, 10, 20, 50];
+const STAR_THRESHOLDS = {
+  easy: { wpm: 20 },
+  medium: { wpm: 15 },
+  hard: { wpm: 10 },
+};
+
 /* ── Keyboard Layout ── */
 const KEYBOARD_ROWS = [
   [
@@ -147,6 +156,7 @@ const Storage = {
     return this._get(STORAGE_KEYS.records) || {
       bestWpm: { easy: 0, medium: 0, hard: 0 },
       bestAccuracy: { easy: 0, medium: 0, hard: 0 },
+      bestScore: { easy: 0, medium: 0, hard: 0 },
       totalGames: 0,
       totalWords: 0,
       dayStreak: 0,
@@ -154,13 +164,16 @@ const Storage = {
     };
   },
 
-  updateRecords(level, wpm, accuracy, wordCount) {
+  updateRecords(level, wpm, accuracy, wordCount, score) {
     const rec = this.loadRecords();
+    if (!rec.bestScore) rec.bestScore = { easy: 0, medium: 0, hard: 0 };
     const isNewBestWpm = wpm > (rec.bestWpm[level] || 0);
     const isNewBestAcc = accuracy > (rec.bestAccuracy[level] || 0);
+    const isNewBestScore = score > (rec.bestScore[level] || 0);
 
     if (isNewBestWpm) rec.bestWpm[level] = wpm;
     if (isNewBestAcc) rec.bestAccuracy[level] = accuracy;
+    if (isNewBestScore) rec.bestScore[level] = score;
     rec.totalGames++;
     rec.totalWords += wordCount;
 
@@ -173,7 +186,7 @@ const Storage = {
     }
 
     this._set(STORAGE_KEYS.records, rec);
-    return { records: rec, isNewBestWpm, isNewBestAcc };
+    return { records: rec, isNewBestWpm, isNewBestAcc, isNewBestScore };
   },
 };
 
@@ -309,6 +322,9 @@ const state = {
   level: settings.level,
   soundMode: settings.soundMode,
   wordBoundaries: [],
+  combo: 0,
+  maxCombo: 0,
+  score: 0,
 };
 
 const sound = new SoundEngine();
@@ -547,6 +563,42 @@ function getCompletedWord(charIndex) {
   return null;
 }
 
+/* ── Combo & Score Display ── */
+function updateComboDisplay() {
+  const $combo = document.getElementById('comboDisplay');
+  if (!$combo) return;
+  if (state.combo >= 2) {
+    $combo.textContent = `x${state.combo}`;
+    $combo.classList.add('combo--visible');
+    // Scale up on milestones
+    if (COMBO_MILESTONES.includes(state.combo)) {
+      $combo.classList.add('combo--milestone');
+      setTimeout(() => $combo.classList.remove('combo--milestone'), 500);
+    }
+  } else {
+    $combo.classList.remove('combo--visible');
+  }
+  // Update score display
+  const $score = document.getElementById('score');
+  if ($score) $score.textContent = state.score.toLocaleString();
+}
+
+function showComboMilestone(combo) {
+  const popup = document.createElement('div');
+  popup.classList.add('combo-popup');
+  const labels = { 5: 'Nice!', 10: 'Great!', 20: 'Amazing!', 50: 'LEGENDARY!' };
+  popup.textContent = `x${combo} ${labels[combo] || ''}`;
+  document.body.appendChild(popup);
+  popup.addEventListener('animationend', () => popup.remove());
+}
+
+function calculateStars(wpm, accuracy, level) {
+  const threshold = STAR_THRESHOLDS[level] || STAR_THRESHOLDS.easy;
+  if (accuracy >= 95 && wpm >= threshold.wpm) return 3;
+  if (accuracy >= 85 || wpm >= threshold.wpm * 0.7) return 2;
+  return 1;
+}
+
 /* ── Handle Keypress ── */
 function handleKey(inputChar) {
   if (state.isFinished) return;
@@ -564,11 +616,24 @@ function handleKey(inputChar) {
   if (inputChar === expected) {
     // Correct
     state.correctKeystrokes++;
+    state.combo++;
+    if (state.combo > state.maxCombo) state.maxCombo = state.combo;
+
+    // Score: base × combo multiplier
+    const comboMultiplier = 1 + state.combo * 0.1;
+    state.score += Math.round(SCORE_PER_CHAR * comboMultiplier);
+
     currentEl.classList.remove('char--active', 'char--pending');
     currentEl.classList.add('char--correct');
     flashKey(keyName, true);
     sound.play('correct');
 
+    // Combo milestone effects
+    if (COMBO_MILESTONES.includes(state.combo)) {
+      showComboMilestone(state.combo);
+    }
+
+    updateComboDisplay();
     state.currentIndex++;
 
     // Speech synthesis based on sound mode
@@ -593,7 +658,10 @@ function handleKey(inputChar) {
     nextEl.classList.add('char--active');
     highlightKey();
   } else {
-    // Wrong
+    // Wrong — reset combo
+    state.combo = 0;
+    updateComboDisplay();
+
     currentEl.classList.add('char--wrong');
     flashKey(keyName, false);
     sound.play('wrong');
@@ -622,6 +690,18 @@ function finishGame() {
     : 100;
   const wordCount = state.wordBoundaries.length;
 
+  // Apply accuracy bonus to final score
+  let accBonus = 1;
+  if (acc >= 100) accBonus = 2;
+  else if (acc >= 95) accBonus = 1.5;
+  else if (acc >= 90) accBonus = 1.2;
+  const finalScore = Math.round(state.score * accBonus);
+  state.score = finalScore;
+
+  // Star rating
+  const stars = calculateStars(Number(wpm), acc, state.level);
+  const starDisplay = '★'.repeat(stars) + '☆'.repeat(3 - stars);
+
   // Save history
   Storage.addHistory({
     date: new Date().toISOString(),
@@ -631,22 +711,28 @@ function finishGame() {
     accuracy: acc,
     time: Number(elapsed.toFixed(1)),
     wordCount,
+    score: finalScore,
+    stars,
+    maxCombo: state.maxCombo,
   });
 
   // Update records
-  const { records, isNewBestWpm, isNewBestAcc } = Storage.updateRecords(
-    state.level, Number(wpm), acc, wordCount
+  const { records, isNewBestWpm, isNewBestAcc, isNewBestScore } = Storage.updateRecords(
+    state.level, Number(wpm), acc, wordCount, finalScore
   );
 
   // Build celebration message
   let statsHtml = `
+    <div class="celebration-stars">${starDisplay}</div>
+    <div class="celebration-score">${finalScore.toLocaleString()} điểm</div>
     ⏱️ Thời gian: <strong>${formatTime(elapsed)}</strong><br>
     ⚡ CPS: <strong>${cps}</strong><br>
     🏎️ WPM: <strong>${wpm}</strong><br>
-    🎯 Chính xác: <strong>${acc}%</strong>
+    🎯 Chính xác: <strong>${acc}%</strong><br>
+    🔥 Max Combo: <strong>x${state.maxCombo}</strong>
   `;
 
-  if (isNewBestWpm || isNewBestAcc) {
+  if (isNewBestWpm || isNewBestAcc || isNewBestScore) {
     statsHtml += '<br><span class="new-record">🏆 Kỷ lục mới!</span>';
   }
 
@@ -674,6 +760,9 @@ function resetGame() {
   state.totalKeystrokes = 0;
   state.correctKeystrokes = 0;
   state.isFinished = false;
+  state.combo = 0;
+  state.maxCombo = 0;
+  state.score = 0;
   stopTimer();
 
   state.text = pickWords(state.level);
@@ -695,6 +784,9 @@ function resetGame() {
   $wpm.textContent = '0';
   $accuracy.textContent = '100%';
   $celebration.classList.remove('celebration--visible');
+  updateComboDisplay();
+  const $score = document.getElementById('score');
+  if ($score) $score.textContent = '0';
 
   refreshRecordsDisplay();
   renderText();

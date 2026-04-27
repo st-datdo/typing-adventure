@@ -167,11 +167,13 @@ body {
 .stat-cps .stat-value { color: #ffeb3b; }
 .stat-wpm .stat-value { color: #ff9800; }
 .stat-accuracy .stat-value { color: #69f0ae; }
+.stat-score .stat-value { color: #40c4ff; }
 .stat-best .stat-value { color: #e040fb; }
 .stat-streak .stat-value { color: #ff5252; }
 
 /* ── Word Display ── */
 .word-display-section {
+  position: relative;
   background: rgba(255, 255, 255, 0.04);
   backdrop-filter: blur(16px);
   border: 1px solid rgba(255, 255, 255, 0.08);
@@ -274,6 +276,94 @@ body {
 @keyframes progressGlow {
   0%, 100% { background-position: 0% 50%; }
   50% { background-position: 100% 50%; }
+}
+
+/* ── Combo Display ── */
+.combo-display {
+  position: absolute;
+  top: 8px;
+  right: 16px;
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: #ff9800;
+  text-shadow: 0 0 12px rgba(255, 152, 0, 0.5);
+  opacity: 0;
+  transform: scale(0.8);
+  transition: opacity var(--duration-fast) ease,
+              transform var(--duration-fast) var(--ease-bounce);
+  pointer-events: none;
+  z-index: 2;
+}
+
+.combo-display.combo--visible {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.combo-display.combo--milestone {
+  transform: scale(1.5);
+  color: #ff5722;
+  text-shadow: 0 0 20px rgba(255, 87, 34, 0.7);
+}
+
+/* ── Combo Popup (milestone) ── */
+.combo-popup {
+  position: fixed;
+  top: 40%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.5);
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: #ffeb3b;
+  text-shadow: 0 0 30px rgba(255, 235, 59, 0.6),
+               0 4px 12px rgba(0, 0, 0, 0.5);
+  z-index: 150;
+  pointer-events: none;
+  animation: comboPopup 1s var(--ease-out) forwards;
+}
+
+@keyframes comboPopup {
+  0% {
+    transform: translate(-50%, -50%) scale(0.5);
+    opacity: 0;
+  }
+  20% {
+    transform: translate(-50%, -50%) scale(1.2);
+    opacity: 1;
+  }
+  80% {
+    transform: translate(-50%, -60%) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-50%, -80%) scale(0.8);
+    opacity: 0;
+  }
+}
+
+/* ── Celebration Stars & Score ── */
+.celebration-stars {
+  font-size: 2.8rem;
+  letter-spacing: 6px;
+  color: #ffd700;
+  text-shadow: 0 0 16px rgba(255, 215, 0, 0.5);
+  animation: starsReveal 800ms var(--ease-bounce);
+}
+
+@keyframes starsReveal {
+  0% { transform: scale(0); opacity: 0; }
+  50% { transform: scale(1.3); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.celebration-score {
+  font-size: 1.8rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, #40c4ff, #e040fb);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 4px;
 }
 
 /* ── Keyboard ── */
