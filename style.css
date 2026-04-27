@@ -33,25 +33,169 @@
 
 /* ── Theme: Light ── */
 [data-theme="light"] {
-  --bg-primary: #f5f0ff;
-  --bg-secondary: #e8e0f0;
-  --bg-tertiary: #ddd5e8;
-  --color-text: #2d2545;
-  --color-text-dim: #6b5f8a;
-  --color-correct: #16a34a;
+  --bg-primary: #fffbeb;
+  --bg-secondary: #fef3c7;
+  --bg-tertiary: #fef9e7;
+  --color-text: #0f172a;
+  --color-text-dim: #475569;
+  --color-correct: #059669;
   --color-wrong: #dc2626;
   --color-active: #d97706;
   --color-accent: #7c3aed;
-  --color-accent-glow: rgba(124, 58, 237, 0.3);
+  --color-accent-glow: rgba(124, 58, 237, 0.2);
   --key-bg: #ffffff;
-  --key-bg-hover: #f0ebff;
-  --key-border: #d4cce6;
-  --key-shadow: rgba(0, 0, 0, 0.1);
+  --key-bg-hover: #f5f3ff;
+  --key-border: #cbd5e1;
+  --key-shadow: rgba(0, 0, 0, 0.06);
 }
 
+/* Surface cards — white with subtle shadow instead of glass */
+[data-theme="light"] .stat-card {
+  background: #ffffff;
+  border-color: #e2e8f0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  backdrop-filter: none;
+}
+
+[data-theme="light"] .word-display-section {
+  background: #ffffff;
+  border-color: #e2e8f0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  backdrop-filter: none;
+}
+
+[data-theme="light"] .keyboard {
+  background: #f1f5f9;
+  border-color: #e2e8f0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  backdrop-filter: none;
+}
+
+[data-theme="light"] .key {
+  box-shadow: 0 2px 0 #cbd5e1, 0 3px 6px rgba(0, 0, 0, 0.04);
+}
+
+[data-theme="light"] .key--pressed {
+  box-shadow: 0 1px 0 #cbd5e1, 0 1px 2px rgba(0, 0, 0, 0.04) !important;
+}
+
+/* Buttons — solid light style */
+[data-theme="light"] .btn {
+  background: #ffffff;
+  border-color: #e2e8f0;
+  backdrop-filter: none;
+}
+
+[data-theme="light"] .btn:hover {
+  background: #f5f3ff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+[data-theme="light"] .btn-restart {
+  background: #f5f3ff;
+  border-color: #ddd6fe;
+}
+
+[data-theme="light"] .btn-sound-mode {
+  background: #ecfdf5;
+  border-color: #a7f3d0;
+}
+
+/* Progress bar */
+[data-theme="light"] .progress-bar {
+  background: #e2e8f0;
+}
+
+/* Combo */
+[data-theme="light"] .combo-display {
+  color: #ea580c;
+  text-shadow: none;
+}
+
+[data-theme="light"] .combo-popup {
+  color: #7c3aed;
+  text-shadow: 0 2px 8px rgba(124, 58, 237, 0.3);
+}
+
+/* Overlays — light frosted glass */
+[data-theme="light"] .settings-overlay,
+[data-theme="light"] .celebration {
+  background: rgba(255, 251, 235, 0.85);
+}
+
+[data-theme="light"] .settings-panel {
+  background: #ffffff;
+  border-color: #e2e8f0;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.12);
+}
+
+[data-theme="light"] .celebration-content {
+  background: #ffffff;
+  border-color: #e2e8f0;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.12);
+}
+
+[data-theme="light"] .celebration-content h2 {
+  background: linear-gradient(135deg, #7c3aed, #db2777, #ea580c);
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
+/* Celebration stats grid */
+[data-theme="light"] .cstat {
+  background: #f8fafc;
+  border-color: #e2e8f0;
+}
+
+[data-theme="light"] .celebration-mistakes {
+  background: #fef2f2;
+  border-color: #fecaca;
+}
+
+/* Settings controls */
+[data-theme="light"] .setting-control {
+  background: #f8fafc;
+  border-color: #cbd5e1;
+}
+
+[data-theme="light"] .setting-control:hover {
+  background: #f1f5f9;
+  border-color: #94a3b8;
+}
+
+[data-theme="light"] .setting-control option {
+  background: #ffffff;
+  color: #0f172a;
+}
+
+[data-theme="light"] .settings-close {
+  background: #f1f5f9;
+  color: #64748b;
+}
+
+[data-theme="light"] .settings-close:hover {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+[data-theme="light"] .toggle-track {
+  background: #e2e8f0;
+  border-color: #cbd5e1;
+}
+
+/* Stars background — subtle on light */
 [data-theme="light"] .star {
   background: #7c3aed;
 }
+
+/* Score colors keep good contrast */
+[data-theme="light"] .stat-time .stat-value { color: #0284c7; }
+[data-theme="light"] .stat-cps .stat-value { color: #d97706; }
+[data-theme="light"] .stat-wpm .stat-value { color: #ea580c; }
+[data-theme="light"] .stat-accuracy .stat-value { color: #059669; }
+[data-theme="light"] .stat-score .stat-value { color: #0284c7; }
+[data-theme="light"] .stat-best .stat-value { color: #9333ea; }
+[data-theme="light"] .stat-streak .stat-value { color: #dc2626; }
 
 /* ── Theme: Colorful ── */
 [data-theme="colorful"] {
