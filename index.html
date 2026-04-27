@@ -119,14 +119,49 @@
       </div>
       <div class="settings-body">
         <div class="setting-group">
-          <label class="setting-label" for="keyboardCaseSelect">
-            Hiển thị bàn phím
-          </label>
+          <label class="setting-label" for="themeSelect">Giao diện</label>
+          <p class="setting-desc">Chọn theme phù hợp</p>
+          <select class="setting-control" id="themeSelect">
+            <option value="dark">🌙 Tối</option>
+            <option value="light">☀️ Sáng</option>
+            <option value="colorful">🎨 Sắc màu</option>
+          </select>
+        </div>
+        <div class="setting-group">
+          <label class="setting-label" for="keyboardCaseSelect">Hiển thị bàn phím</label>
           <p class="setting-desc">Chọn chữ hoa hoặc chữ thường trên bàn phím</p>
           <select class="setting-control" id="keyboardCaseSelect">
             <option value="lower">abc - Chữ thường</option>
             <option value="upper">ABC - Chữ hoa</option>
           </select>
+        </div>
+        <div class="setting-group">
+          <label class="setting-label" for="speechRateSelect">Tốc độ đọc</label>
+          <p class="setting-desc">Tốc độ phát âm trong chế độ đọc chữ cái / đọc từ</p>
+          <select class="setting-control" id="speechRateSelect">
+            <option value="slow">🐢 Chậm</option>
+            <option value="normal">🐇 Vừa</option>
+            <option value="fast">🚀 Nhanh</option>
+          </select>
+        </div>
+        <div class="setting-group">
+          <label class="setting-label" for="wordCountSelect">Số lượng từ</label>
+          <p class="setting-desc">Số từ mỗi lượt chơi</p>
+          <select class="setting-control" id="wordCountSelect">
+            <option value="5">5 từ</option>
+            <option value="10">10 từ</option>
+            <option value="15">15 từ</option>
+            <option value="20">20 từ</option>
+          </select>
+        </div>
+        <div class="setting-group">
+          <label class="setting-label">Hướng dẫn ngón tay</label>
+          <p class="setting-desc">Hiện viền màu dưới phím gợi ý ngón tay</p>
+          <label class="setting-toggle">
+            <input type="checkbox" id="fingerGuideToggle" checked>
+            <span class="toggle-track"><span class="toggle-thumb"></span></span>
+            <span class="toggle-label" id="fingerGuideLabel">Bật</span>
+          </label>
         </div>
       </div>
     </div>

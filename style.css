@@ -31,6 +31,46 @@
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
+/* ── Theme: Light ── */
+[data-theme="light"] {
+  --bg-primary: #f5f0ff;
+  --bg-secondary: #e8e0f0;
+  --bg-tertiary: #ddd5e8;
+  --color-text: #2d2545;
+  --color-text-dim: #6b5f8a;
+  --color-correct: #16a34a;
+  --color-wrong: #dc2626;
+  --color-active: #d97706;
+  --color-accent: #7c3aed;
+  --color-accent-glow: rgba(124, 58, 237, 0.3);
+  --key-bg: #ffffff;
+  --key-bg-hover: #f0ebff;
+  --key-border: #d4cce6;
+  --key-shadow: rgba(0, 0, 0, 0.1);
+}
+
+[data-theme="light"] .star {
+  background: #7c3aed;
+}
+
+/* ── Theme: Colorful ── */
+[data-theme="colorful"] {
+  --bg-primary: #1a0533;
+  --bg-secondary: #4a1068;
+  --bg-tertiary: #2d0a4e;
+  --color-text: #fce4ff;
+  --color-text-dim: #c9a0d4;
+  --color-correct: #4ade80;
+  --color-wrong: #fb7185;
+  --color-active: #fbbf24;
+  --color-accent: #e879f9;
+  --color-accent-glow: rgba(232, 121, 249, 0.4);
+  --key-bg: #2e0a50;
+  --key-bg-hover: #451278;
+  --key-border: #6b21a8;
+  --key-shadow: rgba(0, 0, 0, 0.5);
+}
+
 body {
   font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
   background: linear-gradient(135deg, var(--bg-primary), var(--bg-secondary), var(--bg-tertiary));
@@ -532,6 +572,10 @@ body {
 .key--finger-right-pinky { border-bottom: 2px solid #ef5350; }
 .key--finger-thumb { border-bottom: 2px solid #78909c; }
 
+.keyboard--hide-fingers [class*="key--finger-"] {
+  border-bottom-color: transparent;
+}
+
 /* ── Controls ── */
 .controls {
   display: flex;
@@ -714,6 +758,57 @@ body {
 .setting-control option {
   background: #1e1b4b;
   color: var(--color-text);
+}
+
+/* Toggle switch */
+.setting-toggle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  margin-top: 4px;
+}
+
+.setting-toggle input {
+  display: none;
+}
+
+.toggle-track {
+  position: relative;
+  width: 44px;
+  height: 24px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 12px;
+  transition: background var(--duration-fast) ease;
+}
+
+.toggle-thumb {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 18px;
+  height: 18px;
+  background: var(--color-text-dim);
+  border-radius: 50%;
+  transition: transform var(--duration-fast) var(--ease-bounce),
+              background var(--duration-fast) ease;
+}
+
+.setting-toggle input:checked + .toggle-track {
+  background: rgba(0, 230, 118, 0.25);
+  border-color: rgba(0, 230, 118, 0.4);
+}
+
+.setting-toggle input:checked + .toggle-track .toggle-thumb {
+  transform: translateX(20px);
+  background: var(--color-correct);
+}
+
+.toggle-label {
+  font-size: 0.85rem;
+  color: var(--color-text-dim);
+  font-weight: 500;
 }
 
 /* ── Hidden Input ── */

@@ -298,6 +298,11 @@ class SpeechEngine {
   speakWord(word) {
     this._speak(word);
   }
+
+  setRate(preset) {
+    const rates = { slow: 0.6, normal: 0.85, fast: 1.1 };
+    this.rate = rates[preset] || 0.85;
+  }
 }
 
 /* ── Settings (loaded from localStorage) ── */
@@ -306,6 +311,10 @@ const DEFAULT_SETTINGS = {
   level: 'easy',
   soundMode: 'default',
   soundEnabled: true,
+  speechRate: 'normal',
+  wordCount: 10,
+  fingerGuide: true,
+  theme: 'dark',
 };
 
 const settings = { ...DEFAULT_SETTINGS, ...Storage.loadSettings() };
@@ -330,6 +339,7 @@ const state = {
 
 const sound = new SoundEngine();
 const speech = new SpeechEngine();
+speech.setRate(settings.speechRate);
 
 /* ── DOM References ── */
 const $wordDisplay = document.getElementById('wordDisplay');
@@ -353,6 +363,11 @@ const $btnSettings = document.getElementById('btnSettings');
 const $settingsPanel = document.getElementById('settingsPanel');
 const $settingsClose = document.getElementById('settingsClose');
 const $keyboardCaseSelect = document.getElementById('keyboardCaseSelect');
+const $speechRateSelect = document.getElementById('speechRateSelect');
+const $wordCountSelect = document.getElementById('wordCountSelect');
+const $fingerGuideToggle = document.getElementById('fingerGuideToggle');
+const $fingerGuideLabel = document.getElementById('fingerGuideLabel');
+const $themeSelect = document.getElementById('themeSelect');
 
 /* ── Stars Background ── */
 function createStars() {
@@ -400,7 +415,8 @@ function pickWords(level) {
   const pool = WORDS[level];
   const picked = [];
   const used = new Set();
-  while (picked.length < WORD_COUNT) {
+  const count = settings.wordCount || WORD_COUNT;
+  while (picked.length < count) {
     const idx = Math.floor(Math.random() * pool.length);
     if (!used.has(idx)) {
       used.add(idx);
@@ -1058,16 +1074,60 @@ $keyboardCaseSelect.addEventListener('change', (e) => {
   renderText();
 });
 
+$speechRateSelect.addEventListener('change', (e) => {
+  settings.speechRate = e.target.value;
+  speech.setRate(e.target.value);
+  persistSettings();
+});
+
+$wordCountSelect.addEventListener('change', (e) => {
+  settings.wordCount = Number(e.target.value);
+  persistSettings();
+  resetGame();
+});
+
+$fingerGuideToggle.addEventListener('change', (e) => {
+  settings.fingerGuide = e.target.checked;
+  persistSettings();
+  $keyboard.classList.toggle('keyboard--hide-fingers', !e.target.checked);
+  $fingerGuideLabel.textContent = e.target.checked ? 'Bật' : 'Tắt';
+});
+
+$themeSelect.addEventListener('change', (e) => {
+  settings.theme = e.target.value;
+  persistSettings();
+  applyTheme(e.target.value);
+});
+
+function applyTheme(theme) {
+  if (theme === 'dark') {
+    document.documentElement.removeAttribute('data-theme');
+  } else {
+    document.documentElement.setAttribute('data-theme', theme);
+  }
+}
+
 /* ── Init ── */
 // Restore saved settings to UI controls
 $levelSelect.value = settings.level;
 $soundModeSelect.value = settings.soundMode;
 $keyboardCaseSelect.value = settings.keyboardCase;
+$speechRateSelect.value = settings.speechRate || 'normal';
+$wordCountSelect.value = settings.wordCount || 10;
+$themeSelect.value = settings.theme || 'dark';
+$fingerGuideToggle.checked = settings.fingerGuide !== false;
+$fingerGuideLabel.textContent = $fingerGuideToggle.checked ? 'Bật' : 'Tắt';
+
 if (!settings.soundEnabled) {
   sound.enabled = false;
   $btnSound.textContent = '🔇';
 }
 
+applyTheme(settings.theme || 'dark');
+
 createStars();
 buildKeyboard();
+if (!settings.fingerGuide && settings.fingerGuide !== undefined) {
+  $keyboard.classList.add('keyboard--hide-fingers');
+}
 resetGame();
