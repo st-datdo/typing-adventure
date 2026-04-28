@@ -885,13 +885,13 @@ function finishGame() {
   const $cEmoji = document.querySelector('.celebration-emoji');
   const $cTitle = document.querySelector('.celebration-content h2');
   if (state.gameMode === 'challenge' && state.lives <= 0) {
-    $cEmoji.textContent = '💔';
+    $cEmoji.textContent = '😵';
     $cTitle.textContent = 'Hết mạng!';
   } else if (state.gameMode === 'timeAttack') {
-    $cEmoji.textContent = '⏱️';
+    $cEmoji.textContent = '⏰';
     $cTitle.textContent = 'Hết giờ!';
   } else {
-    $cEmoji.textContent = '🎉';
+    $cEmoji.textContent = '🥳';
     $cTitle.textContent = 'Tuyệt vời!';
   }
 

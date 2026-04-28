@@ -13,57 +13,57 @@
   <nav class="side-nav" id="sideNav">
     <div class="nav-wrap has-tooltip" data-tooltip="Chọn chế độ chơi">
       <select class="nav-control" id="gameModeSelect">
-        <option value="classic">📝 Cổ điển</option>
-        <option value="lesson">📚 Bài học</option>
-        <option value="timeAttack">⏱️ Đua tốc độ</option>
-        <option value="challenge">💀 Thử thách</option>
+        <option value="classic">🎮 Cổ điển</option>
+        <option value="lesson">🎒 Bài học</option>
+        <option value="timeAttack">⚡ Đua tốc độ</option>
+        <option value="challenge">🐉 Thử thách</option>
       </select>
     </div>
     <div class="nav-wrap nav-sub hidden has-tooltip" data-tooltip="Chọn bài học luyện tập">
       <select class="nav-control" id="lessonSelect">
-        <option value="0">Home Row</option>
-        <option value="1">Top Row</option>
-        <option value="2">Bottom Row</option>
-        <option value="3">Home+Top</option>
-        <option value="4">Tất cả</option>
+        <option value="0">🏠 Home Row</option>
+        <option value="1">⬆️ Top Row</option>
+        <option value="2">⬇️ Bottom Row</option>
+        <option value="3">🔀 Home+Top</option>
+        <option value="4">🌈 Tất cả</option>
       </select>
     </div>
     <div class="nav-wrap nav-sub hidden has-tooltip" data-tooltip="Chọn thời gian đua">
       <select class="nav-control" id="timeAttackSelect">
-        <option value="30">30s</option>
-        <option value="60">60s</option>
-        <option value="120">120s</option>
+        <option value="30">🐇 30s</option>
+        <option value="60">🦊 60s</option>
+        <option value="120">🐢 120s</option>
       </select>
     </div>
     <div class="nav-wrap has-tooltip" data-tooltip="Chọn độ khó của từ">
       <select class="nav-control" id="levelSelect">
-        <option value="easy">🌱 Dễ</option>
-        <option value="medium">🌿 Vừa</option>
-        <option value="hard">🌳 Khó</option>
+        <option value="easy">🐣 Dễ</option>
+        <option value="medium">🐥 Vừa</option>
+        <option value="hard">🦅 Khó</option>
       </select>
     </div>
     <div class="nav-wrap has-tooltip" data-tooltip="Chế độ phát âm tiếng Anh">
       <select class="nav-control" id="soundModeSelect">
         <option value="default">🔔 Mặc định</option>
-        <option value="character">🔤 Chữ cái</option>
-        <option value="word">📖 Từ</option>
+        <option value="character">🗣️ Chữ cái</option>
+        <option value="word">💬 Từ</option>
       </select>
     </div>
-    <button class="nav-btn has-tooltip" id="btnSettings" data-tooltip="Mở cài đặt tùy chỉnh">⚙️ Cài đặt</button>
-    <button class="nav-btn has-tooltip" id="btnHistory" data-tooltip="Xem lịch sử & tiến bộ">📊 Lịch sử</button>
+    <button class="nav-btn has-tooltip" id="btnSettings" data-tooltip="Mở cài đặt tùy chỉnh">🛠️ Cài đặt</button>
+    <button class="nav-btn has-tooltip" id="btnHistory" data-tooltip="Xem lịch sử & tiến bộ">📈 Lịch sử</button>
   </nav>
 
   <!-- Quick Actions (top-right) -->
   <aside class="quick-actions">
-    <button class="qa-btn has-tooltip" id="btnRestart" data-tooltip="Chơi lại từ đầu">🔄</button>
+    <button class="qa-btn has-tooltip" id="btnRestart" data-tooltip="Chơi lại từ đầu">🔃</button>
     <button class="qa-btn has-tooltip" id="btnSound" data-tooltip="Bật/tắt âm thanh">🔊</button>
   </aside>
 
   <header class="header">
     <h1 class="title">
-      <span class="title-icon">⌨️</span>
+      <span class="title-icon">🎹</span>
       Typing Adventure
-      <span class="title-icon">🚀</span>
+      <span class="title-icon">✨</span>
     </h1>
     <p class="subtitle">Luyện gõ phím siêu tốc!</p>
     <p class="profile-greeting hidden" id="profileGreeting"></p>
@@ -73,7 +73,7 @@
     <!-- Stats Bar -->
     <section class="stats-bar">
       <div class="stat-card stat-time has-tooltip" data-tooltip="Thời gian đã chơi">
-        <div class="stat-icon">⏱️</div>
+        <div class="stat-icon">⏳</div>
         <div class="stat-info">
           <span class="stat-label">Thời gian</span>
           <span class="stat-value" id="timer">0:00</span>
@@ -87,7 +87,7 @@
         </div>
       </div>
       <div class="stat-card stat-wpm has-tooltip" data-tooltip="Từ mỗi phút (Words Per Minute)">
-        <div class="stat-icon">🏎️</div>
+        <div class="stat-icon">🚀</div>
         <div class="stat-info">
           <span class="stat-label">WPM</span>
           <span class="stat-value" id="wpm">0</span>
@@ -101,14 +101,14 @@
         </div>
       </div>
       <div class="stat-card stat-score has-tooltip" data-tooltip="Điểm số tích lũy (combo tăng điểm)">
-        <div class="stat-icon">💎</div>
+        <div class="stat-icon">💰</div>
         <div class="stat-info">
           <span class="stat-label">Điểm</span>
           <span class="stat-value" id="score">0</span>
         </div>
       </div>
       <div class="stat-card stat-best has-tooltip" data-tooltip="Kỷ lục WPM cao nhất của level hiện tại">
-        <div class="stat-icon">🏆</div>
+        <div class="stat-icon">👑</div>
         <div class="stat-info">
           <span class="stat-label">Kỷ lục WPM</span>
           <span class="stat-value" id="bestWpm">0</span>
@@ -197,7 +197,7 @@
   <div class="settings-overlay" id="historyPanel">
     <div class="settings-panel history-panel">
       <div class="settings-header">
-        <h2 class="settings-title">📊 Lịch sử & Tiến bộ</h2>
+        <h2 class="settings-title">📈 Lịch sử & Tiến bộ</h2>
         <button class="settings-close" id="historyClose">✕</button>
       </div>
       <div class="settings-body">
@@ -237,7 +237,7 @@
   <div class="settings-overlay" id="settingsPanel">
     <div class="settings-panel">
       <div class="settings-header">
-        <h2 class="settings-title">⚙️ Cài đặt</h2>
+        <h2 class="settings-title">🛠️ Cài đặt</h2>
         <button class="settings-close" id="settingsClose">✕</button>
       </div>
       <div class="settings-body">
@@ -246,10 +246,11 @@
           <p class="setting-desc">Tên và avatar của bạn</p>
           <div class="profile-row">
             <select class="setting-control profile-avatar-select" id="profileAvatar">
-              <option value="🧒">🧒</option><option value="👦">👦</option><option value="👧">👧</option>
-              <option value="🦊">🦊</option><option value="🐱">🐱</option><option value="🐶">🐶</option>
-              <option value="🦄">🦄</option><option value="🐼">🐼</option><option value="🐸">🐸</option>
-              <option value="🦁">🦁</option><option value="🐯">🐯</option><option value="🐰">🐰</option>
+              <option value="🐱">🐱</option><option value="🐶">🐶</option><option value="🐰">🐰</option>
+              <option value="🦊">🦊</option><option value="🐼">🐼</option><option value="🐸">🐸</option>
+              <option value="🦁">🦁</option><option value="🐯">🐯</option><option value="🦄">🦄</option>
+              <option value="🐙">🐙</option><option value="🦋">🦋</option><option value="🐧">🐧</option>
+              <option value="🐲">🐲</option><option value="🦜">🦜</option><option value="🐳">🐳</option>
             </select>
             <input type="text" class="setting-control profile-name-input" id="profileName" placeholder="Nhập tên..." maxlength="20">
           </div>
@@ -257,23 +258,23 @@
         <div class="setting-group">
           <label class="setting-label">Huy hiệu</label>
           <p class="setting-desc">Xem huy hiệu đã mở khóa</p>
-          <button class="btn btn-achievements" id="btnAchievements">🏅 Xem huy hiệu</button>
+          <button class="btn btn-achievements" id="btnAchievements">🎖️ Xem huy hiệu</button>
         </div>
         <div class="setting-group">
           <label class="setting-label" for="themeSelect">Giao diện</label>
           <p class="setting-desc">Chọn theme phù hợp</p>
           <select class="setting-control" id="themeSelect">
-            <option value="dark">🌙 Tối</option>
-            <option value="light">☀️ Sáng</option>
-            <option value="colorful">🎨 Sắc màu</option>
+            <option value="dark">🌜 Tối</option>
+            <option value="light">🌤️ Sáng</option>
+            <option value="colorful">🌈 Sắc màu</option>
           </select>
         </div>
         <div class="setting-group">
           <label class="setting-label" for="keyboardCaseSelect">Hiển thị bàn phím</label>
           <p class="setting-desc">Chọn chữ hoa hoặc chữ thường trên bàn phím</p>
           <select class="setting-control" id="keyboardCaseSelect">
-            <option value="lower">abc - Chữ thường</option>
-            <option value="upper">ABC - Chữ hoa</option>
+            <option value="lower">🔡 Chữ thường</option>
+            <option value="upper">🔠 Chữ hoa</option>
           </select>
         </div>
         <div class="setting-group">
@@ -312,7 +313,7 @@
   <div class="settings-overlay" id="achievementsPanel">
     <div class="settings-panel">
       <div class="settings-header">
-        <h2 class="settings-title">🏅 Huy hiệu</h2>
+        <h2 class="settings-title">🎖️ Huy hiệu</h2>
         <button class="settings-close" id="achievementsClose">✕</button>
       </div>
       <div class="settings-body">
@@ -324,7 +325,7 @@
   <!-- Celebration overlay -->
   <div class="celebration" id="celebration">
     <div class="celebration-content">
-      <div class="celebration-emoji">🎉</div>
+      <div class="celebration-emoji">🥳</div>
       <h2>Tuyệt vời!</h2>
       <div id="celebrationStars" class="celebration-stars"></div>
       <div id="celebrationScore" class="celebration-score"></div>

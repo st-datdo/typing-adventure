@@ -598,6 +598,21 @@ body {
 .stat-icon {
   font-size: 1.6rem;
   line-height: 1;
+  animation: iconBob 2s ease-in-out infinite;
+  display: inline-block;
+}
+
+.stat-card:nth-child(1) .stat-icon { animation-delay: 0s; }
+.stat-card:nth-child(2) .stat-icon { animation-delay: 0.15s; }
+.stat-card:nth-child(3) .stat-icon { animation-delay: 0.3s; }
+.stat-card:nth-child(4) .stat-icon { animation-delay: 0.45s; }
+.stat-card:nth-child(5) .stat-icon { animation-delay: 0.6s; }
+.stat-card:nth-child(6) .stat-icon { animation-delay: 0.75s; }
+.stat-card:nth-child(7) .stat-icon { animation-delay: 0.9s; }
+
+@keyframes iconBob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-3px); }
 }
 
 .stat-info {
