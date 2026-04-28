@@ -1428,8 +1428,11 @@ function applyTheme(theme) {
 }
 
 function updateModeSubSelectors() {
-  $lessonSelect.classList.toggle('hidden', state.gameMode !== 'lesson');
-  $timeAttackSelect.classList.toggle('hidden', state.gameMode !== 'timeAttack');
+  // Toggle on the wrapper .nav-wrap div (parent of the select)
+  const lessonWrap = $lessonSelect.closest('.nav-wrap') || $lessonSelect;
+  const timeWrap = $timeAttackSelect.closest('.nav-wrap') || $timeAttackSelect;
+  lessonWrap.classList.toggle('hidden', state.gameMode !== 'lesson');
+  timeWrap.classList.toggle('hidden', state.gameMode !== 'timeAttack');
 }
 
 /* ── Game Mode Selectors ── */

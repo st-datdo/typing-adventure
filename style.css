@@ -401,6 +401,14 @@ body {
   font-size: 0.9rem;
 }
 
+.nav-wrap {
+  width: 100%;
+}
+
+.nav-wrap .nav-control {
+  width: 100%;
+}
+
 .nav-sub.hidden {
   display: none !important;
 }

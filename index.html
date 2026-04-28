@@ -11,34 +11,44 @@
 
   <!-- Side Nav (top-left) -->
   <nav class="side-nav" id="sideNav">
-    <select class="nav-control has-tooltip" id="gameModeSelect" data-tooltip="Chọn chế độ chơi">
-      <option value="classic">📝 Cổ điển</option>
-      <option value="lesson">📚 Bài học</option>
-      <option value="timeAttack">⏱️ Đua tốc độ</option>
-      <option value="challenge">💀 Thử thách</option>
-    </select>
-    <select class="nav-control nav-sub hidden has-tooltip" id="lessonSelect" data-tooltip="Chọn bài học luyện tập">
-      <option value="0">Home Row</option>
-      <option value="1">Top Row</option>
-      <option value="2">Bottom Row</option>
-      <option value="3">Home+Top</option>
-      <option value="4">Tất cả</option>
-    </select>
-    <select class="nav-control nav-sub hidden has-tooltip" id="timeAttackSelect" data-tooltip="Chọn thời gian đua">
-      <option value="30">30s</option>
-      <option value="60">60s</option>
-      <option value="120">120s</option>
-    </select>
-    <select class="nav-control has-tooltip" id="levelSelect" data-tooltip="Chọn độ khó của từ">
-      <option value="easy">🌱 Dễ</option>
-      <option value="medium">🌿 Vừa</option>
-      <option value="hard">🌳 Khó</option>
-    </select>
-    <select class="nav-control has-tooltip" id="soundModeSelect" data-tooltip="Chế độ phát âm tiếng Anh">
-      <option value="default">🔔 Mặc định</option>
-      <option value="character">🔤 Chữ cái</option>
-      <option value="word">📖 Từ</option>
-    </select>
+    <div class="nav-wrap has-tooltip" data-tooltip="Chọn chế độ chơi">
+      <select class="nav-control" id="gameModeSelect">
+        <option value="classic">📝 Cổ điển</option>
+        <option value="lesson">📚 Bài học</option>
+        <option value="timeAttack">⏱️ Đua tốc độ</option>
+        <option value="challenge">💀 Thử thách</option>
+      </select>
+    </div>
+    <div class="nav-wrap nav-sub hidden has-tooltip" data-tooltip="Chọn bài học luyện tập">
+      <select class="nav-control" id="lessonSelect">
+        <option value="0">Home Row</option>
+        <option value="1">Top Row</option>
+        <option value="2">Bottom Row</option>
+        <option value="3">Home+Top</option>
+        <option value="4">Tất cả</option>
+      </select>
+    </div>
+    <div class="nav-wrap nav-sub hidden has-tooltip" data-tooltip="Chọn thời gian đua">
+      <select class="nav-control" id="timeAttackSelect">
+        <option value="30">30s</option>
+        <option value="60">60s</option>
+        <option value="120">120s</option>
+      </select>
+    </div>
+    <div class="nav-wrap has-tooltip" data-tooltip="Chọn độ khó của từ">
+      <select class="nav-control" id="levelSelect">
+        <option value="easy">🌱 Dễ</option>
+        <option value="medium">🌿 Vừa</option>
+        <option value="hard">🌳 Khó</option>
+      </select>
+    </div>
+    <div class="nav-wrap has-tooltip" data-tooltip="Chế độ phát âm tiếng Anh">
+      <select class="nav-control" id="soundModeSelect">
+        <option value="default">🔔 Mặc định</option>
+        <option value="character">🔤 Chữ cái</option>
+        <option value="word">📖 Từ</option>
+      </select>
+    </div>
     <button class="nav-btn has-tooltip" id="btnSettings" data-tooltip="Mở cài đặt tùy chỉnh">⚙️ Cài đặt</button>
     <button class="nav-btn has-tooltip" id="btnHistory" data-tooltip="Xem lịch sử & tiến bộ">📊 Lịch sử</button>
   </nav>
