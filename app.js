@@ -1404,7 +1404,10 @@ $fingerGuideToggle.addEventListener('change', (e) => {
   settings.fingerGuide = e.target.checked;
   persistSettings();
   $keyboard.classList.toggle('keyboard--hide-fingers', !e.target.checked);
+  const $handsGuide = document.getElementById('handsGuide');
+  if ($handsGuide) $handsGuide.classList.toggle('hidden', !e.target.checked);
   $fingerGuideLabel.textContent = e.target.checked ? 'Bật' : 'Tắt';
+  updateFingerHint();
 });
 
 $themeSelect.addEventListener('change', (e) => {
@@ -1701,21 +1704,48 @@ for (const row of KEYBOARD_ROWS) {
 
 function updateFingerHint() {
   const $hint = document.getElementById('fingerHint');
-  if (!$hint || !settings.fingerGuide) {
+  const $label = document.getElementById('fingerLabel');
+
+  // Clear all active fingers
+  document.querySelectorAll('.finger-path.finger--active')
+    .forEach(el => el.classList.remove('finger--active'));
+
+  if (!settings.fingerGuide) {
     if ($hint) $hint.textContent = '';
+    if ($label) { $label.textContent = ''; $label.classList.remove('label--visible'); }
     return;
   }
+
   if (state.currentIndex >= state.text.length) {
-    $hint.textContent = '';
+    if ($hint) $hint.textContent = '';
+    if ($label) { $label.textContent = ''; $label.classList.remove('label--visible'); }
     return;
   }
+
   const expected = state.text[state.currentIndex];
   const keyName = expected === ' ' ? ' ' : expected.toLowerCase();
   const finger = KEY_FINGER_MAP[keyName];
+
   if (finger) {
-    $hint.textContent = `👆 ${FINGER_NAMES[finger] || finger}`;
+    // Highlight SVG finger(s)
+    if (finger === 'thumb') {
+      document.getElementById('finger-thumb-left')?.classList.add('finger--active');
+      document.getElementById('finger-thumb-right')?.classList.add('finger--active');
+    } else {
+      const el = document.getElementById('finger-' + finger);
+      if (el) el.classList.add('finger--active');
+    }
+
+    // Show label
+    const name = FINGER_NAMES[finger] || finger;
+    if ($label) {
+      $label.textContent = name;
+      $label.classList.add('label--visible');
+    }
+    if ($hint) $hint.textContent = `👆 ${name}`;
   } else {
-    $hint.textContent = '';
+    if ($hint) $hint.textContent = '';
+    if ($label) { $label.textContent = ''; $label.classList.remove('label--visible'); }
   }
 }
 
@@ -1751,6 +1781,8 @@ createStars();
 buildKeyboard();
 if (!settings.fingerGuide && settings.fingerGuide !== undefined) {
   $keyboard.classList.add('keyboard--hide-fingers');
+  const $handsGuide = document.getElementById('handsGuide');
+  if ($handsGuide) $handsGuide.classList.add('hidden');
 }
 resetGame();
 checkAchievements();

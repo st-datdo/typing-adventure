@@ -1564,7 +1564,117 @@ body {
   100% { transform: translateX(-50%) translateY(-20px); opacity: 0; }
 }
 
-/* ── Finger Hint ── */
+/* ── Hands Guide ── */
+.hands-guide {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  gap: clamp(4px, 1.5vw, 16px);
+  max-width: 800px;
+  margin: 8px auto 0;
+  position: relative;
+}
+
+.hand-svg {
+  width: clamp(90px, 18vw, 160px);
+  height: auto;
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.2));
+  transition: opacity var(--duration-fast) ease;
+}
+
+.palm-path {
+  fill: var(--key-bg);
+  stroke: var(--key-border);
+  stroke-width: 2;
+  opacity: 0.6;
+}
+
+.finger-path,
+.fingertip {
+  fill: var(--key-bg);
+  stroke: var(--key-border);
+  stroke-width: 1.5;
+  opacity: 0.4;
+  transition: fill 150ms ease, opacity 150ms ease, filter 150ms ease, stroke 150ms ease;
+  cursor: default;
+}
+
+/* Active finger — glowing color + matching fingertip via CSS sibling */
+.finger-path.finger--active {
+  opacity: 1;
+  stroke-width: 2;
+}
+
+/* Fingertip follows its preceding rect/ellipse */
+.finger-path.finger--active + .fingertip {
+  opacity: 1;
+  stroke-width: 2;
+}
+
+#finger-left-pinky.finger--active,
+#finger-left-pinky.finger--active + .fingertip  { fill: #ef5350; stroke: #c62828; filter: drop-shadow(0 0 10px rgba(239,83,80,0.7)); }
+
+#finger-left-ring.finger--active,
+#finger-left-ring.finger--active + .fingertip   { fill: #ab47bc; stroke: #7b1fa2; filter: drop-shadow(0 0 10px rgba(171,71,188,0.7)); }
+
+#finger-left-middle.finger--active,
+#finger-left-middle.finger--active + .fingertip { fill: #42a5f5; stroke: #1565c0; filter: drop-shadow(0 0 10px rgba(66,165,245,0.7)); }
+
+#finger-left-index.finger--active,
+#finger-left-index.finger--active + .fingertip  { fill: #66bb6a; stroke: #2e7d32; filter: drop-shadow(0 0 10px rgba(102,187,106,0.7)); }
+
+#finger-thumb-left.finger--active,
+#finger-thumb-right.finger--active { fill: #78909c; stroke: #455a64; filter: drop-shadow(0 0 10px rgba(120,144,156,0.7)); }
+
+#finger-right-index.finger--active,
+#finger-right-index.finger--active + .fingertip { fill: #ffa726; stroke: #e65100; filter: drop-shadow(0 0 10px rgba(255,167,38,0.7)); }
+
+#finger-right-middle.finger--active,
+#finger-right-middle.finger--active + .fingertip{ fill: #42a5f5; stroke: #1565c0; filter: drop-shadow(0 0 10px rgba(66,165,245,0.7)); }
+
+#finger-right-ring.finger--active,
+#finger-right-ring.finger--active + .fingertip  { fill: #ab47bc; stroke: #7b1fa2; filter: drop-shadow(0 0 10px rgba(171,71,188,0.7)); }
+
+#finger-right-pinky.finger--active,
+#finger-right-pinky.finger--active + .fingertip { fill: #ef5350; stroke: #c62828; filter: drop-shadow(0 0 10px rgba(239,83,80,0.7)); }
+
+/* Finger label below hands */
+.finger-label {
+  position: absolute;
+  bottom: -20px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--color-text);
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity 150ms ease, color 150ms ease;
+  pointer-events: none;
+}
+
+.finger-label.label--visible {
+  opacity: 1;
+}
+
+/* Hide hands when finger guide is off */
+.keyboard--hide-fingers ~ .hands-guide {
+  display: none;
+}
+
+/* Light theme adjustments */
+[data-theme="light"] .palm-path {
+  fill: #e2e8f0;
+  stroke: #94a3b8;
+}
+
+[data-theme="light"] .finger-path,
+[data-theme="light"] .fingertip {
+  fill: #cbd5e1;
+  stroke: #94a3b8;
+}
+
+/* Finger hint text (now secondary to SVG) */
 .finger-hint {
   text-align: center;
   font-size: 0.8rem;
@@ -1573,6 +1683,15 @@ body {
   height: 20px;
   margin-top: 4px;
   transition: opacity var(--duration-fast) ease;
+}
+
+@media (max-width: 480px) {
+  .hand-svg {
+    width: 80px;
+  }
+  .finger-label {
+    font-size: 0.75rem;
+  }
 }
 
 /* ── Adaptive Difficulty Popup ── */
