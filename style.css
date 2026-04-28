@@ -356,6 +356,121 @@ body {
 .stat-streak .stat-value { color: #ff5252; }
 
 /* ── Word Display ── */
+.btn-custom-text {
+  position: absolute;
+  top: -14px;
+  right: -14px;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 50%;
+  background: var(--key-bg);
+  color: var(--color-text-dim);
+  font-size: 0.9rem;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+  transition: background var(--duration-fast) ease,
+              border-color var(--duration-fast) ease,
+              transform var(--duration-fast) var(--ease-bounce),
+              box-shadow var(--duration-fast) ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.btn-custom-text:hover {
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+  color: #fff;
+  transform: scale(1.15);
+  box-shadow: 0 4px 14px var(--color-accent-glow);
+}
+
+.btn-custom-tooltip {
+  position: absolute;
+  right: 110%;
+  top: 50%;
+  transform: translateY(-50%);
+  white-space: nowrap;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--color-text);
+  background: var(--key-bg);
+  border: 1px solid var(--key-border);
+  border-radius: 6px;
+  padding: 4px 10px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 150ms ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.btn-custom-text:hover .btn-custom-tooltip {
+  opacity: 1;
+}
+
+[data-theme="light"] .btn-custom-text {
+  background: #ffffff;
+  border-color: #e2e8f0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+[data-theme="light"] .btn-custom-text:hover {
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+}
+
+[data-theme="light"] .btn-custom-tooltip {
+  background: #ffffff;
+  border-color: #e2e8f0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Custom Text Modal */
+.custom-text-panel {
+  max-width: 460px;
+}
+
+.custom-text-input {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: var(--radius-sm);
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--color-text);
+  font-size: 0.95rem;
+  font-family: inherit;
+  resize: vertical;
+  min-height: 80px;
+  transition: border-color var(--duration-fast) ease;
+}
+
+.custom-text-input:focus {
+  outline: none;
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px var(--color-accent-glow);
+}
+
+.custom-text-input::placeholder {
+  color: var(--color-text-dim);
+  opacity: 0.6;
+}
+
+[data-theme="light"] .custom-text-input {
+  background: #f8fafc;
+  border-color: #cbd5e1;
+  color: #0f172a;
+}
+
+.custom-text-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+
 .word-display-section {
   position: relative;
   background: rgba(255, 255, 255, 0.04);

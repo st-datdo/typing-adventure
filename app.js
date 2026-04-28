@@ -1288,6 +1288,7 @@ function showAdaptivePopup(message, suggestedLevel) {
 
 // Hidden input captures all keystrokes
 $hiddenInput.addEventListener('input', (e) => {
+  if (document.querySelector('.settings-overlay.settings--visible')) return;
   const data = e.data;
   if (data && data.length === 1) {
     handleKey(data);
@@ -1297,6 +1298,8 @@ $hiddenInput.addEventListener('input', (e) => {
 
 // Keyboard events for special keys and visual feedback
 document.addEventListener('keydown', (e) => {
+  // Skip when an overlay is open (settings, custom text, etc.)
+  if (document.querySelector('.settings-overlay.settings--visible')) return;
   if (state.isFinished) return;
 
   // Handle space explicitly (input event might not fire for space in some cases)
@@ -1336,11 +1339,11 @@ $keyboard.addEventListener('pointerdown', (e) => {
   focusInput();
 });
 
-// Click anywhere to focus input
+// Click anywhere to focus input (skip when overlays are open)
 document.addEventListener('click', (e) => {
-  if (!e.target.closest('.btn') && !e.target.closest('select')) {
-    focusInput();
-  }
+  if (document.querySelector('.settings-overlay.settings--visible')) return;
+  if (e.target.closest('.btn') || e.target.closest('select') || e.target.closest('.btn-custom-text')) return;
+  focusInput();
 });
 
 $btnRestart.addEventListener('click', resetGame);
@@ -1623,6 +1626,79 @@ function renderTrend(recentHistory) {
   $trend.innerHTML = `<span class="trend-icon">${icon}</span> <span class="trend-text">${text}</span>`;
   $trend.className = `history-trend ${cls}`;
 }
+
+/* ── Custom Text ── */
+const $btnCustomText = document.getElementById('btnCustomText');
+const $customTextPanel = document.getElementById('customTextPanel');
+const $customTextClose = document.getElementById('customTextClose');
+const $customTextInput = document.getElementById('customTextInput');
+const $customTextApply = document.getElementById('customTextApply');
+const $customTextCancel = document.getElementById('customTextCancel');
+
+$btnCustomText.addEventListener('click', () => {
+  $customTextPanel.classList.add('settings--visible');
+  $customTextInput.focus();
+});
+
+$customTextClose.addEventListener('click', () => {
+  $customTextPanel.classList.remove('settings--visible');
+});
+
+$customTextCancel.addEventListener('click', () => {
+  $customTextPanel.classList.remove('settings--visible');
+});
+
+$customTextPanel.addEventListener('click', (e) => {
+  if (e.target === $customTextPanel) {
+    $customTextPanel.classList.remove('settings--visible');
+  }
+});
+
+$customTextApply.addEventListener('click', () => {
+  const raw = $customTextInput.value.trim().toLowerCase().replace(/[^a-z\s]/g, '').replace(/\s+/g, ' ');
+  if (!raw) return;
+
+  $customTextPanel.classList.remove('settings--visible');
+
+  // Reset game with custom text
+  if (window.speechSynthesis) window.speechSynthesis.cancel();
+  state.currentIndex = 0;
+  state.startTime = null;
+  state.totalKeystrokes = 0;
+  state.correctKeystrokes = 0;
+  state.isFinished = false;
+  state.combo = 0;
+  state.maxCombo = 0;
+  state.score = 0;
+  state.mistakeMap = {};
+  state.wordsCompleted = 0;
+  state.lives = CHALLENGE_LIVES;
+  state.challengeMistakes = 0;
+  stopTimer();
+
+  state.text = raw;
+
+  state.wordBoundaries = [];
+  let pos = 0;
+  for (const word of state.text.split(' ')) {
+    state.wordBoundaries.push({ word, startIndex: pos, endIndex: pos + word.length });
+    pos += word.length + 1;
+  }
+
+  $timer.textContent = '0:00';
+  $cps.textContent = '0.00';
+  $wpm.textContent = '0';
+  $accuracy.textContent = '100%';
+  $celebration.classList.remove('celebration--visible');
+  updateComboDisplay();
+  updateLivesDisplay();
+  const $score = document.getElementById('score');
+  if ($score) $score.textContent = '0';
+
+  refreshRecordsDisplay();
+  renderText();
+  focusInput();
+});
 
 /* ── Profile ── */
 const $profileName = document.getElementById('profileName');
