@@ -224,6 +224,74 @@ body {
   cursor: default;
 }
 
+/* ── Universal Tooltip ── */
+.has-tooltip {
+  position: relative;
+}
+
+.has-tooltip::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%) translateY(4px);
+  white-space: nowrap;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--color-text);
+  background: var(--key-bg);
+  border: 1px solid var(--key-border);
+  border-radius: 6px;
+  padding: 5px 10px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 150ms ease, transform 150ms ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  z-index: 100;
+  max-width: 220px;
+  white-space: normal;
+  text-align: center;
+  line-height: 1.3;
+}
+
+.has-tooltip:hover::after {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* Side-nav tooltips: show to the right instead of above */
+.side-nav .has-tooltip::after {
+  bottom: auto;
+  left: calc(100% + 8px);
+  top: 50%;
+  transform: translateY(-50%) translateX(-4px);
+}
+
+.side-nav .has-tooltip:hover::after {
+  transform: translateY(-50%) translateX(0);
+}
+
+/* Quick-actions tooltips: show to the left */
+.quick-actions .has-tooltip::after {
+  bottom: auto;
+  left: auto;
+  right: calc(100% + 8px);
+  top: 50%;
+  transform: translateY(-50%) translateX(4px);
+}
+
+.quick-actions .has-tooltip:hover::after {
+  transform: translateY(-50%) translateX(0);
+}
+
+/* Light theme tooltip */
+[data-theme="light"] .has-tooltip::after {
+  background: #ffffff;
+  border-color: #e2e8f0;
+  color: #0f172a;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
 /* ── Quick Actions (fixed top-right) ── */
 .quick-actions {
   position: fixed;

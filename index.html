@@ -11,42 +11,42 @@
 
   <!-- Side Nav (top-left) -->
   <nav class="side-nav" id="sideNav">
-    <select class="nav-control" id="gameModeSelect" title="Chế độ chơi">
+    <select class="nav-control has-tooltip" id="gameModeSelect" data-tooltip="Chọn chế độ chơi">
       <option value="classic">📝 Cổ điển</option>
       <option value="lesson">📚 Bài học</option>
       <option value="timeAttack">⏱️ Đua tốc độ</option>
       <option value="challenge">💀 Thử thách</option>
     </select>
-    <select class="nav-control nav-sub hidden" id="lessonSelect" title="Chọn bài học">
+    <select class="nav-control nav-sub hidden has-tooltip" id="lessonSelect" data-tooltip="Chọn bài học luyện tập">
       <option value="0">Home Row</option>
       <option value="1">Top Row</option>
       <option value="2">Bottom Row</option>
       <option value="3">Home+Top</option>
       <option value="4">Tất cả</option>
     </select>
-    <select class="nav-control nav-sub hidden" id="timeAttackSelect" title="Thời gian">
+    <select class="nav-control nav-sub hidden has-tooltip" id="timeAttackSelect" data-tooltip="Chọn thời gian đua">
       <option value="30">30s</option>
       <option value="60">60s</option>
       <option value="120">120s</option>
     </select>
-    <select class="nav-control" id="levelSelect" title="Chọn độ khó">
+    <select class="nav-control has-tooltip" id="levelSelect" data-tooltip="Chọn độ khó của từ">
       <option value="easy">🌱 Dễ</option>
       <option value="medium">🌿 Vừa</option>
       <option value="hard">🌳 Khó</option>
     </select>
-    <select class="nav-control" id="soundModeSelect" title="Chế độ âm thanh">
+    <select class="nav-control has-tooltip" id="soundModeSelect" data-tooltip="Chế độ phát âm tiếng Anh">
       <option value="default">🔔 Mặc định</option>
       <option value="character">🔤 Chữ cái</option>
       <option value="word">📖 Từ</option>
     </select>
-    <button class="nav-btn" id="btnSettings" title="Cài đặt">⚙️ Cài đặt</button>
-    <button class="nav-btn" id="btnHistory" title="Lịch sử">📊 Lịch sử</button>
+    <button class="nav-btn has-tooltip" id="btnSettings" data-tooltip="Mở cài đặt tùy chỉnh">⚙️ Cài đặt</button>
+    <button class="nav-btn has-tooltip" id="btnHistory" data-tooltip="Xem lịch sử & tiến bộ">📊 Lịch sử</button>
   </nav>
 
   <!-- Quick Actions (top-right) -->
   <aside class="quick-actions">
-    <button class="qa-btn" id="btnRestart" title="Chơi lại">🔄</button>
-    <button class="qa-btn" id="btnSound" title="Bật/tắt âm thanh">🔊</button>
+    <button class="qa-btn has-tooltip" id="btnRestart" data-tooltip="Chơi lại từ đầu">🔄</button>
+    <button class="qa-btn has-tooltip" id="btnSound" data-tooltip="Bật/tắt âm thanh">🔊</button>
   </aside>
 
   <header class="header">
@@ -62,49 +62,49 @@
   <main class="main">
     <!-- Stats Bar -->
     <section class="stats-bar">
-      <div class="stat-card stat-time">
+      <div class="stat-card stat-time has-tooltip" data-tooltip="Thời gian đã chơi">
         <div class="stat-icon">⏱️</div>
         <div class="stat-info">
           <span class="stat-label">Thời gian</span>
           <span class="stat-value" id="timer">0:00</span>
         </div>
       </div>
-      <div class="stat-card stat-cps">
+      <div class="stat-card stat-cps has-tooltip" data-tooltip="Ký tự mỗi giây (Characters Per Second)">
         <div class="stat-icon">⚡</div>
         <div class="stat-info">
           <span class="stat-label">CPS</span>
           <span class="stat-value" id="cps">0.00</span>
         </div>
       </div>
-      <div class="stat-card stat-wpm">
+      <div class="stat-card stat-wpm has-tooltip" data-tooltip="Từ mỗi phút (Words Per Minute)">
         <div class="stat-icon">🏎️</div>
         <div class="stat-info">
           <span class="stat-label">WPM</span>
           <span class="stat-value" id="wpm">0</span>
         </div>
       </div>
-      <div class="stat-card stat-accuracy">
+      <div class="stat-card stat-accuracy has-tooltip" data-tooltip="Tỷ lệ gõ đúng">
         <div class="stat-icon">🎯</div>
         <div class="stat-info">
           <span class="stat-label">Chính xác</span>
           <span class="stat-value" id="accuracy">100%</span>
         </div>
       </div>
-      <div class="stat-card stat-score">
+      <div class="stat-card stat-score has-tooltip" data-tooltip="Điểm số tích lũy (combo tăng điểm)">
         <div class="stat-icon">💎</div>
         <div class="stat-info">
           <span class="stat-label">Điểm</span>
           <span class="stat-value" id="score">0</span>
         </div>
       </div>
-      <div class="stat-card stat-best">
+      <div class="stat-card stat-best has-tooltip" data-tooltip="Kỷ lục WPM cao nhất của level hiện tại">
         <div class="stat-icon">🏆</div>
         <div class="stat-info">
           <span class="stat-label">Kỷ lục WPM</span>
           <span class="stat-value" id="bestWpm">0</span>
         </div>
       </div>
-      <div class="stat-card stat-streak">
+      <div class="stat-card stat-streak has-tooltip" data-tooltip="Số ngày chơi liên tiếp">
         <div class="stat-icon">🔥</div>
         <div class="stat-info">
           <span class="stat-label">Streak</span>
