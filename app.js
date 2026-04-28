@@ -1,3 +1,208 @@
+/* ── Internationalization (i18n) ── */
+const LANG = {
+  vi: {
+    // Header
+    subtitle: 'Luyện gõ phím siêu tốc!',
+    // Side nav
+    langLabel: '🌐 Ngôn ngữ',
+    tipLang: 'Chọn ngôn ngữ',
+    tipGameMode: 'Chọn chế độ chơi',
+    modeClassic: '🎮 Cổ điển', modeLesson: '🎒 Bài học', modeTimeAttack: '⚡ Đua tốc độ', modeChallenge: '🐉 Thử thách',
+    tipLesson: 'Chọn bài học luyện tập',
+    lessonAll: '🌈 Tất cả',
+    tipTimeAttack: 'Chọn thời gian đua',
+    tipLevel: 'Chọn độ khó của từ',
+    lvEasy: '🐣 Dễ', lvMedium: '🐥 Vừa', lvHard: '🦅 Khó',
+    tipSoundMode: 'Chế độ phát âm tiếng Anh',
+    smDefault: '🔔 Mặc định', smChar: '🗣️ Chữ cái', smWord: '💬 Từ',
+    btnSettings: '🛠️ Cài đặt', tipSettings: 'Mở cài đặt tùy chỉnh',
+    btnHistory: '📈 Lịch sử', tipHistory: 'Xem lịch sử & tiến bộ',
+    tipRestart: 'Chơi lại từ đầu', tipSound: 'Bật/tắt âm thanh',
+    // Stats bar
+    tipTime: 'Thời gian đã chơi', lblTime: 'Thời gian',
+    tipCps: 'Ký tự mỗi giây (Characters Per Second)',
+    tipWpm: 'Từ mỗi phút (Words Per Minute)',
+    tipAccuracy: 'Tỷ lệ gõ đúng', lblAccuracy: 'Chính xác',
+    tipScore: 'Điểm số tích lũy (combo tăng điểm)', lblScore: 'Điểm',
+    tipBest: 'Kỷ lục WPM cao nhất của level hiện tại', lblBest: 'Kỷ lục WPM',
+    tipStreak: 'Số ngày chơi liên tiếp',
+    dayUnit: 'ngày',
+    // Custom text
+    tipCustomText: 'Nhập văn bản tùy chỉnh',
+    customTitle: '✏️ Nhập văn bản',
+    customDesc: 'Nhập văn bản bạn muốn luyện gõ (tiếng Anh, phân cách bằng dấu cách)',
+    customPlaceholder: 'Ví dụ: hello world typing is fun',
+    customStart: '🚀 Bắt đầu gõ', customCancel: 'Hủy',
+    // Settings
+    settingsTitle: '🛠️ Cài đặt',
+    profileLabel: 'Hồ sơ', profileDesc: 'Tên và avatar của bạn', profilePlaceholder: 'Nhập tên...',
+    achLabel: 'Huy hiệu', achDesc: 'Xem huy hiệu đã mở khóa', achBtn: '🎖️ Xem huy hiệu',
+    themeLabel: 'Giao diện', themeDesc: 'Chọn theme phù hợp',
+    themeDark: '🌜 Tối', themeLight: '🌤️ Sáng', themeColorful: '🌈 Sắc màu',
+    caseLabel: 'Hiển thị bàn phím', caseDesc: 'Chọn chữ hoa hoặc chữ thường trên bàn phím',
+    caseLower: '🔡 Chữ thường', caseUpper: '🔠 Chữ hoa',
+    speechLabel: 'Tốc độ đọc', speechDesc: 'Tốc độ phát âm trong chế độ đọc chữ cái / đọc từ',
+    speechSlow: '🐢 Chậm', speechNormal: '🐇 Vừa', speechFast: '🚀 Nhanh',
+    wcLabel: 'Số lượng từ', wcDesc: 'Số từ mỗi lượt chơi', wcUnit: 'từ',
+    fgLabel: 'Hướng dẫn ngón tay', fgDesc: 'Hiện viền màu dưới phím gợi ý ngón tay',
+    toggleOn: 'Bật', toggleOff: 'Tắt',
+    // History
+    historyTitle: '📈 Lịch sử & Tiến bộ',
+    chartTitle: 'Biểu đồ WPM', recentTitle: 'Lần chơi gần đây',
+    thDate: 'Ngày', thLevel: 'Level', thAcc: 'Chính xác', thStars: 'Sao',
+    emptyHistory: 'Chưa có lịch sử chơi nào.',
+    chartMin: 'Cần ít nhất 2 lần chơi',
+    trendUp: 'Đang tiến bộ! WPM tăng {0} so với trước',
+    trendDown: 'Cần cố gắng hơn! WPM giảm {0}',
+    trendStable: 'Ổn định — tiếp tục luyện tập!',
+    streakDays: '{0} ngày liên tiếp',
+    gamesPlayed: '{0} lần chơi', wordsTyped: '{0} từ đã gõ',
+    // Achievements
+    achTitle: '🎖️ Huy hiệu',
+    achFirstGame: 'Lần đầu chơi', achFirstGameDesc: 'Hoàn thành lượt chơi đầu tiên',
+    ach10Games: '10 lượt chơi', ach10GamesDesc: 'Hoàn thành 10 lượt chơi',
+    ach50Games: '50 lượt chơi', ach50GamesDesc: 'Hoàn thành 50 lượt chơi',
+    ach100Games: '100 lượt chơi', ach100GamesDesc: 'Hoàn thành 100 lượt chơi',
+    achStreak3: '3 ngày liên tiếp', achStreak3Desc: 'Chơi 3 ngày liên tiếp',
+    achStreak7: '7 ngày liên tiếp', achStreak7Desc: 'Chơi 7 ngày liên tiếp',
+    achStreak30: '30 ngày liên tiếp', achStreak30Desc: 'Chơi 30 ngày liên tiếp',
+    achWpm20: 'WPM 20', achWpm20Desc: 'Đạt 20 WPM',
+    achWpm40: 'WPM 40', achWpm40Desc: 'Đạt 40 WPM',
+    achWpm60: 'WPM 60', achWpm60Desc: 'Đạt 60 WPM',
+    achWpm80: 'WPM 80', achWpm80Desc: 'Đạt 80 WPM',
+    achWpm100: 'WPM 100', achWpm100Desc: 'Đạt 100 WPM',
+    achPerfect: 'Hoàn hảo!', achPerfectDesc: 'Accuracy 100% trong 1 lượt',
+    ach3StarAll: 'Ba sao tất cả', ach3StarAllDesc: '3 sao ở cả Easy, Medium, Hard',
+    achCombo50: 'Combo 50', achCombo50Desc: 'Đạt combo streak 50',
+    achCps5: 'CPS 5', achCps5Desc: 'Đạt tốc độ 5 ký tự/giây',
+    // Celebration
+    celExcellent: 'Tuyệt vời!', celOutOfLives: 'Hết mạng!', celTimeUp: 'Hết giờ!',
+    celPoints: 'điểm', celNewRecord: '🏆 Kỷ lục mới!',
+    celAlmostRecord: 'Còn {0} WPM nữa là phá kỷ lục!',
+    celRecord: 'Kỷ lục: {0} WPM',
+    celConsecutive: 'ngày liên tiếp',
+    lblWordsCompleted: 'Từ hoàn thành', lblLivesLeft: 'Mạng còn', lblLesson: 'Bài học',
+    lblTimeStat: 'Thời gian', lblAccStat: 'Chính xác', lblPointsStat: 'Điểm',
+    mistakeTitle: 'Chữ cái hay sai nhất',
+    mistakeTip: 'Hãy luyện thêm chữ {0}!',
+    mistakePerfect: 'Hoàn hảo! Không sai chữ nào!',
+    btnPlayAgain: '🔄 Chơi lại', btnTryLevel: '🚀 Thử {0}', btnPracticeWeak: '🎯 Luyện chữ yếu',
+    lvLabelMedium: 'Trung bình', lvLabelHard: 'Khó',
+    // Adaptive
+    adaptUp: 'Bạn giỏi lắm! Thử level {0} nhé?',
+    adaptDown: 'Hãy thử level {0} để luyện thêm nhé!',
+    adaptYes: 'Đồng ý', adaptNo: 'Để sau',
+    adaptLvEasy: 'Dễ', adaptLvMedium: 'Trung bình', adaptLvHard: 'Khó',
+    // Fingers
+    fingerLeftPinky: 'Út trái', fingerLeftRing: 'Áp út trái', fingerLeftMiddle: 'Giữa trái', fingerLeftIndex: 'Trỏ trái',
+    fingerRightIndex: 'Trỏ phải', fingerRightMiddle: 'Giữa phải', fingerRightRing: 'Áp út phải', fingerRightPinky: 'Út phải',
+    fingerThumb: 'Ngón cái',
+    // Profile
+    greeting: '{0} Chào, {1}!',
+  },
+  en: {
+    subtitle: 'Super fast typing practice!',
+    langLabel: '🌐 Language',
+    tipLang: 'Choose language',
+    tipGameMode: 'Choose game mode',
+    modeClassic: '🎮 Classic', modeLesson: '🎒 Lesson', modeTimeAttack: '⚡ Time Attack', modeChallenge: '🐉 Challenge',
+    tipLesson: 'Choose a lesson',
+    lessonAll: '🌈 All',
+    tipTimeAttack: 'Choose time limit',
+    tipLevel: 'Choose difficulty level',
+    lvEasy: '🐣 Easy', lvMedium: '🐥 Medium', lvHard: '🦅 Hard',
+    tipSoundMode: 'English pronunciation mode',
+    smDefault: '🔔 Default', smChar: '🗣️ Letter', smWord: '💬 Word',
+    btnSettings: '🛠️ Settings', tipSettings: 'Open settings',
+    btnHistory: '📈 History', tipHistory: 'View history & progress',
+    tipRestart: 'Restart game', tipSound: 'Toggle sound',
+    tipTime: 'Time elapsed', lblTime: 'Time',
+    tipCps: 'Characters Per Second',
+    tipWpm: 'Words Per Minute',
+    tipAccuracy: 'Typing accuracy', lblAccuracy: 'Accuracy',
+    tipScore: 'Score (combo increases points)', lblScore: 'Score',
+    tipBest: 'Best WPM for current level', lblBest: 'Best WPM',
+    tipStreak: 'Consecutive days played',
+    dayUnit: 'days',
+    tipCustomText: 'Enter custom text',
+    customTitle: '✏️ Custom Text',
+    customDesc: 'Enter text you want to practice typing (English, separated by spaces)',
+    customPlaceholder: 'Example: hello world typing is fun',
+    customStart: '🚀 Start Typing', customCancel: 'Cancel',
+    settingsTitle: '🛠️ Settings',
+    profileLabel: 'Profile', profileDesc: 'Your name and avatar', profilePlaceholder: 'Enter name...',
+    achLabel: 'Achievements', achDesc: 'View unlocked achievements', achBtn: '🎖️ View Achievements',
+    themeLabel: 'Theme', themeDesc: 'Choose a visual theme',
+    themeDark: '🌜 Dark', themeLight: '🌤️ Light', themeColorful: '🌈 Colorful',
+    caseLabel: 'Keyboard Display', caseDesc: 'Show uppercase or lowercase on keyboard',
+    caseLower: '🔡 Lowercase', caseUpper: '🔠 Uppercase',
+    speechLabel: 'Speech Speed', speechDesc: 'Pronunciation speed for letter/word mode',
+    speechSlow: '🐢 Slow', speechNormal: '🐇 Normal', speechFast: '🚀 Fast',
+    wcLabel: 'Word Count', wcDesc: 'Words per game session', wcUnit: 'words',
+    fgLabel: 'Finger Guide', fgDesc: 'Show colored borders hinting which finger to use',
+    toggleOn: 'On', toggleOff: 'Off',
+    historyTitle: '📈 History & Progress',
+    chartTitle: 'WPM Chart', recentTitle: 'Recent Games',
+    thDate: 'Date', thLevel: 'Level', thAcc: 'Accuracy', thStars: 'Stars',
+    emptyHistory: 'No game history yet.',
+    chartMin: 'Need at least 2 games',
+    trendUp: 'Improving! WPM increased by {0}',
+    trendDown: 'Keep trying! WPM decreased by {0}',
+    trendStable: 'Stable — keep practicing!',
+    streakDays: '{0} consecutive days',
+    gamesPlayed: '{0} games played', wordsTyped: '{0} words typed',
+    achTitle: '🎖️ Achievements',
+    achFirstGame: 'First Game', achFirstGameDesc: 'Complete your first game',
+    ach10Games: '10 Games', ach10GamesDesc: 'Complete 10 games',
+    ach50Games: '50 Games', ach50GamesDesc: 'Complete 50 games',
+    ach100Games: '100 Games', ach100GamesDesc: 'Complete 100 games',
+    achStreak3: '3-Day Streak', achStreak3Desc: 'Play 3 days in a row',
+    achStreak7: '7-Day Streak', achStreak7Desc: 'Play 7 days in a row',
+    achStreak30: '30-Day Streak', achStreak30Desc: 'Play 30 days in a row',
+    achWpm20: 'WPM 20', achWpm20Desc: 'Reach 20 WPM',
+    achWpm40: 'WPM 40', achWpm40Desc: 'Reach 40 WPM',
+    achWpm60: 'WPM 60', achWpm60Desc: 'Reach 60 WPM',
+    achWpm80: 'WPM 80', achWpm80Desc: 'Reach 80 WPM',
+    achWpm100: 'WPM 100', achWpm100Desc: 'Reach 100 WPM',
+    achPerfect: 'Perfect!', achPerfectDesc: '100% accuracy in one game',
+    ach3StarAll: '3 Stars All', ach3StarAllDesc: '3 stars on Easy, Medium & Hard',
+    achCombo50: 'Combo 50', achCombo50Desc: 'Reach a 50 combo streak',
+    achCps5: 'CPS 5', achCps5Desc: 'Reach 5 characters per second',
+    celExcellent: 'Excellent!', celOutOfLives: 'Out of Lives!', celTimeUp: "Time's Up!",
+    celPoints: 'points', celNewRecord: '🏆 New Record!',
+    celAlmostRecord: '{0} more WPM to break your record!',
+    celRecord: 'Record: {0} WPM',
+    celConsecutive: 'consecutive days',
+    lblWordsCompleted: 'Words Done', lblLivesLeft: 'Lives Left', lblLesson: 'Lesson',
+    lblTimeStat: 'Time', lblAccStat: 'Accuracy', lblPointsStat: 'Points',
+    mistakeTitle: 'Most Mistyped Letters',
+    mistakeTip: 'Practice the letter {0}!',
+    mistakePerfect: 'Perfect! No mistakes!',
+    btnPlayAgain: '🔄 Play Again', btnTryLevel: '🚀 Try {0}', btnPracticeWeak: '🎯 Practice Weak',
+    lvLabelMedium: 'Medium', lvLabelHard: 'Hard',
+    adaptUp: "You're great! Try {0} level?",
+    adaptDown: 'Try {0} level for more practice!',
+    adaptYes: 'Yes', adaptNo: 'Later',
+    adaptLvEasy: 'Easy', adaptLvMedium: 'Medium', adaptLvHard: 'Hard',
+    fingerLeftPinky: 'Left Pinky', fingerLeftRing: 'Left Ring', fingerLeftMiddle: 'Left Middle', fingerLeftIndex: 'Left Index',
+    fingerRightIndex: 'Right Index', fingerRightMiddle: 'Right Middle', fingerRightRing: 'Right Ring', fingerRightPinky: 'Right Pinky',
+    fingerThumb: 'Thumb',
+    greeting: '{0} Hi, {1}!',
+  },
+};
+
+let currentLang = 'vi';
+
+function t(key) {
+  return (LANG[currentLang] && LANG[currentLang][key]) || (LANG.vi[key]) || key;
+}
+
+function tReplace(key, ...args) {
+  let str = t(key);
+  args.forEach((val, i) => { str = str.replace(`{${i}}`, val); });
+  return str;
+}
+
 /* ── Word Lists ── */
 const WORDS = {
   easy: [
@@ -168,25 +373,25 @@ const KEYBOARD_ROWS = [
 
 /* ── Achievements ── */
 const ACHIEVEMENTS = [
-  { id: 'first_game', icon: '🌟', name: 'Lần đầu chơi', desc: 'Hoàn thành lượt chơi đầu tiên', check: (r) => r.totalGames >= 1 },
-  { id: 'games_10', icon: '📚', name: '10 lượt chơi', desc: 'Hoàn thành 10 lượt chơi', check: (r) => r.totalGames >= 10 },
-  { id: 'games_50', icon: '📖', name: '50 lượt chơi', desc: 'Hoàn thành 50 lượt chơi', check: (r) => r.totalGames >= 50 },
-  { id: 'games_100', icon: '🏅', name: '100 lượt chơi', desc: 'Hoàn thành 100 lượt chơi', check: (r) => r.totalGames >= 100 },
-  { id: 'streak_3', icon: '🔥', name: '3 ngày liên tiếp', desc: 'Chơi 3 ngày liên tiếp', check: (r) => r.dayStreak >= 3 },
-  { id: 'streak_7', icon: '🔥', name: '7 ngày liên tiếp', desc: 'Chơi 7 ngày liên tiếp', check: (r) => r.dayStreak >= 7 },
-  { id: 'streak_30', icon: '🌋', name: '30 ngày liên tiếp', desc: 'Chơi 30 ngày liên tiếp', check: (r) => r.dayStreak >= 30 },
-  { id: 'wpm_20', icon: '💨', name: 'WPM 20', desc: 'Đạt 20 WPM', check: (r) => Math.max(r.bestWpm.easy || 0, r.bestWpm.medium || 0, r.bestWpm.hard || 0) >= 20 },
-  { id: 'wpm_40', icon: '💨', name: 'WPM 40', desc: 'Đạt 40 WPM', check: (r) => Math.max(r.bestWpm.easy || 0, r.bestWpm.medium || 0, r.bestWpm.hard || 0) >= 40 },
-  { id: 'wpm_60', icon: '🚀', name: 'WPM 60', desc: 'Đạt 60 WPM', check: (r) => Math.max(r.bestWpm.easy || 0, r.bestWpm.medium || 0, r.bestWpm.hard || 0) >= 60 },
-  { id: 'wpm_80', icon: '🚀', name: 'WPM 80', desc: 'Đạt 80 WPM', check: (r) => Math.max(r.bestWpm.easy || 0, r.bestWpm.medium || 0, r.bestWpm.hard || 0) >= 80 },
-  { id: 'wpm_100', icon: '⚡', name: 'WPM 100', desc: 'Đạt 100 WPM', check: (r) => Math.max(r.bestWpm.easy || 0, r.bestWpm.medium || 0, r.bestWpm.hard || 0) >= 100 },
-  { id: 'perfect', icon: '🎯', name: 'Hoàn hảo!', desc: 'Accuracy 100% trong 1 lượt', check: (r, h) => h.some(g => g.accuracy === 100) },
-  { id: 'three_star_all', icon: '🏆', name: 'Ba sao tất cả', desc: '3 sao ở cả Easy, Medium, Hard', check: (r, h) => {
+  { id: 'first_game', icon: '🌟', nameKey: 'achFirstGame', descKey: 'achFirstGameDesc', check: (r) => r.totalGames >= 1 },
+  { id: 'games_10', icon: '📚', nameKey: 'ach10Games', descKey: 'ach10GamesDesc', check: (r) => r.totalGames >= 10 },
+  { id: 'games_50', icon: '📖', nameKey: 'ach50Games', descKey: 'ach50GamesDesc', check: (r) => r.totalGames >= 50 },
+  { id: 'games_100', icon: '🏅', nameKey: 'ach100Games', descKey: 'ach100GamesDesc', check: (r) => r.totalGames >= 100 },
+  { id: 'streak_3', icon: '🔥', nameKey: 'achStreak3', descKey: 'achStreak3Desc', check: (r) => r.dayStreak >= 3 },
+  { id: 'streak_7', icon: '🔥', nameKey: 'achStreak7', descKey: 'achStreak7Desc', check: (r) => r.dayStreak >= 7 },
+  { id: 'streak_30', icon: '🌋', nameKey: 'achStreak30', descKey: 'achStreak30Desc', check: (r) => r.dayStreak >= 30 },
+  { id: 'wpm_20', icon: '💨', nameKey: 'achWpm20', descKey: 'achWpm20Desc', check: (r) => Math.max(r.bestWpm.easy || 0, r.bestWpm.medium || 0, r.bestWpm.hard || 0) >= 20 },
+  { id: 'wpm_40', icon: '💨', nameKey: 'achWpm40', descKey: 'achWpm40Desc', check: (r) => Math.max(r.bestWpm.easy || 0, r.bestWpm.medium || 0, r.bestWpm.hard || 0) >= 40 },
+  { id: 'wpm_60', icon: '🚀', nameKey: 'achWpm60', descKey: 'achWpm60Desc', check: (r) => Math.max(r.bestWpm.easy || 0, r.bestWpm.medium || 0, r.bestWpm.hard || 0) >= 60 },
+  { id: 'wpm_80', icon: '🚀', nameKey: 'achWpm80', descKey: 'achWpm80Desc', check: (r) => Math.max(r.bestWpm.easy || 0, r.bestWpm.medium || 0, r.bestWpm.hard || 0) >= 80 },
+  { id: 'wpm_100', icon: '⚡', nameKey: 'achWpm100', descKey: 'achWpm100Desc', check: (r) => Math.max(r.bestWpm.easy || 0, r.bestWpm.medium || 0, r.bestWpm.hard || 0) >= 100 },
+  { id: 'perfect', icon: '🎯', nameKey: 'achPerfect', descKey: 'achPerfectDesc', check: (r, h) => h.some(g => g.accuracy === 100) },
+  { id: 'three_star_all', icon: '🏆', nameKey: 'ach3StarAll', descKey: 'ach3StarAllDesc', check: (r, h) => {
     const levels = ['easy', 'medium', 'hard'];
     return levels.every(l => h.some(g => g.level === l && g.stars === 3));
   }},
-  { id: 'combo_50', icon: '🦸', name: 'Combo 50', desc: 'Đạt combo streak 50', check: (r, h) => h.some(g => (g.maxCombo || 0) >= 50) },
-  { id: 'cps_5', icon: '⚡', name: 'CPS 5', desc: 'Đạt tốc độ 5 ký tự/giây', check: (r, h) => h.some(g => Number(g.cps) >= 5) },
+  { id: 'combo_50', icon: '🦸', nameKey: 'achCombo50', descKey: 'achCombo50Desc', check: (r, h) => h.some(g => (g.maxCombo || 0) >= 50) },
+  { id: 'cps_5', icon: '⚡', nameKey: 'achCps5', descKey: 'achCps5Desc', check: (r, h) => h.some(g => Number(g.cps) >= 5) },
 ];
 
 /* ── Storage (localStorage wrapper) ── */
@@ -424,9 +629,11 @@ const DEFAULT_SETTINGS = {
   wordCount: 10,
   fingerGuide: true,
   theme: 'dark',
+  lang: 'vi',
 };
 
 const settings = { ...DEFAULT_SETTINGS, ...Storage.loadSettings() };
+currentLang = settings.lang || 'vi';
 
 /* ── Game State ── */
 const state = {
@@ -886,13 +1093,13 @@ function finishGame() {
   const $cTitle = document.querySelector('.celebration-content h2');
   if (state.gameMode === 'challenge' && state.lives <= 0) {
     $cEmoji.textContent = '😵';
-    $cTitle.textContent = 'Hết mạng!';
+    $cTitle.textContent = t('celOutOfLives');
   } else if (state.gameMode === 'timeAttack') {
     $cEmoji.textContent = '⏰';
-    $cTitle.textContent = 'Hết giờ!';
+    $cTitle.textContent = t('celTimeUp');
   } else {
     $cEmoji.textContent = '🥳';
-    $cTitle.textContent = 'Tuyệt vời!';
+    $cTitle.textContent = t('celExcellent');
   }
 
   const elapsed = getElapsedSeconds();
@@ -942,40 +1149,40 @@ function finishGame() {
   document.getElementById('celebrationStars').innerHTML = starDisplay;
 
   // ── Score ──
-  document.getElementById('celebrationScore').textContent = `${finalScore.toLocaleString()} điểm`;
+  document.getElementById('celebrationScore').textContent = `${finalScore.toLocaleString()} ${t('celPoints')}`;
 
   // ── Record comparison ──
   let recordHtml = '';
   if (isNewBestWpm || isNewBestAcc || isNewBestScore) {
-    recordHtml = '<span class="new-record">🏆 Kỷ lục mới!</span>';
+    recordHtml = `<span class="new-record">${t('celNewRecord')}</span>`;
   } else if (prevBestWpm > 0) {
     const diff = prevBestWpm - Number(wpm);
     if (diff <= 5 && diff > 0) {
-      recordHtml = `<span class="record-close">Còn ${diff} WPM nữa là phá kỷ lục!</span>`;
+      recordHtml = `<span class="record-close">${tReplace('celAlmostRecord', diff)}</span>`;
     } else if (diff > 5) {
-      recordHtml = `<span class="record-info">Kỷ lục: ${prevBestWpm} WPM</span>`;
+      recordHtml = `<span class="record-info">${tReplace('celRecord', prevBestWpm)}</span>`;
     }
   }
-  recordHtml += `<span class="record-info">🎮 ${records.totalGames} lần chơi | 🔥 ${records.dayStreak} ngày liên tiếp</span>`;
+  recordHtml += `<span class="record-info">🎮 ${tReplace('gamesPlayed', records.totalGames)} | 🔥 ${records.dayStreak} ${t('celConsecutive')}</span>`;
   document.getElementById('celebrationRecord').innerHTML = recordHtml;
 
   // ── Stats grid ──
   let modeStatHtml = '';
   if (state.gameMode === 'timeAttack') {
-    modeStatHtml = `<div class="cstat"><span class="cstat-val">${state.wordsCompleted}</span><span class="cstat-lbl">Từ hoàn thành</span></div>`;
+    modeStatHtml = `<div class="cstat"><span class="cstat-val">${state.wordsCompleted}</span><span class="cstat-lbl">${t('lblWordsCompleted')}</span></div>`;
   } else if (state.gameMode === 'challenge') {
-    modeStatHtml = `<div class="cstat"><span class="cstat-val">${'❤️'.repeat(state.lives)}</span><span class="cstat-lbl">Mạng còn</span></div>`;
+    modeStatHtml = `<div class="cstat"><span class="cstat-val">${'❤️'.repeat(state.lives)}</span><span class="cstat-lbl">${t('lblLivesLeft')}</span></div>`;
   } else if (state.gameMode === 'lesson') {
     const lessonName = (LESSONS[state.lessonIndex] || LESSONS[0]).name;
-    modeStatHtml = `<div class="cstat"><span class="cstat-val">${lessonName}</span><span class="cstat-lbl">Bài học</span></div>`;
+    modeStatHtml = `<div class="cstat"><span class="cstat-val">${lessonName}</span><span class="cstat-lbl">${t('lblLesson')}</span></div>`;
   }
   document.getElementById('celebrationStats').innerHTML = `
-    <div class="cstat"><span class="cstat-val">${formatTime(elapsed)}</span><span class="cstat-lbl">Thời gian</span></div>
+    <div class="cstat"><span class="cstat-val">${formatTime(elapsed)}</span><span class="cstat-lbl">${t('lblTimeStat')}</span></div>
     <div class="cstat"><span class="cstat-val">${cps}</span><span class="cstat-lbl">CPS</span></div>
     <div class="cstat"><span class="cstat-val">${wpm}</span><span class="cstat-lbl">WPM</span></div>
-    <div class="cstat"><span class="cstat-val">${acc}%</span><span class="cstat-lbl">Chính xác</span></div>
+    <div class="cstat"><span class="cstat-val">${acc}%</span><span class="cstat-lbl">${t('lblAccStat')}</span></div>
     <div class="cstat"><span class="cstat-val">x${state.maxCombo}</span><span class="cstat-lbl">Max Combo</span></div>
-    <div class="cstat"><span class="cstat-val">${finalScore.toLocaleString()}</span><span class="cstat-lbl">Điểm</span></div>
+    <div class="cstat"><span class="cstat-val">${finalScore.toLocaleString()}</span><span class="cstat-lbl">${t('lblPointsStat')}</span></div>
     ${modeStatHtml}
   `;
 
@@ -988,30 +1195,28 @@ function finishGame() {
       `<span class="mistake-char">${ch.toUpperCase()} <small>(${count}x)</small></span>`
     ).join(' ');
     $mistakes.innerHTML = `
-      <div class="mistakes-title">Chữ cái hay sai nhất</div>
+      <div class="mistakes-title">${t('mistakeTitle')}</div>
       <div class="mistakes-list">${chars}</div>
-      <div class="mistakes-tip">Hãy luyện thêm chữ ${top3.map(([ch]) => ch.toUpperCase()).join(', ')}!</div>
+      <div class="mistakes-tip">${tReplace('mistakeTip', top3.map(([ch]) => ch.toUpperCase()).join(', '))}</div>
     `;
   } else {
-    $mistakes.innerHTML = '<div class="mistakes-title perfect">Hoàn hảo! Không sai chữ nào!</div>';
+    $mistakes.innerHTML = `<div class="mistakes-title perfect">${t('mistakePerfect')}</div>`;
   }
 
   // ── Action buttons ──
   const $actions = document.getElementById('celebrationActions');
-  let actionsHtml = '<button class="btn btn-restart" id="btnPlayAgain">🔄 Chơi lại</button>';
+  let actionsHtml = `<button class="btn btn-restart" id="btnPlayAgain">${t('btnPlayAgain')}</button>`;
 
-  // "Thử level khó hơn" if 3 stars
   const nextLevel = { easy: 'medium', medium: 'hard' };
   if (starCount === 3 && nextLevel[state.level]) {
     const nlKey = nextLevel[state.level];
-    const nlLabel = { medium: 'Trung bình', hard: 'Khó' };
-    actionsHtml += `<button class="btn btn-level-up" data-level="${nlKey}">🚀 Thử ${nlLabel[nlKey]}</button>`;
+    const nlLabel = { medium: t('lvLabelMedium'), hard: t('lvLabelHard') };
+    actionsHtml += `<button class="btn btn-level-up" data-level="${nlKey}">${tReplace('btnTryLevel', nlLabel[nlKey])}</button>`;
   }
 
-  // "Luyện chữ yếu" if there are mistakes
   if (mistakes.length > 0) {
     const weakChars = mistakes.slice(0, 5).map(([ch]) => ch).join(',');
-    actionsHtml += `<button class="btn btn-practice" data-chars="${weakChars}">🎯 Luyện chữ yếu</button>`;
+    actionsHtml += `<button class="btn btn-practice" data-chars="${weakChars}">${t('btnPracticeWeak')}</button>`;
   }
 
   $actions.innerHTML = actionsHtml;
@@ -1186,7 +1391,7 @@ function refreshRecordsDisplay() {
   const rec = Storage.loadRecords();
   const bestWpm = rec.bestWpm[state.level] || 0;
   $bestWpm.textContent = bestWpm;
-  $dayStreak.textContent = `${rec.dayStreak} ngày`;
+  $dayStreak.textContent = `${rec.dayStreak} ${t('dayUnit')}`;
 }
 
 /* ── Profile Display ── */
@@ -1194,7 +1399,7 @@ function refreshProfileDisplay() {
   const profile = Storage.loadProfile();
   const $greeting = document.getElementById('profileGreeting');
   if ($greeting && profile.name) {
-    $greeting.textContent = `${profile.avatar} Chào, ${profile.name}!`;
+    $greeting.textContent = tReplace('greeting', profile.avatar, profile.name);
     $greeting.classList.remove('hidden');
   } else if ($greeting) {
     $greeting.classList.add('hidden');
@@ -1227,7 +1432,7 @@ function checkAchievements() {
 function showAchievementPopup(ach) {
   const popup = document.createElement('div');
   popup.classList.add('achievement-popup');
-  popup.innerHTML = `<span class="ach-icon">${ach.icon}</span><div class="ach-info"><strong>${ach.name}</strong><span>${ach.desc}</span></div>`;
+  popup.innerHTML = `<span class="ach-icon">${ach.icon}</span><div class="ach-info"><strong>${t(ach.nameKey)}</strong><span>${t(ach.descKey)}</span></div>`;
   document.body.appendChild(popup);
   popup.addEventListener('animationend', () => popup.remove());
 }
@@ -1244,12 +1449,12 @@ function checkAdaptiveDifficulty() {
 
   const nextLevel = { easy: 'medium', medium: 'hard' };
   const prevLevel = { medium: 'easy', hard: 'medium' };
-  const levelLabels = { easy: 'Dễ', medium: 'Trung bình', hard: 'Khó' };
+  const levelLabels = { easy: t('adaptLvEasy'), medium: t('adaptLvMedium'), hard: t('adaptLvHard') };
 
   if (avgAcc >= 95 && avgWpm >= threshold.wpm && nextLevel[state.level]) {
-    showAdaptivePopup(`Bạn giỏi lắm! Thử level ${levelLabels[nextLevel[state.level]]} nhé?`, nextLevel[state.level]);
+    showAdaptivePopup(tReplace('adaptUp', levelLabels[nextLevel[state.level]]), nextLevel[state.level]);
   } else if (avgAcc < 70 && prevLevel[state.level]) {
-    showAdaptivePopup(`Hãy thử level ${levelLabels[prevLevel[state.level]]} để luyện thêm nhé!`, prevLevel[state.level]);
+    showAdaptivePopup(tReplace('adaptDown', levelLabels[prevLevel[state.level]]), prevLevel[state.level]);
   }
 }
 
@@ -1262,8 +1467,8 @@ function showAdaptivePopup(message, suggestedLevel) {
   popup.innerHTML = `
     <p>${message}</p>
     <div class="adaptive-actions">
-      <button class="btn adaptive-yes">Đồng ý</button>
-      <button class="btn adaptive-no">Để sau</button>
+      <button class="btn adaptive-yes">${t('adaptYes')}</button>
+      <button class="btn adaptive-no">${t('adaptNo')}</button>
     </div>
   `;
   document.body.appendChild(popup);
@@ -1427,6 +1632,135 @@ function applyTheme(theme) {
   }
 }
 
+function applyLanguage(lang) {
+  currentLang = lang;
+  document.documentElement.lang = lang === 'vi' ? 'vi' : 'en';
+
+  // Helper to set options of a select
+  const setOpts = (sel, optMap) => {
+    Array.from(sel.options).forEach(opt => {
+      if (optMap[opt.value]) opt.textContent = optMap[opt.value];
+    });
+  };
+
+  // Subtitle
+  document.querySelector('.subtitle').textContent = t('subtitle');
+
+  // Side nav selects
+  setOpts($gameModeSelect, { classic: t('modeClassic'), lesson: t('modeLesson'), timeAttack: t('modeTimeAttack'), challenge: t('modeChallenge') });
+  setOpts($levelSelect, { easy: t('lvEasy'), medium: t('lvMedium'), hard: t('lvHard') });
+  setOpts($soundModeSelect, { default: t('smDefault'), character: t('smChar'), word: t('smWord') });
+
+  // Lesson select — only option 4 needs translation
+  const lessonOpt4 = $lessonSelect.querySelector('option[value="4"]');
+  if (lessonOpt4) lessonOpt4.textContent = t('lessonAll');
+
+  // Side nav buttons
+  document.getElementById('btnSettings').textContent = t('btnSettings');
+  document.getElementById('btnHistory').textContent = t('btnHistory');
+
+  // Tooltips
+  const tips = {
+    tipLang: document.getElementById('langSelect')?.closest('.nav-wrap'),
+    tipGameMode: $gameModeSelect.closest('.nav-wrap'),
+    tipLesson: $lessonSelect.closest('.nav-wrap'),
+    tipTimeAttack: $timeAttackSelect.closest('.nav-wrap'),
+    tipLevel: $levelSelect.closest('.nav-wrap'),
+    tipSoundMode: $soundModeSelect.closest('.nav-wrap'),
+  };
+  for (const [key, el] of Object.entries(tips)) {
+    if (el) el.dataset.tooltip = t(key);
+  }
+  document.getElementById('btnSettings').dataset.tooltip = t('tipSettings');
+  document.getElementById('btnHistory').dataset.tooltip = t('tipHistory');
+  document.getElementById('btnRestart').dataset.tooltip = t('tipRestart');
+  document.getElementById('btnSound').dataset.tooltip = t('tipSound');
+
+  // Stats bar labels + tooltips
+  const statMap = [
+    ['stat-time', 'lblTime', 'tipTime'],
+    ['stat-cps', null, 'tipCps'],
+    ['stat-wpm', null, 'tipWpm'],
+    ['stat-accuracy', 'lblAccuracy', 'tipAccuracy'],
+    ['stat-score', 'lblScore', 'tipScore'],
+    ['stat-best', 'lblBest', 'tipBest'],
+    ['stat-streak', null, 'tipStreak'],
+  ];
+  for (const [cls, lblKey, tipKey] of statMap) {
+    const card = document.querySelector(`.${cls}`);
+    if (!card) continue;
+    if (tipKey) card.dataset.tooltip = t(tipKey);
+    if (lblKey) {
+      const lbl = card.querySelector('.stat-label');
+      if (lbl) lbl.textContent = t(lblKey);
+    }
+  }
+
+  // Custom text
+  const ctBtn = document.querySelector('.btn-custom-tooltip');
+  if (ctBtn) ctBtn.textContent = t('tipCustomText');
+  const ctTitle = document.querySelector('#customTextPanel .settings-title');
+  if (ctTitle) ctTitle.textContent = t('customTitle');
+  const ctDesc = document.querySelector('#customTextPanel .setting-desc');
+  if (ctDesc) ctDesc.textContent = t('customDesc');
+  const ctInput = document.getElementById('customTextInput');
+  if (ctInput) ctInput.placeholder = t('customPlaceholder');
+  const ctApply = document.getElementById('customTextApply');
+  if (ctApply) ctApply.textContent = t('customStart');
+  const ctCancel = document.getElementById('customTextCancel');
+  if (ctCancel) ctCancel.textContent = t('customCancel');
+
+  // Settings panel
+  const sp = document.getElementById('settingsPanel');
+  if (sp) {
+    sp.querySelector('.settings-title').textContent = t('settingsTitle');
+    const labels = sp.querySelectorAll('.setting-label');
+    const descs = sp.querySelectorAll('.setting-desc');
+    const labelKeys = ['profileLabel', 'achLabel', 'themeLabel', 'caseLabel', 'speechLabel', 'wcLabel', 'fgLabel'];
+    const descKeys = ['profileDesc', 'achDesc', 'themeDesc', 'caseDesc', 'speechDesc', 'wcDesc', 'fgDesc'];
+    labelKeys.forEach((k, i) => { if (labels[i]) labels[i].textContent = t(k); });
+    descKeys.forEach((k, i) => { if (descs[i]) descs[i].textContent = t(k); });
+  }
+  const profInput = document.getElementById('profileName');
+  if (profInput) profInput.placeholder = t('profilePlaceholder');
+  const achBtn = document.getElementById('btnAchievements');
+  if (achBtn) achBtn.textContent = t('achBtn');
+  const thSel = document.getElementById('themeSelect');
+  if (thSel) setOpts(thSel, { dark: t('themeDark'), light: t('themeLight'), colorful: t('themeColorful') });
+  const caseSel = document.getElementById('keyboardCaseSelect');
+  if (caseSel) setOpts(caseSel, { lower: t('caseLower'), upper: t('caseUpper') });
+  const spSel = document.getElementById('speechRateSelect');
+  if (spSel) setOpts(spSel, { slow: t('speechSlow'), normal: t('speechNormal'), fast: t('speechFast') });
+  const wcSel = document.getElementById('wordCountSelect');
+  if (wcSel) {
+    Array.from(wcSel.options).forEach(opt => { opt.textContent = `${opt.value} ${t('wcUnit')}`; });
+  }
+  const fgLabel = document.getElementById('fingerGuideLabel');
+  if (fgLabel) fgLabel.textContent = $fingerGuideToggle.checked ? t('toggleOn') : t('toggleOff');
+
+  // History panel
+  const hp = document.getElementById('historyPanel');
+  if (hp) {
+    hp.querySelector('.settings-title').textContent = t('historyTitle');
+    const sections = hp.querySelectorAll('.history-section-title');
+    if (sections[0]) sections[0].textContent = t('chartTitle');
+    if (sections[1]) sections[1].textContent = t('recentTitle');
+    const ths = hp.querySelectorAll('th');
+    const thKeys = ['thDate', 'thLevel', null, 'thAcc', 'thStars'];
+    thKeys.forEach((k, i) => { if (k && ths[i]) ths[i].textContent = t(k); });
+    const empty = document.getElementById('historyEmpty');
+    if (empty) empty.textContent = t('emptyHistory');
+  }
+
+  // Achievements panel title
+  const achPanel = document.getElementById('achievementsPanel');
+  if (achPanel) achPanel.querySelector('.settings-title').textContent = t('achTitle');
+
+  // Refresh records display (for day unit)
+  refreshRecordsDisplay();
+  refreshProfileDisplay();
+}
+
 function updateModeSubSelectors() {
   // Toggle on the wrapper .nav-wrap div (parent of the select)
   const lessonWrap = $lessonSelect.closest('.nav-wrap') || $lessonSelect;
@@ -1434,6 +1768,14 @@ function updateModeSubSelectors() {
   lessonWrap.classList.toggle('hidden', state.gameMode !== 'lesson');
   timeWrap.classList.toggle('hidden', state.gameMode !== 'timeAttack');
 }
+
+/* ── Language Selector ── */
+const $langSelect = document.getElementById('langSelect');
+$langSelect.addEventListener('change', (e) => {
+  settings.lang = e.target.value;
+  persistSettings();
+  applyLanguage(e.target.value);
+});
 
 /* ── Game Mode Selectors ── */
 $gameModeSelect.addEventListener('change', (e) => {
@@ -1479,10 +1821,10 @@ function renderHistoryPanel() {
   // ── Streak banner ──
   const $streak = document.getElementById('historyStreak');
   if (records.dayStreak > 0) {
-    $streak.innerHTML = `<span class="streak-fire">🔥</span> ${records.dayStreak} ngày liên tiếp <span class="streak-sub">| ${records.totalGames} lần chơi | ${records.totalWords} từ đã gõ</span>`;
+    $streak.innerHTML = `<span class="streak-fire">🔥</span> ${tReplace('streakDays', records.dayStreak)} <span class="streak-sub">| ${tReplace('gamesPlayed', records.totalGames)} | ${tReplace('wordsTyped', records.totalWords)}</span>`;
     $streak.classList.remove('hidden');
   } else {
-    $streak.innerHTML = `<span class="streak-sub">🎮 ${records.totalGames} lần chơi | ${records.totalWords} từ đã gõ</span>`;
+    $streak.innerHTML = `<span class="streak-sub">🎮 ${tReplace('gamesPlayed', records.totalGames)} | ${tReplace('wordsTyped', records.totalWords)}</span>`;
     $streak.classList.remove('hidden');
   }
 
@@ -1521,7 +1863,7 @@ function renderHistoryPanel() {
 function renderChart(data) {
   const svg = document.getElementById('historyChart');
   if (data.length < 2) {
-    svg.innerHTML = '<text x="190" y="85" text-anchor="middle" fill="var(--color-text-dim)" font-size="12">Cần ít nhất 2 lần chơi</text>';
+    svg.innerHTML = `<text x="190" y="85" text-anchor="middle" fill="var(--color-text-dim)" font-size="12">${t('chartMin')}</text>`;
     return;
   }
 
@@ -1614,15 +1956,15 @@ function renderTrend(recentHistory) {
   let icon, text, cls;
   if (diff > 3) {
     icon = '📈';
-    text = `Đang tiến bộ! WPM tăng ${Math.round(diff)} so với trước`;
+    text = tReplace('trendUp', Math.round(diff));
     cls = 'trend--up';
   } else if (diff < -3) {
     icon = '📉';
-    text = `Cần cố gắng hơn! WPM giảm ${Math.round(Math.abs(diff))}`;
+    text = tReplace('trendDown', Math.round(Math.abs(diff)));
     cls = 'trend--down';
   } else {
     icon = '➡️';
-    text = `Ổn định — tiếp tục luyện tập!`;
+    text = t('trendStable');
     cls = 'trend--stable';
   }
 
@@ -1753,24 +2095,25 @@ function renderAchievementsPanel() {
     const isUnlocked = unlocked.includes(ach.id);
     return `<div class="ach-card ${isUnlocked ? 'ach--unlocked' : 'ach--locked'}">
       <span class="ach-card-icon">${isUnlocked ? ach.icon : '🔒'}</span>
-      <strong class="ach-card-name">${ach.name}</strong>
-      <span class="ach-card-desc">${ach.desc}</span>
+      <strong class="ach-card-name">${t(ach.nameKey)}</strong>
+      <span class="ach-card-desc">${t(ach.descKey)}</span>
     </div>`;
   }).join('');
 }
 
 /* ── Finger Hint ── */
-const FINGER_NAMES = {
-  'left-pinky': 'Út trái',
-  'left-ring': 'Áp út trái',
-  'left-middle': 'Giữa trái',
-  'left-index': 'Trỏ trái',
-  'right-index': 'Trỏ phải',
-  'right-middle': 'Giữa phải',
-  'right-ring': 'Áp út phải',
-  'right-pinky': 'Út phải',
-  'thumb': 'Ngón cái',
-};
+function getFingerName(finger) {
+  const map = {
+    'left-pinky': 'fingerLeftPinky', 'left-ring': 'fingerLeftRing',
+    'left-middle': 'fingerLeftMiddle', 'left-index': 'fingerLeftIndex',
+    'right-index': 'fingerRightIndex', 'right-middle': 'fingerRightMiddle',
+    'right-ring': 'fingerRightRing', 'right-pinky': 'fingerRightPinky',
+    'thumb': 'fingerThumb',
+  };
+  return t(map[finger] || 'fingerThumb');
+}
+// Keep FINGER_NAMES as getter for backward compat
+const FINGER_NAMES = new Proxy({}, { get: (_, key) => getFingerName(key) });
 
 const KEY_FINGER_MAP = {};
 for (const row of KEYBOARD_ROWS) {
@@ -1839,6 +2182,8 @@ if (!settings.soundEnabled) {
 }
 
 applyTheme(settings.theme || 'dark');
+$langSelect.value = settings.lang || 'vi';
+applyLanguage(settings.lang || 'vi');
 updateModeSubSelectors();
 
 refreshProfileDisplay();
