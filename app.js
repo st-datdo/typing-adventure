@@ -1703,21 +1703,13 @@ for (const row of KEYBOARD_ROWS) {
 }
 
 function updateFingerHint() {
-  const $hint = document.getElementById('fingerHint');
   const $label = document.getElementById('fingerLabel');
 
   // Clear all active fingers
   document.querySelectorAll('.finger-path.finger--active')
     .forEach(el => el.classList.remove('finger--active'));
 
-  if (!settings.fingerGuide) {
-    if ($hint) $hint.textContent = '';
-    if ($label) { $label.textContent = ''; $label.classList.remove('label--visible'); }
-    return;
-  }
-
-  if (state.currentIndex >= state.text.length) {
-    if ($hint) $hint.textContent = '';
+  if (!settings.fingerGuide || state.currentIndex >= state.text.length) {
     if ($label) { $label.textContent = ''; $label.classList.remove('label--visible'); }
     return;
   }
@@ -1727,7 +1719,6 @@ function updateFingerHint() {
   const finger = KEY_FINGER_MAP[keyName];
 
   if (finger) {
-    // Highlight SVG finger(s)
     if (finger === 'thumb') {
       document.getElementById('finger-thumb-left')?.classList.add('finger--active');
       document.getElementById('finger-thumb-right')?.classList.add('finger--active');
@@ -1736,15 +1727,11 @@ function updateFingerHint() {
       if (el) el.classList.add('finger--active');
     }
 
-    // Show label
-    const name = FINGER_NAMES[finger] || finger;
     if ($label) {
-      $label.textContent = name;
+      $label.textContent = FINGER_NAMES[finger] || finger;
       $label.classList.add('label--visible');
     }
-    if ($hint) $hint.textContent = `👆 ${name}`;
   } else {
-    if ($hint) $hint.textContent = '';
     if ($label) { $label.textContent = ''; $label.classList.remove('label--visible'); }
   }
 }

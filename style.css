@@ -1674,17 +1674,6 @@ body {
   stroke: #94a3b8;
 }
 
-/* Finger hint text (now secondary to SVG) */
-.finger-hint {
-  text-align: center;
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: var(--color-text-dim);
-  height: 20px;
-  margin-top: 4px;
-  transition: opacity var(--duration-fast) ease;
-}
-
 @media (max-width: 480px) {
   .hand-svg {
     width: 80px;
