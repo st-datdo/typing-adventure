@@ -9,6 +9,46 @@
 <body>
   <div class="stars" id="stars"></div>
 
+  <!-- Side Nav (top-left) -->
+  <nav class="side-nav" id="sideNav">
+    <select class="nav-control" id="gameModeSelect" title="Chế độ chơi">
+      <option value="classic">📝 Cổ điển</option>
+      <option value="lesson">📚 Bài học</option>
+      <option value="timeAttack">⏱️ Đua tốc độ</option>
+      <option value="challenge">💀 Thử thách</option>
+    </select>
+    <select class="nav-control nav-sub hidden" id="lessonSelect" title="Chọn bài học">
+      <option value="0">Home Row</option>
+      <option value="1">Top Row</option>
+      <option value="2">Bottom Row</option>
+      <option value="3">Home+Top</option>
+      <option value="4">Tất cả</option>
+    </select>
+    <select class="nav-control nav-sub hidden" id="timeAttackSelect" title="Thời gian">
+      <option value="30">30s</option>
+      <option value="60">60s</option>
+      <option value="120">120s</option>
+    </select>
+    <select class="nav-control" id="levelSelect" title="Chọn độ khó">
+      <option value="easy">🌱 Dễ</option>
+      <option value="medium">🌿 Vừa</option>
+      <option value="hard">🌳 Khó</option>
+    </select>
+    <select class="nav-control" id="soundModeSelect" title="Chế độ âm thanh">
+      <option value="default">🔔 Mặc định</option>
+      <option value="character">🔤 Chữ cái</option>
+      <option value="word">📖 Từ</option>
+    </select>
+    <button class="nav-btn" id="btnSettings" title="Cài đặt">⚙️ Cài đặt</button>
+    <button class="nav-btn" id="btnHistory" title="Lịch sử">📊 Lịch sử</button>
+  </nav>
+
+  <!-- Quick Actions (top-right) -->
+  <aside class="quick-actions">
+    <button class="qa-btn" id="btnRestart" title="Chơi lại">🔄</button>
+    <button class="qa-btn" id="btnSound" title="Bật/tắt âm thanh">🔊</button>
+  </aside>
+
   <header class="header">
     <h1 class="title">
       <span class="title-icon">⌨️</span>
@@ -141,49 +181,6 @@
       </svg>
     </section>
 
-    <!-- Controls -->
-    <section class="controls">
-      <select class="btn btn-game-mode" id="gameModeSelect" title="Chế độ chơi">
-        <option value="classic">📝 Cổ điển</option>
-        <option value="lesson">📚 Bài học</option>
-        <option value="timeAttack">⏱️ Đua tốc độ</option>
-        <option value="challenge">💀 Thử thách</option>
-      </select>
-      <select class="btn btn-mode-sub hidden" id="lessonSelect" title="Chọn bài học">
-        <option value="0">Home Row (asdfjkl)</option>
-        <option value="1">Top Row (qwerty)</option>
-        <option value="2">Bottom Row (zxcvbnm)</option>
-        <option value="3">Home + Top</option>
-        <option value="4">Tất cả</option>
-      </select>
-      <select class="btn btn-mode-sub hidden" id="timeAttackSelect" title="Thời gian">
-        <option value="30">30 giây</option>
-        <option value="60">60 giây</option>
-        <option value="120">120 giây</option>
-      </select>
-      <button class="btn btn-restart" id="btnRestart" title="Chơi lại">
-        🔄 Chơi lại
-      </button>
-      <select class="btn btn-level" id="levelSelect" title="Chọn độ khó">
-        <option value="easy">🌱 Dễ</option>
-        <option value="medium">🌿 Trung bình</option>
-        <option value="hard">🌳 Khó</option>
-      </select>
-      <select class="btn btn-sound-mode" id="soundModeSelect" title="Chế độ âm thanh">
-        <option value="default">🔔 Mặc định</option>
-        <option value="character">🔤 Đọc chữ cái</option>
-        <option value="word">📖 Đọc từ</option>
-      </select>
-      <button class="btn btn-sound" id="btnSound" title="Bật/tắt âm thanh">
-        🔊
-      </button>
-      <button class="btn btn-settings" id="btnSettings" title="Cài đặt">
-        ⚙️ Cài đặt
-      </button>
-      <button class="btn btn-history" id="btnHistory" title="Lịch sử">
-        📊 Lịch sử
-      </button>
-    </section>
   </main>
 
   <!-- History Panel -->
