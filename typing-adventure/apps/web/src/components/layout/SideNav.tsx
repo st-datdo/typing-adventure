@@ -36,7 +36,7 @@ export function SideNav({
   return (
     <>
       <nav className="side-nav">
-        <div className="nav-wrap">
+        <div className="nav-wrap has-tooltip" data-tooltip={t(lang, 'tipLang')}>
           <select
             className="nav-control nav-lang"
             value={lang}
@@ -47,7 +47,7 @@ export function SideNav({
           </select>
         </div>
 
-        <div className="nav-wrap">
+        <div className="nav-wrap has-tooltip" data-tooltip={t(lang, 'tipGameMode')}>
           <select
             className="nav-control"
             value={gameMode}
@@ -61,7 +61,7 @@ export function SideNav({
         </div>
 
         {gameMode === 'lesson' && (
-          <div className="nav-wrap nav-sub">
+          <div className="nav-wrap nav-sub has-tooltip" data-tooltip={t(lang, 'tipLesson')}>
             <select
               className="nav-control"
               value={lessonIndex}
@@ -77,7 +77,7 @@ export function SideNav({
         )}
 
         {gameMode === 'timeAttack' && (
-          <div className="nav-wrap nav-sub">
+          <div className="nav-wrap nav-sub has-tooltip" data-tooltip={t(lang, 'tipTimeAttack')}>
             <select
               className="nav-control"
               value={timeAttackDuration}
@@ -90,7 +90,7 @@ export function SideNav({
           </div>
         )}
 
-        <div className="nav-wrap">
+        <div className="nav-wrap has-tooltip" data-tooltip={t(lang, 'tipLevel')}>
           <select
             className="nav-control"
             value={settings.level}
@@ -102,7 +102,7 @@ export function SideNav({
           </select>
         </div>
 
-        <div className="nav-wrap">
+        <div className="nav-wrap has-tooltip" data-tooltip={t(lang, 'tipSoundMode')}>
           <select
             className="nav-control"
             value={settings.soundMode}
@@ -114,18 +114,19 @@ export function SideNav({
           </select>
         </div>
 
-        <button className="nav-btn" onClick={onOpenSettings}>
+        <button className="nav-btn has-tooltip" data-tooltip={t(lang, 'tipSettings')} onClick={onOpenSettings}>
           {t(lang, 'btnSettings')}
         </button>
-        <button className="nav-btn" onClick={onOpenHistory}>
+        <button className="nav-btn has-tooltip" data-tooltip={t(lang, 'tipHistory')} onClick={onOpenHistory}>
           {t(lang, 'btnHistory')}
         </button>
       </nav>
 
       <aside className="quick-actions">
-        <button className="qa-btn" onClick={onRestart}>🔃</button>
+        <button className="qa-btn has-tooltip" data-tooltip={t(lang, 'tipRestart')} onClick={onRestart}>🔃</button>
         <button
-          className="qa-btn"
+          className="qa-btn has-tooltip"
+          data-tooltip={t(lang, 'tipSound')}
           onClick={() => settings.setSoundEnabled(!settings.soundEnabled)}
         >
           {settings.soundEnabled ? '🔊' : '🔇'}

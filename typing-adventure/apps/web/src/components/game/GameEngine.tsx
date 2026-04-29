@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useCallback, useState } from 'react'
+import { useEffect, useCallback, useState, useRef } from 'react'
 import { useSession, signOut } from 'next-auth/react'
 import { useGameEngine } from '@/hooks/useGameEngine'
 import { useGameStore } from '@/stores/game-store'
@@ -38,6 +38,8 @@ export function GameEngine() {
   const settings = useSettingsStore()
   const [syncStatus, setSyncStatus] = useState<'idle' | 'syncing' | 'saved' | 'offline'>('idle')
   const [panel, setPanel] = useState<Panel>('none')
+  const flashIdRef = useRef(0)
+  const [lastKeyFlash, setLastKeyFlash] = useState<{ key: string; correct: boolean; id: number } | null>(null)
 
   // Save result to server when game finishes (if logged in)
   useEffect(() => {
@@ -62,6 +64,17 @@ export function GameEngine() {
     })
   }, [result, showCelebration, session])
 
+  // Flash key helper — reads fresh state from store
+  const doFlash = useCallback((char: string) => {
+    const { gameState: gs } = useGameStore.getState()
+    const expected = gs.text[gs.currentIndex]
+    if (expected === undefined) return
+    const isCorrect = char === expected
+    const keyName = char === ' ' ? ' ' : char.toLowerCase()
+    flashIdRef.current++
+    setLastKeyFlash({ key: keyName, correct: isCorrect, id: flashIdRef.current })
+  }, [])
+
   // Keyboard input
   useEffect(() => {
     const handleInput = (e: Event) => {
@@ -69,6 +82,7 @@ export function GameEngine() {
       const inputEvent = e as InputEvent
       const data = inputEvent.data
       if (data && data.length === 1) {
+        doFlash(data)
         handleKeypress(data)
       }
       if (hiddenInputRef.current) {
@@ -81,6 +95,7 @@ export function GameEngine() {
       if (gameState.isFinished) return
       if (e.key === ' ') {
         e.preventDefault()
+        doFlash(' ')
         handleKeypress(' ')
       }
     }
@@ -93,7 +108,7 @@ export function GameEngine() {
       input?.removeEventListener('input', handleInput)
       document.removeEventListener('keydown', handleKeydown)
     }
-  }, [handleKeypress, gameState.isFinished, panel])
+  }, [handleKeypress, gameState.isFinished, panel, doFlash])
 
   // Auto-focus
   const focusInput = useCallback(() => {
@@ -204,7 +219,7 @@ export function GameEngine() {
       <main className="main">
         <StatsBar gameState={gameState} />
         <WordDisplay gameState={gameState} />
-        <Keyboard gameState={gameState} onKeyClick={handleKeyClick} />
+        <Keyboard gameState={gameState} onKeyClick={handleKeyClick} lastKeyFlash={lastKeyFlash} />
         <HandGuide gameState={gameState} />
       </main>
 

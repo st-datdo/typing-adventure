@@ -1,20 +1,29 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
-import { KEYBOARD_ROWS, getFingerForKey } from '@typing-adventure/game-engine'
+import { useState, useEffect, useRef } from 'react'
+import { KEYBOARD_ROWS } from '@typing-adventure/game-engine'
 import type { GameState } from '@typing-adventure/game-engine'
 import { useSettingsStore } from '@/stores/settings-store'
+
+interface KeyFlash {
+  key: string
+  correct: boolean
+  id: number
+}
 
 interface KeyboardProps {
   gameState: GameState
   onKeyClick: (key: string) => void
+  lastKeyFlash?: KeyFlash | null
 }
 
-export function Keyboard({ gameState, onKeyClick }: KeyboardProps) {
+export function Keyboard({ gameState, onKeyClick, lastKeyFlash }: KeyboardProps) {
   const keyboardCase = useSettingsStore(s => s.keyboardCase)
   const fingerGuide = useSettingsStore(s => s.fingerGuide)
   const [pressedKeys, setPressedKeys] = useState<Set<string>>(new Set())
   const [flashKeys, setFlashKeys] = useState<Record<string, 'correct' | 'wrong'>>({})
+  const lastFlashIdRef = useRef(0)
+  const flashTimestampRef = useRef<Record<string, number>>({})
 
   const expectedKey = gameState.currentIndex < gameState.text.length
     ? gameState.text[gameState.currentIndex]
@@ -22,17 +31,26 @@ export function Keyboard({ gameState, onKeyClick }: KeyboardProps) {
 
   const highlightKeyName = expectedKey === ' ' ? ' ' : expectedKey?.toLowerCase() ?? null
 
-  // Flash effect
-  const flashKey = useCallback((keyName: string, isCorrect: boolean) => {
-    setFlashKeys(prev => ({ ...prev, [keyName]: isCorrect ? 'correct' : 'wrong' }))
+  // React to lastKeyFlash prop — each flash gets its own independent timer
+  useEffect(() => {
+    if (!lastKeyFlash || lastKeyFlash.id === lastFlashIdRef.current) return
+    lastFlashIdRef.current = lastKeyFlash.id
+    const keyName = lastKeyFlash.key
+    const flashId = lastKeyFlash.id
+    const type = lastKeyFlash.correct ? 'correct' : 'wrong'
+    // Track which flash ID is active for this key
+    flashTimestampRef.current[keyName] = flashId
+    setFlashKeys(prev => ({ ...prev, [keyName]: type }))
     setTimeout(() => {
+      // Only clear if this is still the active flash for this key
+      if (flashTimestampRef.current[keyName] !== flashId) return
       setFlashKeys(prev => {
         const next = { ...prev }
         delete next[keyName]
         return next
       })
     }, 200)
-  }, [])
+  }, [lastKeyFlash])
 
   // Listen for keyboard events for visual feedback
   useEffect(() => {

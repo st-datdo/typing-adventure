@@ -830,9 +830,10 @@ body {
   text-shadow: 0 0 10px rgba(0, 230, 118, 0.4);
 }
 
-/* Character mode: each letter pops up big then settles */
+/* Pop animation on correct char */
 .char--pop {
   animation: charPop 400ms var(--ease-bounce);
+  transition: none;
 }
 
 @keyframes charPop {
@@ -845,6 +846,7 @@ body {
 /* Word mode: wave burst across all chars of the completed word */
 .char--word-burst {
   animation: wordBurst 600ms var(--ease-bounce) both;
+  transition: none;
 }
 
 @keyframes wordBurst {

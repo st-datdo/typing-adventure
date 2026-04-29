@@ -90,7 +90,7 @@ export function useGameEngine() {
       playCorrect()
       if (settings.soundMode === 'character' && char !== ' ') {
         speakLetter(char)
-      } else if (settings.soundMode === 'word' && completedWord) {
+      } else if (settings.soundMode === 'word' && completedWord && char !== ' ') {
         speakWord(completedWord)
       }
     } else {
