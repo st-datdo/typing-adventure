@@ -11,7 +11,12 @@
       "Bash(pnpm --filter @typing-adventure/game-engine test)",
       "Bash(npx prisma:*)",
       "Bash(mkdir -p /Users/dat.do/Downloads/Blueasha/Project/Mine/keyboad_with_sound/typing-adventure/apps/web/src/app/api/auth/\\\\[...nextauth\\\\])",
-      "Bash(mkdir -p \"/Users/dat.do/Downloads/Blueasha/Project/Mine/keyboad_with_sound/typing-adventure/apps/web/src/app/api/users/[id]\")"
+      "Bash(mkdir -p \"/Users/dat.do/Downloads/Blueasha/Project/Mine/keyboad_with_sound/typing-adventure/apps/web/src/app/api/users/[id]\")",
+      "Bash(pnpm --filter @typing-adventure/web exec tsc --noEmit)",
+      "Bash(ls /Users/dat.do/Downloads/Blueasha/Project/Mine/keyboad_with_sound/*.html /Users/dat.do/Downloads/Blueasha/Project/Mine/keyboad_with_sound/*.js /Users/dat.do/Downloads/Blueasha/Project/Mine/keyboad_with_sound/*.css)",
+      "mcp__plugin_ecc_playwright__browser_run_code",
+      "Bash(pnpm --filter web build)",
+      "Bash(git stash:*)"
     ]
   }
 }

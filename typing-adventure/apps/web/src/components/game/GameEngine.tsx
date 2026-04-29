@@ -18,6 +18,8 @@ import { GuestBanner } from '@/components/auth/GuestBanner'
 import { SyncIndicator } from '@/components/auth/SyncIndicator'
 import { MigrateDialog } from '@/components/auth/MigrateDialog'
 import { saveSession } from '@/lib/api/sessions'
+import { getProfile } from '@/lib/api/users'
+import { useRecordsStore } from '@/stores/records-store'
 import { t } from '@typing-adventure/i18n'
 import type { GameMode, Level } from '@typing-adventure/game-engine'
 
@@ -36,10 +38,42 @@ export function GameEngine() {
   const { data: session } = useSession()
   const gameStore = useGameStore()
   const settings = useSettingsStore()
+  const recordsStore = useRecordsStore()
   const [syncStatus, setSyncStatus] = useState<'idle' | 'syncing' | 'saved' | 'offline'>('idle')
   const [panel, setPanel] = useState<Panel>('none')
   const flashIdRef = useRef(0)
   const [lastKeyFlash, setLastKeyFlash] = useState<{ key: string; correct: boolean; id: number } | null>(null)
+  const profileLoadedRef = useRef<string | null>(null)
+
+  // Load profile + settings from DB when logged in
+  useEffect(() => {
+    if (!session?.user) {
+      profileLoadedRef.current = null
+      settings.setIsLoggedIn(false)
+      return
+    }
+    const userId = (session.user as any).id as string
+    settings.setIsLoggedIn(true)
+    if (profileLoadedRef.current === userId) return
+    profileLoadedRef.current = userId
+
+    getProfile().then((res) => {
+      if (!res.success || !res.data) return
+      settings.loadFromServer({
+        name: res.data.name,
+        avatar: res.data.avatar,
+        settings: res.data.settings as Record<string, unknown> | null,
+      })
+    })
+  }, [session])
+
+  // Sign out handler: clear all local stores
+  const handleSignOut = useCallback(() => {
+    signOut().then(() => {
+      settings.clearAll()
+      recordsStore.clearAll()
+    })
+  }, [])
 
   // Save result to server when game finishes (if logged in)
   useEffect(() => {
@@ -199,12 +233,12 @@ export function GameEngine() {
         <p className="subtitle">{t(settings.lang, 'subtitle')}</p>
         {session?.user ? (
           <p className="profile-greeting">
-            {(session.user as any).image ?? '🧒'}{' '}
-            {settings.lang === 'vi' ? 'Chào' : 'Hi'}, {session.user.name ?? session.user.email}!
+            {settings.playerAvatar || (session.user as any).image || '🧒'}{' '}
+            {settings.lang === 'vi' ? 'Chào' : 'Hi'}, {settings.playerName || session.user.name || session.user.email}!
             <button
               className="btn"
               style={{ marginLeft: 8, fontSize: '0.75rem', padding: '4px 10px' }}
-              onClick={() => signOut()}
+              onClick={handleSignOut}
             >
               Đăng xuất
             </button>

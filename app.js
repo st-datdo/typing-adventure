@@ -992,10 +992,8 @@ function handleKey(inputChar) {
     flashKey(keyName, true);
     sound.play('correct');
 
-    // Character mode: pop animation on the typed char
-    if (state.soundMode === 'character') {
-      currentEl.classList.add('char--pop');
-    }
+    // Pop animation on the typed char (all modes)
+    currentEl.classList.add('char--pop');
 
     // Combo milestone effects
     if (COMBO_MILESTONES.includes(state.combo)) {

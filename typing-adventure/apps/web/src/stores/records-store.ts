@@ -20,6 +20,7 @@ interface RecordsActions {
     isNewBestScore: boolean
   }
   unlockAchievements: (ids: string[]) => void
+  clearAll: () => void
 }
 
 export type RecordsStore = RecordsState & RecordsActions
@@ -81,6 +82,22 @@ export const useRecordsStore = create<RecordsStore>()(
       unlockAchievements: (ids) => {
         const { unlockedAchievements } = get()
         set({ unlockedAchievements: [...unlockedAchievements, ...ids] })
+      },
+
+      clearAll: () => {
+        set({
+          records: {
+            bestWpm: { easy: 0, medium: 0, hard: 0 },
+            bestAccuracy: { easy: 0, medium: 0, hard: 0 },
+            bestScore: { easy: 0, medium: 0, hard: 0 },
+            totalGames: 0,
+            totalWords: 0,
+            dayStreak: 0,
+            lastPlayDate: null,
+          },
+          history: [],
+          unlockedAchievements: [],
+        })
       },
     }),
     {
