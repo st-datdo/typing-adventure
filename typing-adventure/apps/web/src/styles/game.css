@@ -900,7 +900,7 @@ body {
 /* ── Combo Display ── */
 .combo-display {
   position: absolute;
-  top: 8px;
+  top: 0px;
   right: 16px;
   font-size: 1.4rem;
   font-weight: 800;

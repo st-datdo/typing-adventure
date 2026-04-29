@@ -17,7 +17,7 @@ import { AchievementGrid } from '@/components/achievements/AchievementGrid'
 import { GuestBanner } from '@/components/auth/GuestBanner'
 import { SyncIndicator } from '@/components/auth/SyncIndicator'
 import { MigrateDialog } from '@/components/auth/MigrateDialog'
-import { saveSession } from '@/lib/api/sessions'
+import { saveSession, getStats, getHistory } from '@/lib/api/sessions'
 import { getProfile } from '@/lib/api/users'
 import { useRecordsStore } from '@/stores/records-store'
 import { t } from '@typing-adventure/i18n'
@@ -64,6 +64,29 @@ export function GameEngine() {
         avatar: res.data.avatar,
         settings: res.data.settings as Record<string, unknown> | null,
       })
+    })
+
+    // Load records + history from DB
+    Promise.all([
+      getStats(),
+      getHistory(1, 100),
+    ]).then(([statsRes, historyRes]) => {
+      if (!statsRes.success || !statsRes.data) return
+      const serverHistory = historyRes.success && historyRes.data
+        ? historyRes.data.map((s: any) => ({
+            date: s.createdAt,
+            level: s.level,
+            wpm: s.wpm,
+            cps: s.cps,
+            accuracy: s.accuracy,
+            time: s.timeSeconds,
+            wordCount: s.wordCount,
+            score: s.score,
+            stars: s.stars,
+            maxCombo: s.maxCombo ?? 0,
+          }))
+        : []
+      recordsStore.loadFromServer(statsRes.data, serverHistory)
     })
   }, [session])
 

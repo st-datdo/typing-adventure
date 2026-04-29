@@ -12,6 +12,16 @@ interface RecordsState {
   unlockedAchievements: string[]
 }
 
+interface ServerRecords {
+  bestWpm: Record<string, number>
+  bestAccuracy: Record<string, number>
+  bestScore: Record<string, number>
+  totalGames: number
+  totalWords: number
+  dayStreak: number
+  lastPlayDate: string | null
+}
+
 interface RecordsActions {
   addHistory: (entry: HistoryEntry) => void
   updateRecords: (level: Level, wpm: number, accuracy: number, wordCount: number, score: number) => {
@@ -20,6 +30,7 @@ interface RecordsActions {
     isNewBestScore: boolean
   }
   unlockAchievements: (ids: string[]) => void
+  loadFromServer: (records: ServerRecords, history: HistoryEntry[]) => void
   clearAll: () => void
 }
 
@@ -82,6 +93,37 @@ export const useRecordsStore = create<RecordsStore>()(
       unlockAchievements: (ids) => {
         const { unlockedAchievements } = get()
         set({ unlockedAchievements: [...unlockedAchievements, ...ids] })
+      },
+
+      loadFromServer: (serverRecords, serverHistory) => {
+        const lastPlayDate = serverRecords.lastPlayDate
+          ? serverRecords.lastPlayDate.slice(0, 10)
+          : null
+
+        set({
+          records: {
+            bestWpm: {
+              easy: serverRecords.bestWpm?.easy ?? 0,
+              medium: serverRecords.bestWpm?.medium ?? 0,
+              hard: serverRecords.bestWpm?.hard ?? 0,
+            },
+            bestAccuracy: {
+              easy: serverRecords.bestAccuracy?.easy ?? 0,
+              medium: serverRecords.bestAccuracy?.medium ?? 0,
+              hard: serverRecords.bestAccuracy?.hard ?? 0,
+            },
+            bestScore: {
+              easy: serverRecords.bestScore?.easy ?? 0,
+              medium: serverRecords.bestScore?.medium ?? 0,
+              hard: serverRecords.bestScore?.hard ?? 0,
+            },
+            totalGames: serverRecords.totalGames,
+            totalWords: serverRecords.totalWords,
+            dayStreak: serverRecords.dayStreak,
+            lastPlayDate,
+          },
+          history: serverHistory,
+        })
       },
 
       clearAll: () => {
