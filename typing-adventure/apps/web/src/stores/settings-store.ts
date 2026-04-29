@@ -1,10 +1,11 @@
 'use client'
 
 import { create } from 'zustand'
-import { persist } from 'zustand/middleware'
+import { persist, createJSONStorage } from 'zustand/middleware'
 import type { KeyboardCase, Level, SoundMode, SpeechRate, Theme, Lang } from '@typing-adventure/game-engine'
 
 interface SettingsState {
+  _hydrated: boolean
   keyboardCase: KeyboardCase
   level: Level
   soundMode: SoundMode
@@ -37,6 +38,7 @@ export type SettingsStore = SettingsState & SettingsActions
 export const useSettingsStore = create<SettingsStore>()(
   persist(
     (set) => ({
+      _hydrated: false,
       keyboardCase: 'lower',
       level: 'easy',
       soundMode: 'default',
@@ -63,6 +65,14 @@ export const useSettingsStore = create<SettingsStore>()(
     }),
     {
       name: 'typingAdventure_settings',
+      storage: createJSONStorage(() => localStorage),
+      onRehydrateStorage: () => {
+        return (state) => {
+          if (state) {
+            state._hydrated = true
+          }
+        }
+      },
     },
   ),
 )

@@ -7,12 +7,29 @@ import type { GameMode, Level, SoundMode, Lang } from '@typing-adventure/game-en
 
 interface SideNavProps {
   gameMode: GameMode
+  lessonIndex: number
+  timeAttackDuration: number
   onModeChange: (mode: GameMode) => void
   onLevelChange: (level: Level) => void
+  onLessonChange: (index: number) => void
+  onTimeAttackChange: (duration: number) => void
   onRestart: () => void
+  onOpenSettings: () => void
+  onOpenHistory: () => void
 }
 
-export function SideNav({ gameMode, onModeChange, onLevelChange, onRestart }: SideNavProps) {
+export function SideNav({
+  gameMode,
+  lessonIndex,
+  timeAttackDuration,
+  onModeChange,
+  onLevelChange,
+  onLessonChange,
+  onTimeAttackChange,
+  onRestart,
+  onOpenSettings,
+  onOpenHistory,
+}: SideNavProps) {
   const settings = useSettingsStore()
   const lang = settings.lang
 
@@ -45,7 +62,11 @@ export function SideNav({ gameMode, onModeChange, onLevelChange, onRestart }: Si
 
         {gameMode === 'lesson' && (
           <div className="nav-wrap nav-sub">
-            <select className="nav-control">
+            <select
+              className="nav-control"
+              value={lessonIndex}
+              onChange={(e) => onLessonChange(parseInt(e.target.value))}
+            >
               {LESSONS.map((lesson, i) => (
                 <option key={i} value={i}>
                   {i === 4 ? t(lang, 'lessonAll') : `${['🏠', '⬆️', '⬇️', '🔀', '🌈'][i]} ${lesson.name}`}
@@ -57,7 +78,11 @@ export function SideNav({ gameMode, onModeChange, onLevelChange, onRestart }: Si
 
         {gameMode === 'timeAttack' && (
           <div className="nav-wrap nav-sub">
-            <select className="nav-control">
+            <select
+              className="nav-control"
+              value={timeAttackDuration}
+              onChange={(e) => onTimeAttackChange(parseInt(e.target.value))}
+            >
               <option value="30">🐇 30s</option>
               <option value="60">🦊 60s</option>
               <option value="120">🐢 120s</option>
@@ -89,10 +114,10 @@ export function SideNav({ gameMode, onModeChange, onLevelChange, onRestart }: Si
           </select>
         </div>
 
-        <button className="nav-btn" onClick={() => {}}>
+        <button className="nav-btn" onClick={onOpenSettings}>
           {t(lang, 'btnSettings')}
         </button>
-        <button className="nav-btn" onClick={() => {}}>
+        <button className="nav-btn" onClick={onOpenHistory}>
           {t(lang, 'btnHistory')}
         </button>
       </nav>

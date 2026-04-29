@@ -11,12 +11,17 @@ import { HandGuide } from './HandGuide'
 import { StatsBar } from './StatsBar'
 import { CelebrationModal } from './CelebrationModal'
 import { SideNav } from '@/components/layout/SideNav'
+import { SettingsPanel } from '@/components/settings/SettingsPanel'
+import { HistoryPanel } from '@/components/history/HistoryPanel'
+import { AchievementGrid } from '@/components/achievements/AchievementGrid'
 import { GuestBanner } from '@/components/auth/GuestBanner'
 import { SyncIndicator } from '@/components/auth/SyncIndicator'
 import { MigrateDialog } from '@/components/auth/MigrateDialog'
 import { saveSession } from '@/lib/api/sessions'
 import { t } from '@typing-adventure/i18n'
 import type { GameMode, Level } from '@typing-adventure/game-engine'
+
+type Panel = 'none' | 'settings' | 'history' | 'achievements'
 
 export function GameEngine() {
   const {
@@ -32,6 +37,7 @@ export function GameEngine() {
   const gameStore = useGameStore()
   const settings = useSettingsStore()
   const [syncStatus, setSyncStatus] = useState<'idle' | 'syncing' | 'saved' | 'offline'>('idle')
+  const [panel, setPanel] = useState<Panel>('none')
 
   // Save result to server when game finishes (if logged in)
   useEffect(() => {
@@ -59,8 +65,8 @@ export function GameEngine() {
   // Keyboard input
   useEffect(() => {
     const handleInput = (e: Event) => {
+      if (panel !== 'none') return
       const inputEvent = e as InputEvent
-      if (document.querySelector('.settings-overlay.settings--visible')) return
       const data = inputEvent.data
       if (data && data.length === 1) {
         handleKeypress(data)
@@ -71,7 +77,7 @@ export function GameEngine() {
     }
 
     const handleKeydown = (e: KeyboardEvent) => {
-      if (document.querySelector('.settings-overlay.settings--visible')) return
+      if (panel !== 'none') return
       if (gameState.isFinished) return
       if (e.key === ' ') {
         e.preventDefault()
@@ -87,12 +93,13 @@ export function GameEngine() {
       input?.removeEventListener('input', handleInput)
       document.removeEventListener('keydown', handleKeydown)
     }
-  }, [handleKeypress, gameState.isFinished])
+  }, [handleKeypress, gameState.isFinished, panel])
 
   // Auto-focus
   const focusInput = useCallback(() => {
+    if (panel !== 'none') return
     hiddenInputRef.current?.focus()
-  }, [])
+  }, [panel])
 
   useEffect(() => {
     focusInput()
@@ -116,16 +123,24 @@ export function GameEngine() {
     gameStore.startGame(gameState.gameMode, level, settings.wordCount)
   }, [gameState.gameMode, settings.wordCount])
 
+  const handleLessonChange = useCallback((index: number) => {
+    gameStore.startGame('lesson', settings.level, settings.wordCount, index)
+  }, [settings.level, settings.wordCount])
+
+  const handleTimeAttackChange = useCallback((duration: number) => {
+    gameStore.startGame('timeAttack', settings.level, settings.wordCount, 0, duration)
+  }, [settings.level, settings.wordCount])
+
   const handlePlayAgain = useCallback(() => {
     gameStore.startGame(gameState.gameMode, settings.level, settings.wordCount, gameState.lessonIndex, gameState.timeAttackDuration)
     focusInput()
-  }, [gameState.gameMode, settings.level, settings.wordCount, gameState.lessonIndex, gameState.timeAttackDuration])
+  }, [gameState.gameMode, settings.level, settings.wordCount, gameState.lessonIndex, gameState.timeAttackDuration, focusInput])
 
   const handleTryLevel = useCallback((level: string) => {
     settings.setLevel(level as Level)
     gameStore.startGame(gameState.gameMode, level as Level, settings.wordCount)
     focusInput()
-  }, [gameState.gameMode, settings.wordCount])
+  }, [gameState.gameMode, settings.wordCount, focusInput])
 
   const handlePracticeWeak = useCallback((chars: string[]) => {
     const allWords = ['cat', 'dog', 'sun', 'hat', 'big', 'run', 'fun', 'apple', 'happy', 'tiger']
@@ -133,7 +148,7 @@ export function GameEngine() {
     const text = (matching.length > 0 ? matching : allWords).slice(0, 10).join(' ')
     gameStore.startCustomGame(text, settings.level)
     focusInput()
-  }, [settings.level])
+  }, [settings.level, focusInput])
 
   const handleKeyClick = useCallback((key: string) => {
     handleKeypress(key)
@@ -141,12 +156,23 @@ export function GameEngine() {
   }, [handleKeypress, focusInput])
 
   return (
-    <div onClick={focusInput}>
+    <div onClick={(e) => {
+      // Không focus hidden input khi click vào select/button/input trong nav
+      const target = e.target as HTMLElement
+      if (target.closest('.side-nav') || target.closest('.quick-actions') || target.closest('.settings-overlay') || target.closest('.celebration') || target.tagName === 'SELECT' || target.tagName === 'BUTTON' || target.tagName === 'INPUT') return
+      focusInput()
+    }}>
       <SideNav
         gameMode={gameState.gameMode}
+        lessonIndex={gameState.lessonIndex}
+        timeAttackDuration={gameState.timeAttackDuration}
         onModeChange={handleModeChange}
         onLevelChange={handleLevelChange}
+        onLessonChange={handleLessonChange}
+        onTimeAttackChange={handleTimeAttackChange}
         onRestart={handlePlayAgain}
+        onOpenSettings={() => setPanel('settings')}
+        onOpenHistory={() => setPanel('history')}
       />
 
       <header className="header">
@@ -190,6 +216,21 @@ export function GameEngine() {
           onTryLevel={handleTryLevel}
           onPracticeWeak={handlePracticeWeak}
         />
+      )}
+
+      {panel === 'settings' && (
+        <SettingsPanel
+          onClose={() => { setPanel('none'); focusInput() }}
+          onOpenAchievements={() => setPanel('achievements')}
+        />
+      )}
+
+      {panel === 'history' && (
+        <HistoryPanel onClose={() => { setPanel('none'); focusInput() }} />
+      )}
+
+      {panel === 'achievements' && (
+        <AchievementGrid onClose={() => { setPanel('settings'); }} />
       )}
 
       <input
