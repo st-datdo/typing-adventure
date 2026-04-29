@@ -126,6 +126,7 @@ export const useSettingsStore = create<SettingsStore>()(
           playerAvatar: profile.avatar ?? '🧒',
           ...(s.theme != null && { theme: s.theme as Theme }),
           ...(s.keyboardCase != null && { keyboardCase: s.keyboardCase as KeyboardCase }),
+          ...(s.level != null && { level: s.level as Level }),
           ...(s.soundMode != null && { soundMode: s.soundMode as SoundMode }),
           ...(s.soundEnabled != null && { soundEnabled: s.soundEnabled as boolean }),
           ...(s.speechRate != null && { speechRate: s.speechRate as SpeechRate }),

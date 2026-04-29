@@ -7,6 +7,7 @@ import { ok, err, unauthorized } from '@/lib/api-response'
 const settingsSchema = z.object({
   theme: z.enum(['dark', 'light', 'colorful']).optional(),
   keyboardCase: z.enum(['lower', 'upper']).optional(),
+  level: z.enum(['easy', 'medium', 'hard']).optional(),
   soundMode: z.enum(['default', 'character', 'word']).optional(),
   soundEnabled: z.boolean().optional(),
   speechRate: z.enum(['slow', 'normal', 'fast']).optional(),
