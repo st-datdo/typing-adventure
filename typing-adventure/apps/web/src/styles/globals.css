@@ -1,0 +1,72 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+@import './game.css';
+
+/* ── Theme: Dark (default) ── */
+:root {
+  --bg-primary: #0f0c29;
+  --bg-secondary: #302b63;
+  --bg-tertiary: #24243e;
+  --color-text: #f0e6ff;
+  --color-text-dim: #a89cc8;
+  --color-correct: #00e676;
+  --color-wrong: #ff5252;
+  --color-active: #ffeb3b;
+  --color-accent: #7c4dff;
+  --color-accent-glow: rgba(124, 77, 255, 0.4);
+  --key-bg: #1a1a3e;
+  --key-bg-hover: #2a2a5e;
+  --key-border: #3d3d6b;
+  --key-shadow: rgba(0, 0, 0, 0.5);
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --duration-fast: 120ms;
+  --duration-normal: 250ms;
+  --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ── Theme: Light ── */
+[data-theme="light"] {
+  --bg-primary: #fffbeb;
+  --bg-secondary: #fef3c7;
+  --bg-tertiary: #fef9e7;
+  --color-text: #0f172a;
+  --color-text-dim: #475569;
+  --color-correct: #059669;
+  --color-wrong: #dc2626;
+  --color-active: #d97706;
+  --color-accent: #7c3aed;
+  --color-accent-glow: rgba(124, 58, 237, 0.2);
+  --key-bg: #ffffff;
+  --key-bg-hover: #f5f3ff;
+  --key-border: #cbd5e1;
+  --key-shadow: rgba(0, 0, 0, 0.06);
+}
+
+/* ── Theme: Colorful ── */
+[data-theme="colorful"] {
+  --bg-primary: #1a0533;
+  --bg-secondary: #2d1b69;
+  --bg-tertiary: #1f0f47;
+  --color-text: #f8f0ff;
+  --color-text-dim: #c4b5d9;
+  --color-correct: #00ffab;
+  --color-wrong: #ff6b6b;
+  --color-active: #ffd93d;
+  --color-accent: #c084fc;
+  --color-accent-glow: rgba(192, 132, 252, 0.4);
+  --key-bg: #2a1052;
+  --key-bg-hover: #3d1a75;
+  --key-border: #5b2d99;
+  --key-shadow: rgba(0, 0, 0, 0.5);
+}
+
+body {
+  background: linear-gradient(135deg, var(--bg-primary), var(--bg-secondary));
+  color: var(--color-text);
+  min-height: 100vh;
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+}

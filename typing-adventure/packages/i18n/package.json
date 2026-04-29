@@ -1,0 +1,9 @@
+{
+  "name": "@typing-adventure/i18n",
+  "version": "0.1.0",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "dependencies": {
+    "@typing-adventure/game-engine": "workspace:*"
+  }
+}

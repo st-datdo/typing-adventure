@@ -1,0 +1,67 @@
+'use client'
+
+import { useEffect, useState } from 'react'
+import type { GameState } from '@typing-adventure/game-engine'
+import { formatTime } from '@typing-adventure/game-engine'
+import { useSettingsStore } from '@/stores/settings-store'
+import { useRecordsStore } from '@/stores/records-store'
+import { t } from '@typing-adventure/i18n'
+
+interface StatsBarProps {
+  gameState: GameState
+}
+
+export function StatsBar({ gameState }: StatsBarProps) {
+  const lang = useSettingsStore(s => s.lang)
+  const records = useRecordsStore(s => s.records)
+  const [liveStats, setLiveStats] = useState({ time: '0:00', cps: '0.00', wpm: 0, accuracy: 100 })
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (!gameState.startTime || gameState.isFinished) return
+
+      const elapsed = (Date.now() - gameState.startTime) / 1000
+      const cps = elapsed > 0 ? gameState.correctKeystrokes / elapsed : 0
+      const wpm = elapsed > 0
+        ? Math.round((gameState.correctKeystrokes / 5) / (elapsed / 60))
+        : 0
+      const accuracy = gameState.totalKeystrokes > 0
+        ? Math.round((gameState.correctKeystrokes / gameState.totalKeystrokes) * 100)
+        : 100
+
+      const displayTime = gameState.gameMode === 'timeAttack'
+        ? formatTime(Math.max(0, gameState.timeAttackDuration - elapsed))
+        : formatTime(elapsed)
+
+      setLiveStats({ time: displayTime, cps: cps.toFixed(2), wpm, accuracy })
+    }, 100)
+
+    return () => clearInterval(interval)
+  }, [gameState.startTime, gameState.isFinished, gameState.correctKeystrokes, gameState.totalKeystrokes, gameState.gameMode, gameState.timeAttackDuration])
+
+  const bestWpm = records.bestWpm[gameState.level] ?? 0
+
+  const stats = [
+    { cls: 'stat-time', icon: '⏳', label: t(lang, 'lblTime'), value: liveStats.time },
+    { cls: 'stat-cps', icon: '⚡', label: 'CPS', value: liveStats.cps },
+    { cls: 'stat-wpm', icon: '🚀', label: 'WPM', value: liveStats.wpm },
+    { cls: 'stat-accuracy', icon: '🎯', label: t(lang, 'lblAccuracy'), value: `${liveStats.accuracy}%` },
+    { cls: 'stat-score', icon: '💰', label: t(lang, 'lblScore'), value: gameState.score.toLocaleString() },
+    { cls: 'stat-best', icon: '👑', label: t(lang, 'lblBest'), value: bestWpm },
+    { cls: 'stat-streak', icon: '🔥', label: 'Streak', value: `${records.dayStreak} ${t(lang, 'dayUnit')}` },
+  ]
+
+  return (
+    <section className="stats-bar">
+      {stats.map(s => (
+        <div key={s.cls} className={`stat-card ${s.cls}`}>
+          <div className="stat-icon">{s.icon}</div>
+          <div className="stat-info">
+            <span className="stat-label">{s.label}</span>
+            <span className="stat-value">{s.value}</span>
+          </div>
+        </div>
+      ))}
+    </section>
+  )
+}

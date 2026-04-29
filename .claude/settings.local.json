@@ -3,7 +3,12 @@
     "allow": [
       "Bash(wc -l /Users/dat.do/Downloads/Blueasha/Project/Mine/keyboad_with_sound/*.js /Users/dat.do/Downloads/Blueasha/Project/Mine/keyboad_with_sound/*.css /Users/dat.do/Downloads/Blueasha/Project/Mine/keyboad_with_sound/*.html)",
       "Bash(git -C /Users/dat.do/Downloads/Blueasha/Project/Mine/keyboad_with_sound log --oneline -20)",
-      "Bash(ls /Users/dat.do/Downloads/Blueasha/Project/Mine/keyboad_with_sound/*.png /Users/dat.do/Downloads/Blueasha/Project/Mine/keyboad_with_sound/*.ico /Users/dat.do/Downloads/Blueasha/Project/Mine/keyboad_with_sound/*.svg)"
+      "Bash(ls /Users/dat.do/Downloads/Blueasha/Project/Mine/keyboad_with_sound/*.png /Users/dat.do/Downloads/Blueasha/Project/Mine/keyboad_with_sound/*.ico /Users/dat.do/Downloads/Blueasha/Project/Mine/keyboad_with_sound/*.svg)",
+      "Bash(pnpm install:*)",
+      "Bash(npx tsc:*)",
+      "Bash(npx next:*)",
+      "Bash(npx vitest:*)",
+      "Bash(pnpm --filter @typing-adventure/game-engine test)"
     ]
   }
 }

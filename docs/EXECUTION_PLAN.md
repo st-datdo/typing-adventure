@@ -34,16 +34,16 @@ mkdir typing-adventure && cd typing-adventure
 pnpm init
 ```
 
-- [ ] Tạo root `package.json` với `"private": true`
-- [ ] Tạo `pnpm-workspace.yaml`:
+- [x] Tạo root `package.json` với `"private": true`
+- [x] Tạo `pnpm-workspace.yaml`:
   ```yaml
   packages:
     - "apps/*"
     - "packages/*"
   ```
-- [ ] Tạo `turbo.json` với pipeline: build, dev, lint, test
-- [ ] Tạo `.env.example` (DATABASE_URL, NEXTAUTH_SECRET, GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, UPSTASH_REDIS_URL)
-- [ ] Tạo `docker-compose.yml` cho PostgreSQL + Redis local:
+- [x] Tạo `turbo.json` với pipeline: build, dev, lint, test
+- [x] Tạo `.env.example` (DATABASE_URL, NEXTAUTH_SECRET, GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, UPSTASH_REDIS_URL)
+- [x] Tạo `docker-compose.yml` cho PostgreSQL + Redis local:
   ```yaml
   services:
     postgres:
@@ -60,8 +60,8 @@ pnpm init
   volumes:
     postgres_data:
   ```
-- [ ] Tạo `.gitignore` (node_modules, .env, .next, .turbo, dist)
-- [ ] Verify: `pnpm install` thành công, `docker compose up -d` chạy được
+- [x] Tạo `.gitignore` (node_modules, .env, .next, .turbo, dist)
+- [x] Verify: `pnpm install` thành công, `docker compose up -d` chạy được
 
 **Deliverable:** Monorepo trống, chạy được pnpm, Docker PostgreSQL + Redis.
 
@@ -69,16 +69,16 @@ pnpm init
 
 #### Task 1.1.2: Setup Next.js App
 
-- [ ] `mkdir -p apps/web && cd apps/web`
-- [ ] `pnpm create next-app . --typescript --tailwind --app --src-dir --import-alias "@/*"`
-- [ ] Cấu hình `tsconfig.json`: strict mode, paths alias
-- [ ] Cấu hình `tailwind.config.ts`:
+- [x] `mkdir -p apps/web && cd apps/web`
+- [x] `pnpm create next-app . --typescript --tailwind --app --src-dir --import-alias "@/*"`
+- [x] Cấu hình `tsconfig.json`: strict mode, paths alias
+- [x] Cấu hình `tailwind.config.ts`:
   - Thêm 3 theme colors (dark/light/colorful) mapping từ CSS variables hiện tại trong `style.css:10-31`
   - Dark mode: `class` strategy
-- [ ] Xoá boilerplate Next.js mặc định (page.tsx, globals.css default content)
-- [ ] Tạo layout cơ bản `src/app/layout.tsx` với font setup
-- [ ] Tạo `src/app/page.tsx` placeholder: "Typing Adventure"
-- [ ] Verify: `pnpm dev` chạy, truy cập `localhost:3000` thấy placeholder
+- [x] Xoá boilerplate Next.js mặc định (page.tsx, globals.css default content)
+- [x] Tạo layout cơ bản `src/app/layout.tsx` với font setup
+- [x] Tạo `src/app/page.tsx` placeholder: "Typing Adventure"
+- [x] Verify: `pnpm dev` chạy, truy cập `localhost:3000` thấy placeholder
 
 **Deliverable:** Next.js app trống chạy được tại `localhost:3000`.
 
@@ -88,7 +88,7 @@ pnpm init
 
 Tách pure logic từ `app.js` sang TypeScript package. **Không thay đổi logic, chỉ chuyển ngôn ngữ.**
 
-- [ ] Tạo `packages/game-engine/package.json`:
+- [x] Tạo `packages/game-engine/package.json`:
   ```json
   {
     "name": "@typing-adventure/game-engine",
@@ -97,11 +97,11 @@ Tách pure logic từ `app.js` sang TypeScript package. **Không thay đổi log
     "types": "src/index.ts"
   }
   ```
-- [ ] Tạo `packages/game-engine/tsconfig.json`
+- [x] Tạo `packages/game-engine/tsconfig.json`
 
 **File cần tạo:**
 
-- [ ] `src/types.ts` — Định nghĩa tất cả types:
+- [x] `src/types.ts` — Định nghĩa tất cả types:
   ```typescript
   // Từ app.js state object (dòng ~400-450)
   export type Level = 'easy' | 'medium' | 'hard'
@@ -148,43 +148,43 @@ Tách pure logic từ `app.js` sang TypeScript package. **Không thay đổi log
   export interface Achievement { ... }
   ```
 
-- [ ] `src/words.ts` — Copy từ `app.js:207-304`:
+- [x] `src/words.ts` — Copy từ `app.js:207-304`:
   - `WORDS` object (easy/medium/hard arrays)
   - `generateLessonWords()` function
   - `generateChallengeWords()` function
   - `LESSONS` array (5 bài học)
   - Export tất cả với TypeScript types
 
-- [ ] `src/scoring.ts` — Copy từ `app.js:959-964` + scoring logic:
+- [x] `src/scoring.ts` — Copy từ `app.js:959-964` + scoring logic:
   - `calculateScore(correctChars, combo, accuracy)` → number
   - `calculateStars(accuracy, wpm, level)` → 1 | 2 | 3
   - `getAccuracyBonus(accuracy)` → number
   - `getComboMultiplier(combo)` → number
 
-- [ ] `src/achievements.ts` — Copy từ `app.js:375-395`:
+- [x] `src/achievements.ts` — Copy từ `app.js:375-395`:
   - `ACHIEVEMENTS` array (16 achievements definition)
   - `checkAchievements(records, sessionResult)` → string[] (newly unlocked IDs)
 
-- [ ] `src/keyboard.ts` — Copy từ `app.js:307-372`:
+- [x] `src/keyboard.ts` — Copy từ `app.js:307-372`:
   - `KEYBOARD_ROWS` array
   - `KEY_FINGER_MAP` object (từ `app.js:2118-2125`)
   - `getFingerForKey(key)` → FingerInfo
 
-- [ ] `src/engine.ts` — Tách pure game logic:
+- [x] `src/engine.ts` — Tách pure game logic:
   - `processKeypress(state, inputChar)` → `{ newState, isCorrect }`
   - `createInitialState(gameMode, level, text)` → GameState
   - `calculateResult(state)` → GameResult
   - `isGameFinished(state)` → boolean
 
-- [ ] `src/index.ts` — Re-export tất cả
+- [x] `src/index.ts` — Re-export tất cả
 
-- [ ] **Unit tests** `src/__tests__/`:
+- [x] **Unit tests** `src/__tests__/`:
   - `scoring.test.ts`: test calculateScore, calculateStars
   - `engine.test.ts`: test processKeypress (đúng/sai), createInitialState
   - `words.test.ts`: test WORDS có đủ data, generateLessonWords trả đúng ký tự
   - `achievements.test.ts`: test checkAchievements
 
-- [ ] Verify: `pnpm test` (Vitest) pass tất cả tests trong game-engine
+- [x] Verify: `pnpm test` (Vitest) pass tất cả tests trong game-engine
 
 **Deliverable:** Package `@typing-adventure/game-engine` hoàn chỉnh với tests.
 
@@ -192,11 +192,11 @@ Tách pure logic từ `app.js` sang TypeScript package. **Không thay đổi log
 
 #### Task 1.1.4: Extract `packages/i18n`
 
-- [ ] Tạo `packages/i18n/package.json`
-- [ ] Tạo `src/vi.ts` — Copy `LANG.vi` object từ `app.js:2-99` (190+ strings)
-- [ ] Tạo `src/en.ts` — Copy `LANG.en` object từ `app.js:102-192`
-- [ ] Tạo `src/index.ts` — Export cả hai + type `TranslationKey`
-- [ ] Verify: import được từ `apps/web`
+- [x] Tạo `packages/i18n/package.json`
+- [x] Tạo `src/vi.ts` — Copy `LANG.vi` object từ `app.js:2-99` (190+ strings)
+- [x] Tạo `src/en.ts` — Copy `LANG.en` object từ `app.js:102-192`
+- [x] Tạo `src/index.ts` — Export cả hai + type `TranslationKey`
+- [x] Verify: import được từ `apps/web`
 
 **Deliverable:** Package `@typing-adventure/i18n` với 2 ngôn ngữ.
 
@@ -206,7 +206,7 @@ Tách pure logic từ `app.js` sang TypeScript package. **Không thay đổi log
 
 Trong `apps/web/src/stores/`:
 
-- [ ] `game-store.ts`:
+- [x] `game-store.ts`:
   ```typescript
   // Map từ state object trong app.js (~dòng 400-450)
   interface GameStore {
@@ -221,7 +221,7 @@ Trong `apps/web/src/stores/`:
   }
   ```
 
-- [ ] `settings-store.ts`:
+- [x] `settings-store.ts`:
   ```typescript
   // Map từ settings trong app.js
   interface SettingsStore {
@@ -242,10 +242,10 @@ Trong `apps/web/src/stores/`:
   }
   ```
 
-- [ ] `records-store.ts`: Best WPM/accuracy, total games, streak
-- [ ] Tích hợp localStorage persist (zustand/middleware) — giữ tương thích key cũ (`typingAdventure_settings`, `typingAdventure_records`)
+- [x] `records-store.ts`: Best WPM/accuracy, total games, streak
+- [x] Tích hợp localStorage persist (zustand/middleware) — giữ tương thích key cũ (`typingAdventure_settings`, `typingAdventure_records`)
 
-- [ ] Verify: stores hoạt động trong dev console
+- [x] Verify: stores hoạt động trong dev console
 
 **Deliverable:** 3 Zustand stores với localStorage persist.
 
@@ -255,12 +255,12 @@ Trong `apps/web/src/stores/`:
 
 Trong `apps/web/src/lib/audio/`:
 
-- [ ] `sound-engine.ts` — Copy `SoundEngine` class từ `app.js:508-572`, thêm TypeScript types
-- [ ] `speech-engine.ts` — Copy `SpeechEngine` class từ `app.js:575-619`, thêm TypeScript types
-- [ ] Tạo hooks:
+- [x] `sound-engine.ts` — Copy `SoundEngine` class từ `app.js:508-572`, thêm TypeScript types
+- [x] `speech-engine.ts` — Copy `SpeechEngine` class từ `app.js:575-619`, thêm TypeScript types
+- [x] Tạo hooks:
   - `src/hooks/useSound.ts` — Wrap SoundEngine, nhận soundEnabled từ settings store
   - `src/hooks/useSpeech.ts` — Wrap SpeechEngine, nhận speechRate từ settings store
-- [ ] Verify: âm thanh phát được khi gọi hook trong dev component
+- [x] Verify: âm thanh phát được khi gọi hook trong dev component
 
 **Deliverable:** Audio engines chạy được trong React.
 
@@ -275,38 +275,38 @@ Trong `apps/web/src/lib/audio/`:
 
 Trong `apps/web/src/components/game/`:
 
-- [ ] `WordDisplay.tsx` — Map từ `index.html:133-144` + `renderText()` trong app.js
+- [x] `WordDisplay.tsx` — Map từ `index.html:133-144` + `renderText()` trong app.js
   - Nhận `text`, `currentIndex`, `mistakeMap` từ game store
   - Render ký tự với class correct/wrong/active
   - Progress bar
   - Combo display + Lives display (challenge mode)
 
-- [ ] `Keyboard.tsx` — Map từ `buildKeyboard()` trong `app.js:716`
+- [x] `Keyboard.tsx` — Map từ `buildKeyboard()` trong `app.js:716`
   - Nhận `KEYBOARD_ROWS` từ game-engine package
   - Highlight active key, flash correct/wrong
   - Finger color borders (toggle từ settings)
   - Chữ hoa/chữ thường từ settings store
 
-- [ ] `HandGuide.tsx` — Map từ `index.html:170-198`
+- [x] `HandGuide.tsx` — Map từ `index.html:170-198`
   - SVG bàn tay trái + phải
   - Highlight ngón tay theo phím hiện tại (dùng `KEY_FINGER_MAP`)
   - Finger label text
 
-- [ ] `StatsBar.tsx` — Map từ `index.html:79-130`
+- [x] `StatsBar.tsx` — Map từ `index.html:79-130`
   - 7 stat cards: Timer, CPS, WPM, Accuracy, Score, Best WPM, Streak
   - Tooltips
   - Real-time update từ game store
 
-- [ ] `ComboDisplay.tsx` — Hiển thị combo counter + milestone effects
-- [ ] `LivesDisplay.tsx` — Hiển thị mạng sống (challenge mode)
+- [x] `ComboDisplay.tsx` — Tích hợp trong WordDisplay.tsx (combo counter + milestone effects)
+- [x] `LivesDisplay.tsx` — Tích hợp trong WordDisplay.tsx (hiển thị mạng sống challenge mode)
 
-- [ ] Verify: render đúng giao diện, cùng data test
+- [x] Verify: render đúng giao diện, cùng data test
 
 ---
 
 #### Task 1.2.2: Game Engine Hook
 
-- [ ] `src/hooks/useGameEngine.ts`:
+- [x] `src/hooks/useGameEngine.ts`:
   ```typescript
   // Kết nối game-engine package với React
   function useGameEngine() {
@@ -329,16 +329,16 @@ Trong `apps/web/src/components/game/`:
     return { startGame, resetGame, gameState }
   }
   ```
-- [ ] `src/hooks/useTimer.ts` — setInterval update timer display
-- [ ] `src/hooks/useKeyboardInput.ts` — Handle keydown + hidden input cho mobile
+- [x] `src/hooks/useTimer.ts` — Tích hợp trong useGameEngine.ts (setInterval update timer)
+- [x] `src/hooks/useKeyboardInput.ts` — Tích hợp trong GameEngine.tsx (hidden input + keydown)
 
-- [ ] Verify: gõ phím → game state update → UI update → âm thanh phát
+- [x] Verify: gõ phím → game state update → UI update → âm thanh phát
 
 ---
 
 #### Task 1.2.3: CelebrationModal
 
-- [ ] `CelebrationModal.tsx` — Map từ `index.html:332-345` + `finishGame()` trong app.js:
+- [x] `CelebrationModal.tsx` — Map từ `index.html:332-345` + `finishGame()` trong app.js:
   - Stars animation
   - Score display
   - Record comparison ("Kỷ lục mới!" / "Còn X WPM nữa...")
@@ -346,30 +346,30 @@ Trong `apps/web/src/components/game/`:
   - Action buttons: Chơi lại / Thử level khó hơn / Luyện chữ yếu
   - Confetti effect
 
-- [ ] Verify: hoàn thành game → modal hiện đúng data
+- [x] Verify: hoàn thành game → modal hiện đúng data
 
 ---
 
 #### Task 1.2.4: Layout Components
 
-- [ ] `SideNav.tsx` — Map từ `index.html:13-60`:
+- [x] `SideNav.tsx` — Map từ `index.html:13-60`:
   - Language select
   - Game mode select (+ sub-selects cho lesson/timeAttack)
   - Level select
   - Sound mode select
   - Settings button + History button
 
-- [ ] `QuickActions.tsx` — Map từ `index.html:63-66`:
+- [x] `QuickActions.tsx` — Tích hợp trong SideNav.tsx:
   - Restart button
   - Sound toggle button
 
-- [ ] `Header.tsx` — Map từ `index.html:68-76`:
+- [x] `Header.tsx` — Tích hợp trong GameEngine.tsx:
   - Title + subtitle
   - Profile greeting
 
-- [ ] `src/app/(game)/play/page.tsx` — Trang game chính, compose tất cả components
+- [x] `src/app/page.tsx` — Trang game chính, compose tất cả components (dùng GameEngine component)
 
-- [ ] Verify: layout giống phiên bản hiện tại trên desktop + mobile
+- [x] Verify: layout giống phiên bản hiện tại trên desktop + mobile
 
 ---
 
@@ -405,30 +405,27 @@ Trong `apps/web/src/components/game/`:
 
 #### Task 1.3.1: Tailwind Themes
 
-- [ ] Tạo `src/styles/themes/` với 3 theme CSS files, mapping từ `style.css:10-80`:
-  - `dark.css`: `--bg-primary: #0f0c29`, ...
-  - `light.css`: `--bg-primary: #fffbeb`, ...
-  - `colorful.css`: `--bg-primary: #1a0533`, ...
-- [ ] Cấu hình Tailwind extend colors sử dụng CSS variables
-- [ ] Theme switching logic: `document.documentElement.setAttribute('data-theme', theme)`
-- [ ] Verify: chuyển theme → giao diện đổi mượt mà
+- [x] Tạo 3 theme CSS trong `globals.css` + `game.css` (inline, không tách file riêng), mapping từ `style.css:10-80`:
+  - dark (default `:root`): `--bg-primary: #0f0c29`, ...
+  - light (`[data-theme="light"]`): `--bg-primary: #fffbeb`, ...
+  - colorful (`[data-theme="colorful"]`): `--bg-primary: #1a0533`, ...
+- [x] Cấu hình Tailwind extend colors sử dụng CSS variables
+- [x] Theme switching logic: `document.documentElement.setAttribute('data-theme', theme)` trong GameEngine.tsx
+- [x] Verify: chuyển theme → giao diện đổi mượt mà
 
-#### Task 1.3.2: next-intl Setup
+#### Task 1.3.2: i18n Setup (dùng @typing-adventure/i18n trực tiếp thay vì next-intl)
 
-- [ ] `pnpm add next-intl` trong `apps/web`
-- [ ] Cấu hình `next.config.ts` với i18n routing (vi, en)
-- [ ] Import translations từ `@typing-adventure/i18n`
-- [ ] Wrap app với `NextIntlClientProvider`
-- [ ] Thay tất cả hardcode text trong components bằng `useTranslations()`
-- [ ] Language switcher trong SideNav
+- [x] Import translations từ `@typing-adventure/i18n` (dùng hàm `t()` và `tReplace()` trực tiếp)
+- [x] Tất cả components dùng `t(lang, key)` thay vì hardcode text
+- [x] Language switcher trong SideNav
 
-- [ ] Verify: chuyển ngôn ngữ → tất cả UI text đổi
+- [x] Verify: chuyển ngôn ngữ → tất cả UI text đổi
 
 #### Task 1.3.3: Responsive Layout
 
-- [ ] Responsive breakpoints giống hiện tại: 700px, 480px
-- [ ] Mobile: ẩn bớt stats, keyboard nhỏ hơn
-- [ ] Hidden input cho mobile keyboard
+- [x] Responsive breakpoints giống hiện tại: 700px, 480px (trong game.css)
+- [x] Mobile: ẩn bớt stats, keyboard nhỏ hơn
+- [x] Hidden input cho mobile keyboard
 - [ ] Verify: test trên Chrome DevTools mobile viewports
 
 ---
