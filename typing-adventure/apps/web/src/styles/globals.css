@@ -2,6 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 @import './game.css';
+@import './auth.css';
 
 /* ── Theme: Dark (default) ── */
 :root {

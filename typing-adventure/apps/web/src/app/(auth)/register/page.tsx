@@ -1,0 +1,146 @@
+'use client'
+
+import { useState } from 'react'
+import { signIn } from 'next-auth/react'
+import { useRouter } from 'next/navigation'
+
+const AVATARS = ['🧒', '👦', '👧', '🧒🏻', '👦🏻', '👧🏻', '🦸', '🧙', '🧚', '🤖', '👽', '🐱', '🐶', '🦊', '🐼', '🐸']
+
+export default function RegisterPage() {
+  const router = useRouter()
+  const [name, setName] = useState('')
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [avatar, setAvatar] = useState('🧒')
+  const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setError('')
+    setLoading(true)
+
+    try {
+      const res = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, email, password, avatar }),
+      })
+
+      const data = await res.json()
+
+      if (!data.success) {
+        setError(data.error ?? 'Đăng ký thất bại')
+        setLoading(false)
+        return
+      }
+
+      // Auto sign in after register
+      const result = await signIn('credentials', {
+        email,
+        password,
+        redirect: false,
+      })
+
+      setLoading(false)
+
+      if (result?.error) {
+        setError('Đăng ký thành công nhưng không thể đăng nhập tự động')
+      } else {
+        router.push('/')
+        router.refresh()
+      }
+    } catch {
+      setError('Lỗi kết nối')
+      setLoading(false)
+    }
+  }
+
+  return (
+    <div className="auth-page">
+      <div className="auth-card">
+        <div className="auth-emoji">✨</div>
+        <h1 className="auth-title">Đăng ký</h1>
+        <p className="auth-subtitle">Tạo tài khoản để lưu tiến bộ!</p>
+
+        {error && <div className="auth-error">{error}</div>}
+
+        <form onSubmit={handleSubmit} className="auth-form">
+          <label className="auth-label">
+            😀 Chọn avatar
+            <div className="avatar-picker">
+              {AVATARS.map((a) => (
+                <button
+                  key={a}
+                  type="button"
+                  className={`avatar-option ${a === avatar ? 'avatar-option--selected' : ''}`}
+                  onClick={() => setAvatar(a)}
+                >
+                  {a}
+                </button>
+              ))}
+            </div>
+          </label>
+
+          <label className="auth-label">
+            👤 Tên hiển thị
+            <input
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              className="auth-input"
+              placeholder="Tên của bạn"
+              required
+              maxLength={50}
+            />
+          </label>
+
+          <label className="auth-label">
+            📧 Email
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="auth-input"
+              placeholder="email@example.com"
+              required
+            />
+          </label>
+
+          <label className="auth-label">
+            🔒 Mật khẩu (ít nhất 6 ký tự)
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="auth-input"
+              placeholder="••••••"
+              required
+              minLength={6}
+            />
+          </label>
+
+          <button type="submit" className="btn auth-btn-primary" disabled={loading}>
+            {loading ? '⏳ Đang tạo...' : '🎉 Tạo tài khoản'}
+          </button>
+        </form>
+
+        <div className="auth-divider">
+          <span>hoặc</span>
+        </div>
+
+        <button
+          className="btn auth-btn-google"
+          onClick={() => signIn('google', { callbackUrl: '/' })}
+        >
+          🌐 Đăng ký với Google
+        </button>
+
+        <p className="auth-link">
+          Đã có tài khoản?{' '}
+          <a href="/login">Đăng nhập</a>
+        </p>
+      </div>
+    </div>
+  )
+}

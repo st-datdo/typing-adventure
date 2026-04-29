@@ -1,0 +1,196 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================
+// USER
+// ============================================
+model User {
+  id              String    @id @default(cuid())
+  email           String    @unique
+  passwordHash    String?
+  name            String?
+  avatar          String    @default("🧒")
+  role            Role      @default(USER)
+
+  // OAuth
+  provider          String?
+  providerAccountId String?
+
+  // Settings (JSON)
+  settings        Json      @default("{}")
+
+  // Relations
+  sessions          GameSession[]
+  achievements      UserAchievement[]
+  records           UserRecord?
+  friendsInitiated  Friendship[]   @relation("FriendInitiator")
+  friendsReceived   Friendship[]   @relation("FriendReceiver")
+  raceResults       RaceResult[]
+
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@index([email])
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+// ============================================
+// GAME SESSION
+// ============================================
+model GameSession {
+  id            String    @id @default(cuid())
+  userId        String
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  gameMode      String
+  level         String
+  lessonIndex   Int?
+
+  wpm           Int
+  cps           Float
+  accuracy      Int
+  score         Int
+  stars         Int
+
+  timeSeconds   Float
+  wordCount     Int
+  maxCombo      Int       @default(0)
+  mistakeMap    Json      @default("{}")
+  textContent   String?
+
+  createdAt     DateTime  @default(now())
+
+  @@index([userId, createdAt(sort: Desc)])
+  @@index([gameMode, level])
+  @@index([wpm(sort: Desc)])
+}
+
+// ============================================
+// USER RECORD
+// ============================================
+model UserRecord {
+  id            String    @id @default(cuid())
+  userId        String    @unique
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  bestWpm       Json      @default("{\"easy\": 0, \"medium\": 0, \"hard\": 0}")
+  bestAccuracy  Json      @default("{\"easy\": 0, \"medium\": 0, \"hard\": 0}")
+  bestScore     Json      @default("{\"easy\": 0, \"medium\": 0, \"hard\": 0}")
+
+  totalGames    Int       @default(0)
+  totalWords    Int       @default(0)
+  dayStreak     Int       @default(0)
+  maxDayStreak  Int       @default(0)
+  lastPlayDate  DateTime?
+
+  updatedAt     DateTime  @updatedAt
+}
+
+// ============================================
+// ACHIEVEMENTS
+// ============================================
+model UserAchievement {
+  id              String    @id @default(cuid())
+  userId          String
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  achievementId   String
+  unlockedAt      DateTime  @default(now())
+
+  @@unique([userId, achievementId])
+  @@index([userId])
+}
+
+// ============================================
+// FRIENDSHIP
+// ============================================
+model Friendship {
+  id            String        @id @default(cuid())
+  initiatorId   String
+  initiator     User          @relation("FriendInitiator", fields: [initiatorId], references: [id])
+  receiverId    String
+  receiver      User          @relation("FriendReceiver", fields: [receiverId], references: [id])
+  status        FriendStatus  @default(PENDING)
+
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  @@unique([initiatorId, receiverId])
+  @@index([receiverId, status])
+}
+
+enum FriendStatus {
+  PENDING
+  ACCEPTED
+  BLOCKED
+}
+
+// ============================================
+// WORD PACKS
+// ============================================
+model WordPack {
+  id            String    @id @default(cuid())
+  name          String
+  description   String?
+  language      String    @default("en")
+  level         String
+  words         String[]
+  category      String?
+  isDefault     Boolean   @default(false)
+  createdBy     String?
+
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@index([language, level])
+}
+
+// ============================================
+// MULTIPLAYER
+// ============================================
+model RaceRoom {
+  id            String      @id @default(cuid())
+  code          String      @unique
+  text          String
+  level         String
+  maxPlayers    Int         @default(4)
+  status        RaceStatus  @default(WAITING)
+  results       RaceResult[]
+
+  createdAt     DateTime    @default(now())
+  startedAt     DateTime?
+  endedAt       DateTime?
+}
+
+enum RaceStatus {
+  WAITING
+  COUNTDOWN
+  RACING
+  FINISHED
+}
+
+model RaceResult {
+  id            String    @id @default(cuid())
+  roomId        String
+  room          RaceRoom  @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  userId        String
+  user          User      @relation(fields: [userId], references: [id])
+
+  wpm           Int
+  accuracy      Int
+  position      Int
+  finishTime    Float?
+
+  createdAt     DateTime  @default(now())
+
+  @@unique([roomId, userId])
+}

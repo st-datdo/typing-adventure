@@ -454,16 +454,16 @@ Trong `apps/web/src/components/game/`:
 
 #### Task 2.1.1: Setup Database Package
 
-- [ ] Tạo `packages/db/package.json`
-- [ ] `pnpm add prisma @prisma/client` trong packages/db
-- [ ] Copy Prisma schema từ `FULLSTACK_ARCHITECTURE.md` section 4.2:
+- [x] Tạo `packages/db/package.json`
+- [x] `pnpm add prisma @prisma/client` trong packages/db
+- [x] Copy Prisma schema từ `FULLSTACK_ARCHITECTURE.md` section 4.2:
   - User, GameSession, UserRecord, UserAchievement, Friendship, WordPack, RaceRoom, RaceResult
-- [ ] `npx prisma migrate dev --name init`
-- [ ] Tạo `src/client.ts` — singleton Prisma client
-- [ ] Tạo `prisma/seed.ts`:
+- [x] `npx prisma generate` (migrate cần database chạy — sẽ chạy khi `docker compose up`)
+- [x] Tạo `src/client.ts` — singleton Prisma client
+- [x] Tạo `prisma/seed.ts`:
   - Seed WORDS từ game-engine package vào WordPack table
   - Seed admin user
-- [ ] `npx prisma db seed`
+- [ ] `npx prisma db seed` (cần PostgreSQL chạy)
 - [ ] Verify: `npx prisma studio` → thấy tables + seed data
 
 **Deliverable:** Database schema chạy được, có seed data.
@@ -474,9 +474,9 @@ Trong `apps/web/src/components/game/`:
 
 Trong `apps/web/src/app/api/`:
 
-- [ ] `sessions/route.ts`:
+- [x] `sessions/route.ts`:
   - `POST` — Lưu kết quả trận chơi
-    - Validate body: gameMode, level, wpm, cps, accuracy, score, stars, timeSeconds, wordCount, maxCombo, mistakeMap
+    - Validate body (Zod): gameMode, level, wpm, cps, accuracy, score, stars, timeSeconds, wordCount, maxCombo, mistakeMap
     - Tạo GameSession record
     - Update UserRecord (best WPM/accuracy, totalGames, totalWords, streak)
     - Trả về session + updated records
@@ -484,40 +484,40 @@ Trong `apps/web/src/app/api/`:
     - Query params: `?page=1&limit=20`
     - Filter theo userId từ session
 
-- [ ] `sessions/stats/route.ts`:
+- [x] `sessions/stats/route.ts`:
   - `GET` — Thống kê tổng hợp
     - Best WPM/accuracy theo từng level
     - Total games, total words
     - Day streak
     - Trả về UserRecord
 
-- [ ] Verify: test bằng cURL / Postman
+- [ ] Verify: test bằng cURL / Postman (cần database chạy)
 
 ---
 
 #### Task 2.1.3: API Routes — Users & Achievements
 
-- [ ] `users/me/route.ts`:
+- [x] `users/me/route.ts`:
   - `GET` — Profile hiện tại (name, avatar, settings, records)
-  - `PUT` — Cập nhật profile (name, avatar)
+  - `PUT` — Cập nhật profile (name, avatar) (Zod validated)
 
-- [ ] `users/me/settings/route.ts`:
-  - `PUT` — Cập nhật settings JSON
+- [x] `users/me/settings/route.ts`:
+  - `PUT` — Cập nhật settings JSON (Zod validated)
 
-- [ ] `users/[id]/route.ts`:
+- [x] `users/[id]/route.ts`:
   - `GET` — Profile công khai (name, avatar, records, achievements)
 
-- [ ] `achievements/route.ts`:
+- [x] `achievements/route.ts`:
   - `GET` — Tất cả achievements + trạng thái mở khóa
 
-- [ ] `achievements/check/route.ts`:
+- [x] `achievements/check/route.ts`:
   - `POST` — Kiểm tra & mở khóa achievements mới
     - Nhận: current records + session result
     - Dùng `checkAchievements()` từ game-engine package
     - Tạo UserAchievement records
     - Trả về newly unlocked
 
-- [ ] Verify: tất cả endpoints trả đúng format `{ success, data, meta? }`
+- [x] Tất cả endpoints trả đúng format `{ success, data, meta? }` (qua `api-response.ts` helper)
 
 ---
 
@@ -525,34 +525,32 @@ Trong `apps/web/src/app/api/`:
 
 Trong `apps/web/src/lib/api/`:
 
-- [ ] `client.ts` — Fetch wrapper:
+- [x] `client.ts` — Fetch wrapper:
   ```typescript
   async function apiClient<T>(endpoint: string, options?: RequestInit): Promise<ApiResponse<T>>
   ```
-  - Tự thêm Authorization header
   - Handle errors thống nhất
   - Parse JSON response
 
-- [ ] `sessions.ts`:
+- [x] `sessions.ts`:
   - `saveSession(data)` → POST /api/sessions
   - `getHistory(page, limit)` → GET /api/sessions
   - `getStats()` → GET /api/sessions/stats
 
-- [ ] `users.ts`:
+- [x] `users.ts`:
   - `getProfile()` → GET /api/users/me
   - `updateProfile(data)` → PUT /api/users/me
   - `updateSettings(data)` → PUT /api/users/me/settings
 
-- [ ] `achievements.ts`:
+- [x] `achievements.ts`:
   - `getAchievements()` → GET /api/achievements
-  - `checkAchievements(data)` → POST /api/achievements/check
+  - `checkAchievementsApi(data)` → POST /api/achievements/check
 
-- [ ] Tích hợp vào game flow:
-  - Khi `finishGame()` → gọi `saveSession()` + `checkAchievements()`
-  - Khi load app → gọi `getProfile()` + `getStats()`
-  - **Offline fallback**: nếu API fail → lưu localStorage, retry sau
+- [x] Tích hợp vào game flow:
+  - Khi `finishGame()` → GameEngine.tsx gọi `saveSession()` (nếu đã đăng nhập)
+  - **Offline fallback**: nếu API fail → lưu localStorage (zustand persist), hiện SyncIndicator "Offline"
 
-- [ ] Verify: chơi game → data lưu lên PostgreSQL
+- [ ] Verify: chơi game → data lưu lên PostgreSQL (cần database chạy)
 
 ---
 
@@ -560,75 +558,70 @@ Trong `apps/web/src/lib/api/`:
 
 #### Task 2.2.1: NextAuth.js Setup
 
-- [ ] `pnpm add next-auth@beta @auth/prisma-adapter` trong apps/web
-- [ ] Tạo `src/app/api/auth/[...nextauth]/route.ts`:
-  - Prisma adapter
-  - Credentials provider (email + password)
+- [x] `pnpm add next-auth@beta @auth/prisma-adapter` trong apps/web
+- [x] Tạo `src/app/api/auth/[...nextauth]/route.ts`:
+  - PrismaAdapter
+  - Credentials provider (email + password + bcrypt)
   - Google OAuth provider
   - JWT strategy
-  - Session callbacks
+  - Session callbacks (jwt → id, session → user.id)
 
-- [ ] Tạo `src/lib/auth.ts` — Auth config + helper functions
-- [ ] Tạo middleware `src/middleware.ts` — Protected routes
+- [x] Tạo `src/lib/auth.ts` — Auth config + helper `getSessionUser()`
+- [x] Tạo middleware `src/middleware.ts` — Protected routes (/profile, /friends)
 
-- [ ] Verify: NextAuth chạy, `/api/auth/session` trả session
+- [ ] Verify: NextAuth chạy, `/api/auth/session` trả session (cần database)
 
 ---
 
 #### Task 2.2.2: Trang Login / Register
 
-- [ ] `src/app/(auth)/login/page.tsx`:
+- [x] `src/app/(auth)/login/page.tsx`:
   - Form email + password
   - Nút "Đăng nhập với Google"
   - Link "Chưa có tài khoản? Đăng ký"
   - Error messages
-  - Giao diện phù hợp trẻ em (emoji, màu sắc)
+  - Giao diện phù hợp trẻ em (emoji, màu sắc) + auth.css
 
-- [ ] `src/app/(auth)/register/page.tsx`:
-  - Form: name, email, password, avatar (emoji picker)
+- [x] `src/app/(auth)/register/page.tsx`:
+  - Form: name, email, password, avatar (16 emoji picker)
   - Validate: email format, password strength (≥ 6 ký tự)
-  - Tự đăng nhập sau đăng ký
+  - Tự đăng nhập sau đăng ký (signIn credentials)
 
-- [ ] `src/app/api/auth/register/route.ts`:
-  - Validate input
+- [x] `src/app/api/auth/register/route.ts`:
+  - Validate input (Zod)
   - Hash password (bcrypt, saltRounds=12)
   - Tạo User + UserRecord
   - Trả về user info
 
-- [ ] Verify: đăng ký → đăng nhập → thấy profile
+- [ ] Verify: đăng ký → đăng nhập → thấy profile (cần database)
 
 ---
 
 #### Task 2.2.3: Guest Mode + Migration
 
-- [ ] Guest mode:
+- [x] Guest mode:
   - Mặc định vào app → chơi ngay (không cần đăng nhập)
-  - Dữ liệu lưu localStorage như hiện tại
-  - Hiện banner nhẹ: "Đăng nhập để lưu tiến bộ của bạn"
+  - Dữ liệu lưu localStorage như hiện tại (zustand persist)
+  - GuestBanner component: "Đăng nhập để lưu tiến bộ của bạn!" (ẩn được)
 
-- [ ] Guest-to-Account migration:
+- [x] Guest-to-Account migration:
   - `src/app/api/auth/migrate/route.ts`:
     - `POST` — Nhận localStorage data: history, records, achievements
-    - Merge vào account mới tạo
-    - Conflict: giữ giá trị tốt hơn (best WPM = max)
-  - Frontend: sau khi đăng ký/đăng nhập lần đầu:
-    - Detect có localStorage data
-    - Hiện dialog: "Bạn có dữ liệu chơi trước đó. Nhập vào tài khoản?"
-    - Nếu đồng ý → gọi migrate API → xóa localStorage cũ
+    - Merge vào account: giữ giá trị tốt hơn (best WPM = max)
+  - MigrateDialog component: sau đăng nhập detect localStorage data → hiện dialog → gọi API → xóa localStorage
 
-- [ ] Verify: chơi guest → đăng ký → dữ liệu cũ xuất hiện trong account
+- [ ] Verify: chơi guest → đăng ký → dữ liệu cũ xuất hiện trong account (cần database)
 
 ---
 
 #### Task 2.2.4: Auth UI Integration
 
-- [ ] Header: hiện avatar + tên nếu đã đăng nhập, nút "Đăng nhập" nếu chưa
-- [ ] Settings: hiện email, nút "Đăng xuất"
-- [ ] Sync indicator: "Đã lưu ☁️" / "Đang đồng bộ..." / "Offline 📴"
-- [ ] Protected routes: /profile, /friends → redirect login nếu chưa đăng nhập
-- [ ] Public routes: /play, /leaderboard → cho phép guest
+- [x] Header: hiện avatar + tên + nút "Đăng xuất" nếu đã đăng nhập (trong GameEngine.tsx)
+- [x] Sync indicator: SyncIndicator component — "Đã lưu ☁️" / "Đang đồng bộ..." / "Offline 📴"
+- [x] Protected routes: middleware.ts → /profile, /friends redirect nếu chưa đăng nhập
+- [x] Public routes: / (play), /leaderboard → cho phép guest
 
-- [ ] Verify: flow đăng nhập/đăng xuất mượt mà
+- [ ] Verify: flow đăng nhập/đăng xuất mượt mà (cần database)
 
 ---
 

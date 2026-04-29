@@ -1,6 +1,7 @@
 'use client'
 
-import { useEffect, useCallback } from 'react'
+import { useEffect, useCallback, useState } from 'react'
+import { useSession, signOut } from 'next-auth/react'
 import { useGameEngine } from '@/hooks/useGameEngine'
 import { useGameStore } from '@/stores/game-store'
 import { useSettingsStore } from '@/stores/settings-store'
@@ -10,6 +11,10 @@ import { HandGuide } from './HandGuide'
 import { StatsBar } from './StatsBar'
 import { CelebrationModal } from './CelebrationModal'
 import { SideNav } from '@/components/layout/SideNav'
+import { GuestBanner } from '@/components/auth/GuestBanner'
+import { SyncIndicator } from '@/components/auth/SyncIndicator'
+import { MigrateDialog } from '@/components/auth/MigrateDialog'
+import { saveSession } from '@/lib/api/sessions'
 import { t } from '@typing-adventure/i18n'
 import type { GameMode, Level } from '@typing-adventure/game-engine'
 
@@ -23,8 +28,33 @@ export function GameEngine() {
     hiddenInputRef,
   } = useGameEngine()
 
+  const { data: session } = useSession()
   const gameStore = useGameStore()
   const settings = useSettingsStore()
+  const [syncStatus, setSyncStatus] = useState<'idle' | 'syncing' | 'saved' | 'offline'>('idle')
+
+  // Save result to server when game finishes (if logged in)
+  useEffect(() => {
+    if (!result || !showCelebration || !session) return
+    setSyncStatus('syncing')
+    saveSession({
+      gameMode: gameState.gameMode,
+      level: gameState.level,
+      wpm: result.wpm,
+      cps: result.cps,
+      accuracy: result.accuracy,
+      score: result.score,
+      stars: result.stars,
+      timeSeconds: result.timeSeconds,
+      wordCount: result.wordCount,
+      maxCombo: result.maxCombo,
+      mistakeMap: result.mistakeMap,
+    }).then((res) => {
+      setSyncStatus(res.success ? 'saved' : 'offline')
+    }).catch(() => {
+      setSyncStatus('offline')
+    })
+  }, [result, showCelebration, session])
 
   // Keyboard input
   useEffect(() => {
@@ -126,11 +156,23 @@ export function GameEngine() {
           <span className="title-icon">✨</span>
         </h1>
         <p className="subtitle">{t(settings.lang, 'subtitle')}</p>
-        {settings.playerName && (
+        {session?.user ? (
+          <p className="profile-greeting">
+            {(session.user as any).image ?? '🧒'}{' '}
+            {settings.lang === 'vi' ? 'Chào' : 'Hi'}, {session.user.name ?? session.user.email}!
+            <button
+              className="btn"
+              style={{ marginLeft: 8, fontSize: '0.75rem', padding: '4px 10px' }}
+              onClick={() => signOut()}
+            >
+              Đăng xuất
+            </button>
+          </p>
+        ) : settings.playerName ? (
           <p className="profile-greeting">
             {settings.playerAvatar} {settings.lang === 'vi' ? 'Chào' : 'Hi'}, {settings.playerName}!
           </p>
-        )}
+        ) : null}
       </header>
 
       <main className="main">
@@ -159,6 +201,10 @@ export function GameEngine() {
         autoCapitalize="off"
         spellCheck={false}
       />
+
+      <GuestBanner />
+      <SyncIndicator status={syncStatus} />
+      <MigrateDialog />
     </div>
   )
 }

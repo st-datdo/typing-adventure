@@ -8,7 +8,10 @@
       "Bash(npx tsc:*)",
       "Bash(npx next:*)",
       "Bash(npx vitest:*)",
-      "Bash(pnpm --filter @typing-adventure/game-engine test)"
+      "Bash(pnpm --filter @typing-adventure/game-engine test)",
+      "Bash(npx prisma:*)",
+      "Bash(mkdir -p /Users/dat.do/Downloads/Blueasha/Project/Mine/keyboad_with_sound/typing-adventure/apps/web/src/app/api/auth/\\\\[...nextauth\\\\])",
+      "Bash(mkdir -p \"/Users/dat.do/Downloads/Blueasha/Project/Mine/keyboad_with_sound/typing-adventure/apps/web/src/app/api/users/[id]\")"
     ]
   }
 }
