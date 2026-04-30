@@ -3,6 +3,7 @@
 @tailwind utilities;
 @import './game.css';
 @import './auth.css';
+@import './social.css';
 
 /* ── Theme: Dark (default) ── */
 :root {

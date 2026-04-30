@@ -644,14 +644,14 @@ Trong `apps/web/src/lib/api/`:
 
 #### Task 3.1.1: Leaderboard API
 
-- [ ] `api/leaderboard/route.ts`:
+- [x] `api/leaderboard/route.ts`:
   - `GET` — Bảng xếp hạng toàn cầu
   - Query params: `?mode=classic&level=medium&period=weekly&limit=50&offset=0`
   - Period: `all` / `weekly` / `daily`
   - Trả về: rank, name (ẩn: 3 ký tự đầu + ***), avatar, wpm, accuracy, score
   - Cache Redis: TTL 5 phút
 
-- [ ] `api/leaderboard/friends/route.ts`:
+- [x] `api/leaderboard/friends/route.ts`:
   - `GET` — Xếp hạng bạn bè
   - Chỉ hiện users trong friendship list
 
@@ -661,7 +661,7 @@ Trong `apps/web/src/lib/api/`:
 
 #### Task 3.1.2: Leaderboard Page (SSR)
 
-- [ ] `src/app/(social)/leaderboard/page.tsx`:
+- [x] `src/app/(social)/leaderboard/page.tsx`:
   - Server-side render cho SEO
   - Bảng xếp hạng: #rank, avatar, tên, WPM, accuracy
   - Filters: mode dropdown, level dropdown, period tabs (All / Weekly / Daily)
@@ -677,12 +677,12 @@ Trong `apps/web/src/lib/api/`:
 
 #### Task 3.2.1: Public Profile Page
 
-- [ ] `src/app/(social)/profile/[id]/page.tsx`:
+- [x] `src/app/(social)/profile/[id]/page.tsx`:
   - Avatar + tên
   - Best records (WPM, accuracy theo level)
   - Total games, total words, max streak
   - Achievement showcase (chỉ unlocked)
-  - WPM chart (Recharts) — 20 games gần nhất
+  - WPM chart (CSS bars) — 20 games gần nhất
   - Nút "Kết bạn" (nếu chưa là bạn)
 
 - [ ] Verify: profile hiển thị đúng data, achievements render đẹp
@@ -693,22 +693,22 @@ Trong `apps/web/src/lib/api/`:
 
 #### Task 3.3.1: Friends API
 
-- [ ] `api/friends/route.ts`:
+- [x] `api/friends/route.ts`:
   - `GET` — Danh sách bạn bè (accepted)
   - `POST` — Gửi lời mời kết bạn (body: receiverId hoặc email)
 
-- [ ] `api/friends/[id]/route.ts`:
+- [x] `api/friends/[id]/route.ts`:
   - `PUT` — Chấp nhận lời mời
   - `DELETE` — Xóa bạn / từ chối lời mời
 
-- [ ] `api/friends/requests/route.ts`:
+- [x] `api/friends/requests/route.ts`:
   - `GET` — Danh sách lời mời đang chờ (sent + received)
 
 ---
 
 #### Task 3.3.2: Friends Page
 
-- [ ] `src/app/(social)/friends/page.tsx`:
+- [x] `src/app/(social)/friends/page.tsx`:
   - Tab: "Bạn bè" / "Lời mời" / "Tìm bạn"
   - Danh sách bạn: avatar, tên, best WPM, last active
   - Lời mời: nút Chấp nhận / Từ chối

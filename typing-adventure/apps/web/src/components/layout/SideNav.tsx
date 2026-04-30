@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import { useSettingsStore } from '@/stores/settings-store'
 import { t } from '@typing-adventure/i18n'
 import { LESSONS } from '@typing-adventure/game-engine'
@@ -120,6 +121,13 @@ export function SideNav({
         <button className="nav-btn has-tooltip" data-tooltip={t(lang, 'tipHistory')} onClick={onOpenHistory}>
           {t(lang, 'btnHistory')}
         </button>
+
+        <Link href="/leaderboard" className="nav-btn has-tooltip" data-tooltip={t(lang, 'navLeaderboard')}>
+          {t(lang, 'navLeaderboard')}
+        </Link>
+        <Link href="/friends" className="nav-btn has-tooltip" data-tooltip={t(lang, 'navFriends')}>
+          {t(lang, 'navFriends')}
+        </Link>
       </nav>
 
       <aside className="quick-actions">
