@@ -25,6 +25,7 @@ export {
   WORDS,
   LESSONS,
   pickWords,
+  pickWordsFromPool,
   generateLessonWords,
   generateChallengeWords,
 } from './words'

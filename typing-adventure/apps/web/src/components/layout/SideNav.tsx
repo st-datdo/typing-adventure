@@ -1,19 +1,23 @@
 'use client'
 
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useSettingsStore } from '@/stores/settings-store'
 import { t } from '@typing-adventure/i18n'
 import { LESSONS } from '@typing-adventure/game-engine'
 import type { GameMode, Level, SoundMode, Lang } from '@typing-adventure/game-engine'
+import { getWordPacks, type WordPackSummary } from '@/lib/api/wordpacks'
 
 interface SideNavProps {
   gameMode: GameMode
   lessonIndex: number
   timeAttackDuration: number
+  selectedWordPackId: string | null
   onModeChange: (mode: GameMode) => void
   onLevelChange: (level: Level) => void
   onLessonChange: (index: number) => void
   onTimeAttackChange: (duration: number) => void
+  onWordPackChange: (packId: string | null, words: string[] | undefined) => void
   onRestart: () => void
   onOpenSettings: () => void
   onOpenHistory: () => void
@@ -23,16 +27,39 @@ export function SideNav({
   gameMode,
   lessonIndex,
   timeAttackDuration,
+  selectedWordPackId,
   onModeChange,
   onLevelChange,
   onLessonChange,
   onTimeAttackChange,
+  onWordPackChange,
   onRestart,
   onOpenSettings,
   onOpenHistory,
 }: SideNavProps) {
   const settings = useSettingsStore()
   const lang = settings.lang
+  const [wordPacks, setWordPacks] = useState<WordPackSummary[]>([])
+
+  useEffect(() => {
+    getWordPacks().then((res) => {
+      if (res.success && res.data) setWordPacks(res.data)
+    })
+  }, [])
+
+  const handleWordPackSelect = (packId: string) => {
+    if (packId === 'default') {
+      onWordPackChange(null, undefined)
+    } else {
+      const pack = wordPacks.find((p) => p.id === packId)
+      onWordPackChange(packId, pack?.words)
+    }
+  }
+
+  // Filter packs by current level
+  const filteredPacks = wordPacks.filter(
+    (p) => p.level === settings.level || p.isDefault === false,
+  )
 
   return (
     <>
@@ -102,6 +129,23 @@ export function SideNav({
             <option value="hard">{t(lang, 'lvHard')}</option>
           </select>
         </div>
+
+        {wordPacks.length > 0 && (
+          <div className="nav-wrap has-tooltip" data-tooltip={lang === 'vi' ? 'Chọn bộ từ' : 'Choose word pack'}>
+            <select
+              className="nav-control"
+              value={selectedWordPackId ?? 'default'}
+              onChange={(e) => handleWordPackSelect(e.target.value)}
+            >
+              <option value="default">{lang === 'vi' ? '📦 Mặc định' : '📦 Default'}</option>
+              {wordPacks.map((pack) => (
+                <option key={pack.id} value={pack.id}>
+                  📦 {pack.name} ({pack.wordCount})
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
 
         <div className="nav-wrap has-tooltip" data-tooltip={t(lang, 'tipSoundMode')}>
           <select

@@ -44,6 +44,8 @@ export function GameEngine() {
   const flashIdRef = useRef(0)
   const [lastKeyFlash, setLastKeyFlash] = useState<{ key: string; correct: boolean; id: number } | null>(null)
   const profileLoadedRef = useRef<string | null>(null)
+  const [selectedWordPackId, setSelectedWordPackId] = useState<string | null>(null)
+  const [selectedWordPackWords, setSelectedWordPackWords] = useState<string[] | undefined>(undefined)
 
   // Load profile + settings from DB when logged in
   useEffect(() => {
@@ -187,32 +189,38 @@ export function GameEngine() {
   }, [settings.theme])
 
   const handleModeChange = useCallback((mode: GameMode) => {
-    gameStore.startGame(mode, settings.level, settings.wordCount)
-  }, [settings.level, settings.wordCount])
+    gameStore.startGame(mode, settings.level, settings.wordCount, 0, 60, selectedWordPackWords)
+  }, [settings.level, settings.wordCount, selectedWordPackWords])
 
   const handleLevelChange = useCallback((level: Level) => {
     settings.setLevel(level)
-    gameStore.startGame(gameState.gameMode, level, settings.wordCount)
-  }, [gameState.gameMode, settings.wordCount])
+    gameStore.startGame(gameState.gameMode, level, settings.wordCount, 0, gameState.timeAttackDuration, selectedWordPackWords)
+  }, [gameState.gameMode, settings.wordCount, gameState.timeAttackDuration, selectedWordPackWords])
 
   const handleLessonChange = useCallback((index: number) => {
     gameStore.startGame('lesson', settings.level, settings.wordCount, index)
   }, [settings.level, settings.wordCount])
 
   const handleTimeAttackChange = useCallback((duration: number) => {
-    gameStore.startGame('timeAttack', settings.level, settings.wordCount, 0, duration)
-  }, [settings.level, settings.wordCount])
+    gameStore.startGame('timeAttack', settings.level, settings.wordCount, 0, duration, selectedWordPackWords)
+  }, [settings.level, settings.wordCount, selectedWordPackWords])
 
   const handlePlayAgain = useCallback(() => {
-    gameStore.startGame(gameState.gameMode, settings.level, settings.wordCount, gameState.lessonIndex, gameState.timeAttackDuration)
+    gameStore.startGame(gameState.gameMode, settings.level, settings.wordCount, gameState.lessonIndex, gameState.timeAttackDuration, selectedWordPackWords)
     focusInput()
-  }, [gameState.gameMode, settings.level, settings.wordCount, gameState.lessonIndex, gameState.timeAttackDuration, focusInput])
+  }, [gameState.gameMode, settings.level, settings.wordCount, gameState.lessonIndex, gameState.timeAttackDuration, selectedWordPackWords, focusInput])
 
   const handleTryLevel = useCallback((level: string) => {
     settings.setLevel(level as Level)
-    gameStore.startGame(gameState.gameMode, level as Level, settings.wordCount)
+    gameStore.startGame(gameState.gameMode, level as Level, settings.wordCount, 0, gameState.timeAttackDuration, selectedWordPackWords)
     focusInput()
-  }, [gameState.gameMode, settings.wordCount, focusInput])
+  }, [gameState.gameMode, settings.wordCount, gameState.timeAttackDuration, selectedWordPackWords, focusInput])
+
+  const handleWordPackChange = useCallback((packId: string | null, words: string[] | undefined) => {
+    setSelectedWordPackId(packId)
+    setSelectedWordPackWords(words)
+    gameStore.startGame(gameState.gameMode, settings.level, settings.wordCount, gameState.lessonIndex, gameState.timeAttackDuration, words)
+  }, [gameState.gameMode, settings.level, settings.wordCount, gameState.lessonIndex, gameState.timeAttackDuration])
 
   const handlePracticeWeak = useCallback((chars: string[]) => {
     const allWords = ['cat', 'dog', 'sun', 'hat', 'big', 'run', 'fun', 'apple', 'happy', 'tiger']
@@ -238,10 +246,12 @@ export function GameEngine() {
         gameMode={gameState.gameMode}
         lessonIndex={gameState.lessonIndex}
         timeAttackDuration={gameState.timeAttackDuration}
+        selectedWordPackId={selectedWordPackId}
         onModeChange={handleModeChange}
         onLevelChange={handleLevelChange}
         onLessonChange={handleLessonChange}
         onTimeAttackChange={handleTimeAttackChange}
+        onWordPackChange={handleWordPackChange}
         onRestart={handlePlayAgain}
         onOpenSettings={() => setPanel('settings')}
         onOpenHistory={() => setPanel('history')}

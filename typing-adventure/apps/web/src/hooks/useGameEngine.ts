@@ -100,12 +100,14 @@ export function useGameEngine() {
 
   const resetGame = useCallback(() => {
     cancelSpeech()
+    const { customWords } = useGameStore.getState()
     gameStore.startGame(
       gameState.gameMode,
       settings.level,
       settings.wordCount,
       gameState.lessonIndex,
       gameState.timeAttackDuration,
+      customWords,
     )
   }, [gameState.gameMode, settings.level, settings.wordCount, gameState.lessonIndex, gameState.timeAttackDuration])
 

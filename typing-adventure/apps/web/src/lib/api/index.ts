@@ -10,3 +10,5 @@ export {
   removeFriend,
   getFriendRequests,
 } from './friends'
+export { getWordPacks } from './wordpacks'
+export type { WordPackSummary } from './wordpacks'

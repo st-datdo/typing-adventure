@@ -15,8 +15,9 @@ interface GameStore {
   isPlaying: boolean
   result: GameResult | null
   showCelebration: boolean
+  customWords: string[] | undefined
 
-  startGame: (mode: GameMode, level: Level, wordCount: number, lessonIndex?: number, timeAttackDuration?: number) => void
+  startGame: (mode: GameMode, level: Level, wordCount: number, lessonIndex?: number, timeAttackDuration?: number, customWords?: string[]) => void
   startCustomGame: (text: string, level: Level) => void
   handleKeypress: (char: string) => { isCorrect: boolean; completedWord: string | null; isMilestone: boolean }
   finishGame: () => void
@@ -31,13 +32,15 @@ export const useGameStore = create<GameStore>()((set, get) => ({
   isPlaying: false,
   result: null,
   showCelebration: false,
+  customWords: undefined,
 
-  startGame: (mode, level, wordCount, lessonIndex = 0, timeAttackDuration = 60) => {
+  startGame: (mode, level, wordCount, lessonIndex = 0, timeAttackDuration = 60, customWords = undefined) => {
     set({
-      gameState: createInitialState(mode, level, wordCount, lessonIndex, timeAttackDuration),
+      gameState: createInitialState(mode, level, wordCount, lessonIndex, timeAttackDuration, customWords),
       isPlaying: false,
       result: null,
       showCelebration: false,
+      customWords,
     })
   },
 
@@ -85,7 +88,7 @@ export const useGameStore = create<GameStore>()((set, get) => ({
   },
 
   resetGame: () => {
-    const { gameState } = get()
+    const { gameState, customWords } = get()
     set({
       gameState: createInitialState(
         gameState.gameMode,
@@ -93,6 +96,7 @@ export const useGameStore = create<GameStore>()((set, get) => ({
         gameState.wordBoundaries.length || 10,
         gameState.lessonIndex,
         gameState.timeAttackDuration,
+        customWords,
       ),
       isPlaying: false,
       result: null,

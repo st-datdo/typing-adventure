@@ -4,6 +4,7 @@
 @import './game.css';
 @import './auth.css';
 @import './social.css';
+@import './admin.css';
 
 /* ── Theme: Dark (default) ── */
 :root {

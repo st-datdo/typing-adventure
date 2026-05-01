@@ -32,6 +32,10 @@ export const LESSONS: LessonDef[] = [
 
 export function pickWords(level: Level, count: number): string {
   const pool = WORDS[level]
+  return pickWordsFromPool(pool, count)
+}
+
+export function pickWordsFromPool(pool: string[], count: number): string {
   const picked: string[] = []
   const used = new Set<number>()
   while (picked.length < count) {

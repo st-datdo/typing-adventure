@@ -1,6 +1,6 @@
 import type { GameState, GameMode, Level, WordBoundary, KeypressResult, GameResult } from './types'
 import { calculateCharScore, calculateFinalScore, calculateStars, COMBO_MILESTONES } from './scoring'
-import { WORDS, LESSONS, pickWords, generateLessonWords, generateChallengeWords } from './words'
+import { WORDS, LESSONS, pickWords, pickWordsFromPool, generateLessonWords, generateChallengeWords } from './words'
 
 const CHALLENGE_LIVES = 3
 const CHALLENGE_MISTAKES_PER_LIFE = 3
@@ -14,10 +14,21 @@ export function createInitialState(
   wordCount: number = DEFAULT_WORD_COUNT,
   lessonIndex: number = 0,
   timeAttackDuration: number = 60,
+  customWords?: string[],
 ): GameState {
   let text: string
 
-  if (gameMode === 'lesson') {
+  if (customWords && customWords.length > 0) {
+    // Use custom word pack
+    if (gameMode === 'timeAttack') {
+      const w1 = pickWordsFromPool(customWords, wordCount)
+      const w2 = pickWordsFromPool(customWords, wordCount)
+      const w3 = pickWordsFromPool(customWords, wordCount)
+      text = w1 + ' ' + w2 + ' ' + w3
+    } else {
+      text = pickWordsFromPool(customWords, wordCount)
+    }
+  } else if (gameMode === 'lesson') {
     const lesson = LESSONS[lessonIndex] ?? LESSONS[0]
     const words = generateLessonWords(lesson.chars, wordCount)
     text = words.join(' ')

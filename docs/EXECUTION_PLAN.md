@@ -715,7 +715,7 @@ Trong `apps/web/src/lib/api/`:
   - Tìm bạn: search by name/email
   - Nút "Thách đấu" (link đến multiplayer — giai đoạn 5)
 
-- [ ] Verify: kết bạn flow hoàn chỉnh
+- [x] Verify: kết bạn flow hoàn chỉnh
 
 ---
 
@@ -733,22 +733,22 @@ Trong `apps/web/src/lib/api/`:
 
 #### Task 4.1: WordPack CRUD API
 
-- [ ] `api/wordpacks/route.ts`:
+- [x] `api/wordpacks/route.ts`:
   - `GET` — Danh sách bộ từ (filter: language, level, category)
   - `POST` — Tạo bộ từ mới (admin/teacher only)
 
-- [ ] `api/wordpacks/[id]/route.ts`:
+- [x] `api/wordpacks/[id]/route.ts`:
   - `GET` — Chi tiết 1 bộ từ
   - `PUT` — Sửa (admin/teacher only)
   - `DELETE` — Xóa (admin only)
 
-- [ ] Admin guard middleware: kiểm tra `role === 'ADMIN'`
+- [x] Admin guard middleware: kiểm tra `role === 'ADMIN'`
 
 ---
 
 #### Task 4.2: Seed Default Word Packs
 
-- [ ] Cập nhật `prisma/seed.ts`:
+- [x] Cập nhật `prisma/seed.ts`:
   - Seed 3 default packs (easy/medium/hard) từ WORDS trong game-engine
   - Seed thêm 3 packs theo chủ đề: Animals, Food, School
   - Mỗi pack: 50-100 từ, có category tag
@@ -757,18 +757,18 @@ Trong `apps/web/src/lib/api/`:
 
 #### Task 4.3: Admin Dashboard (Basic)
 
-- [ ] `src/app/admin/layout.tsx` — Admin layout với sidebar
-- [ ] `src/app/admin/dashboard/page.tsx`:
+- [x] `src/app/admin/layout.tsx` — Admin layout với sidebar
+- [x] `src/app/admin/dashboard/page.tsx`:
   - Thống kê: tổng users, sessions hôm nay, WPM trung bình
   - Charts: sessions/ngày (7 ngày gần nhất), user growth
 
-- [ ] `src/app/admin/words/page.tsx`:
+- [x] `src/app/admin/words/page.tsx`:
   - Bảng danh sách word packs
   - CRUD: tạo / sửa / xóa
   - Import CSV
   - Preview: xem trước danh sách từ
 
-- [ ] `src/app/admin/users/page.tsx`:
+- [x] `src/app/admin/users/page.tsx`:
   - Bảng danh sách users (phân trang)
   - Actions: xem profile, ban/unban
 
@@ -776,12 +776,12 @@ Trong `apps/web/src/lib/api/`:
 
 #### Task 4.4: Frontend — Chọn Word Pack khi chơi
 
-- [ ] Thêm vào SideNav: dropdown "Bộ từ" (bên cạnh Level select)
+- [x] Thêm vào SideNav: dropdown "Bộ từ" (bên cạnh Level select)
   - Default: "Mặc định" (dùng WORDS từ game-engine)
   - Danh sách word packs từ API
   - Filter theo level hiện tại
 
-- [ ] Game engine: nhận words từ selected pack thay vì hardcode
+- [x] Game engine: nhận words từ selected pack thay vì hardcode
 
 ---
 
