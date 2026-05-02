@@ -1,6 +1,7 @@
 import { prisma } from '@typing-adventure/db'
 import { requireAdmin } from '@/lib/admin-guard'
 import { ok, err } from '@/lib/api-response'
+import { safeMistakeMap } from '@/lib/mistake-map'
 
 export async function GET(
   _request: Request,
@@ -35,67 +36,77 @@ export async function GET(
 
     if (!classroom) return err('Classroom not found', 404)
 
-    // Fetch stats for each student
-    const studentStats = await Promise.all(
-      classroom.members.map(async (member) => {
-        const [record, recentSessions] = await Promise.all([
-          prisma.userRecord.findUnique({
-            where: { userId: member.userId },
-          }),
-          prisma.gameSession.findMany({
-            where: { userId: member.userId },
-            orderBy: { createdAt: 'desc' },
-            take: 20,
-            select: {
-              wpm: true,
-              accuracy: true,
-              createdAt: true,
-            },
-          }),
-        ])
-
-        return {
-          userId: member.userId,
-          name: member.user.name,
-          email: member.user.email,
-          avatar: member.user.avatar,
-          joinedAt: member.joinedAt,
-          totalGames: record?.totalGames ?? 0,
-          bestWpm: record?.bestWpm ?? { easy: 0, medium: 0, hard: 0 },
-          lastPlayDate: record?.lastPlayDate,
-          recentSessions: recentSessions.map((s) => ({
-            wpm: s.wpm,
-            accuracy: s.accuracy,
-            date: s.createdAt,
-          })),
-        }
-      }),
-    )
-
-    // Class aggregate stats
     const allStudentIds = classroom.members.map((m) => m.userId)
-    const classStats =
-      allStudentIds.length > 0
-        ? await prisma.gameSession.aggregate({
-            _avg: { wpm: true, accuracy: true },
-            where: { userId: { in: allStudentIds } },
-          })
-        : { _avg: { wpm: null, accuracy: null } }
 
-    // Most common mistakes across class
-    const classSessions =
+    // Batch queries: records + recent sessions for ALL students at once
+    const [records, allRecentSessions, classStats, classSessions] =
       allStudentIds.length > 0
-        ? await prisma.gameSession.findMany({
-            where: { userId: { in: allStudentIds } },
-            select: { mistakeMap: true },
-            take: 200,
-            orderBy: { createdAt: 'desc' },
-          })
-        : []
+        ? await Promise.all([
+            prisma.userRecord.findMany({
+              where: { userId: { in: allStudentIds } },
+            }),
+            prisma.gameSession.findMany({
+              where: { userId: { in: allStudentIds } },
+              orderBy: { createdAt: 'desc' },
+              take: allStudentIds.length * 20,
+              select: {
+                userId: true,
+                wpm: true,
+                accuracy: true,
+                createdAt: true,
+              },
+            }),
+            prisma.gameSession.aggregate({
+              _avg: { wpm: true, accuracy: true },
+              where: {
+                userId: { in: allStudentIds },
+                createdAt: { gte: new Date(Date.now() - 30 * 86400000) },
+              },
+            }),
+            prisma.gameSession.findMany({
+              where: { userId: { in: allStudentIds } },
+              select: { mistakeMap: true },
+              take: 500,
+              orderBy: { createdAt: 'desc' },
+            }),
+          ])
+        : [[], [], { _avg: { wpm: null, accuracy: null } }, []]
 
+    // Index records by userId
+    const recordMap = new Map(records.map((r) => [r.userId, r]))
+
+    // Group recent sessions by userId, limit 20 per student
+    const sessionsByUser = new Map<
+      string,
+      { wpm: number; accuracy: number; date: Date }[]
+    >()
+    for (const s of allRecentSessions) {
+      const list = sessionsByUser.get(s.userId) ?? []
+      if (list.length < 20) {
+        list.push({ wpm: s.wpm, accuracy: s.accuracy, date: s.createdAt })
+      }
+      sessionsByUser.set(s.userId, list)
+    }
+
+    const studentStats = classroom.members.map((member) => {
+      const record = recordMap.get(member.userId)
+      return {
+        userId: member.userId,
+        name: member.user.name,
+        email: member.user.email,
+        avatar: member.user.avatar,
+        joinedAt: member.joinedAt,
+        totalGames: record?.totalGames ?? 0,
+        bestWpm: record?.bestWpm ?? { easy: 0, medium: 0, hard: 0 },
+        lastPlayDate: record?.lastPlayDate,
+        recentSessions: sessionsByUser.get(member.userId) ?? [],
+      }
+    })
+
+    // Aggregate mistakes with safe parsing
     const mistakeAggregate: Record<string, number> = {}
     for (const s of classSessions) {
-      const map = s.mistakeMap as Record<string, number>
+      const map = safeMistakeMap(s.mistakeMap)
       for (const [key, count] of Object.entries(map)) {
         mistakeAggregate[key] = (mistakeAggregate[key] ?? 0) + count
       }

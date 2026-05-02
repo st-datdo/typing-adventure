@@ -1,6 +1,9 @@
 import { prisma } from '@typing-adventure/db'
 import { requireAdmin } from '@/lib/admin-guard'
 import { ok, err } from '@/lib/api-response'
+import { safeMistakeMap } from '@/lib/mistake-map'
+
+const MAX_SESSIONS = 10_000
 
 export async function GET(request: Request) {
   const { error } = await requireAdmin()
@@ -20,18 +23,20 @@ export async function GET(request: Request) {
     } else if (period === 'monthly') {
       startDate.setMonth(startDate.getMonth() - 1)
     } else {
-      // all time — no date filter
-      startDate.setFullYear(2000)
+      // all time — cap to last 365 days
+      startDate.setFullYear(startDate.getFullYear() - 1)
     }
 
     const sessions = await prisma.gameSession.findMany({
       where: { createdAt: { gte: startDate } },
       select: { mistakeMap: true },
+      take: MAX_SESSIONS,
+      orderBy: { createdAt: 'desc' },
     })
 
     const aggregate: Record<string, number> = {}
     for (const session of sessions) {
-      const map = session.mistakeMap as Record<string, number>
+      const map = safeMistakeMap(session.mistakeMap)
       for (const [key, count] of Object.entries(map)) {
         aggregate[key] = (aggregate[key] ?? 0) + count
       }

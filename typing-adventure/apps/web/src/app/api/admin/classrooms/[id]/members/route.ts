@@ -73,7 +73,14 @@ export async function DELETE(
     })
 
     return ok({ removed: true })
-  } catch {
+  } catch (e: unknown) {
+    if (
+      e instanceof Error &&
+      'code' in e &&
+      (e as { code: string }).code === 'P2025'
+    ) {
+      return err('Student not found in this classroom', 404)
+    }
     return err('Failed to remove member', 500)
   }
 }

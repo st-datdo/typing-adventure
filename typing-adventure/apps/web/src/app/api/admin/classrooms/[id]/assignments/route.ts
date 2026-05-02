@@ -5,9 +5,12 @@ import { z } from 'zod'
 
 const assignmentSchema = z.object({
   title: z.string().min(1).max(200),
-  gameMode: z.string().min(1),
-  level: z.string().min(1),
-  deadline: z.string().optional(),
+  gameMode: z.enum(['words', 'sentences', 'lesson']),
+  level: z.enum(['easy', 'medium', 'hard']),
+  deadline: z.string().refine(
+    (val) => !val || !isNaN(Date.parse(val)),
+    { message: 'Invalid date format' },
+  ).optional(),
 })
 
 export async function POST(

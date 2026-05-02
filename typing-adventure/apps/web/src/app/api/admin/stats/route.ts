@@ -9,12 +9,15 @@ function daysAgo(n: number): Date {
   return d
 }
 
-function dateRange(days: number) {
+/** Build a complete date range with labels, filling gaps with zeros */
+function fillDateRange(
+  days: number,
+  dataMap: Map<string, number>,
+): { date: string; count: number }[] {
   return Array.from({ length: days }, (_, i) => {
-    const start = daysAgo(days - 1 - i)
-    const end = new Date(start)
-    end.setDate(end.getDate() + 1)
-    return { start, end, label: start.toISOString().slice(0, 10) }
+    const d = daysAgo(days - 1 - i)
+    const label = d.toISOString().slice(0, 10)
+    return { date: label, count: dataMap.get(label) ?? 0 }
   })
 }
 
@@ -27,14 +30,12 @@ export async function GET(request: Request) {
   const days = Math.min(Math.max(period, 7), 90)
 
   try {
-    const now = new Date()
     const todayStart = daysAgo(0)
     const weekAgo = daysAgo(7)
     const monthAgo = daysAgo(30)
+    const rangeStart = daysAgo(days - 1)
 
-    const range = dateRange(days)
-
-    // Core counts + DAU/WAU/MAU
+    // Core counts + DAU/WAU/MAU + trend data — all in parallel
     const [
       totalUsers,
       totalSessions,
@@ -44,6 +45,9 @@ export async function GET(request: Request) {
       wauResult,
       mauResult,
       activeRooms,
+      sessionsInRange,
+      usersInRange,
+      topWordPacks,
     ] = await Promise.all([
       prisma.user.count(),
       prisma.gameSession.count(),
@@ -51,22 +55,18 @@ export async function GET(request: Request) {
         where: { createdAt: { gte: todayStart } },
       }),
       prisma.gameSession.aggregate({ _avg: { wpm: true } }),
-      // DAU: unique users who played today
       prisma.gameSession.groupBy({
         by: ['userId'],
         where: { createdAt: { gte: todayStart } },
       }),
-      // WAU: unique users who played last 7 days
       prisma.gameSession.groupBy({
         by: ['userId'],
         where: { createdAt: { gte: weekAgo } },
       }),
-      // MAU: unique users who played last 30 days
       prisma.gameSession.groupBy({
         by: ['userId'],
         where: { createdAt: { gte: monthAgo } },
       }),
-      // Active race rooms (WAITING or RACING)
       prisma.raceRoom.findMany({
         where: { status: { in: ['WAITING', 'COUNTDOWN', 'RACING'] } },
         select: {
@@ -81,44 +81,54 @@ export async function GET(request: Request) {
         orderBy: { createdAt: 'desc' },
         take: 20,
       }),
+      // Fetch all sessions in range for trend aggregation
+      prisma.gameSession.findMany({
+        where: { createdAt: { gte: rangeStart } },
+        select: { createdAt: true, wpm: true },
+      }),
+      // All users created in range
+      prisma.user.findMany({
+        where: { createdAt: { gte: rangeStart } },
+        select: { createdAt: true },
+      }),
+      prisma.gameSession.groupBy({
+        by: ['gameMode'],
+        _count: { id: true },
+        orderBy: { _count: { id: 'desc' } },
+        take: 10,
+      }),
     ])
 
-    // Sessions per day
-    const dailySessions = await Promise.all(
-      range.map(({ start, end, label }) =>
-        prisma.gameSession
-          .count({ where: { createdAt: { gte: start, lt: end } } })
-          .then((count) => ({ date: label, count })),
-      ),
-    )
+    // Aggregate sessions per day from fetched data
+    const sessionCountMap = new Map<string, number>()
+    const wpmSumMap = new Map<string, { total: number; count: number }>()
 
-    // User registration trend
-    const userGrowth = await Promise.all(
-      range.map(({ start, end, label }) =>
-        prisma.user
-          .count({ where: { createdAt: { gte: start, lt: end } } })
-          .then((count) => ({ date: label, count })),
-      ),
-    )
+    for (const s of sessionsInRange) {
+      const dateKey = s.createdAt.toISOString().slice(0, 10)
+      sessionCountMap.set(dateKey, (sessionCountMap.get(dateKey) ?? 0) + 1)
 
-    // Average WPM trend per day
-    const wpmTrend = await Promise.all(
-      range.map(({ start, end, label }) =>
-        prisma.gameSession
-          .aggregate({
-            _avg: { wpm: true },
-            where: { createdAt: { gte: start, lt: end } },
-          })
-          .then((r) => ({ date: label, avgWpm: Math.round(r._avg.wpm ?? 0) })),
-      ),
-    )
+      const wpmEntry = wpmSumMap.get(dateKey) ?? { total: 0, count: 0 }
+      wpmEntry.total += s.wpm
+      wpmEntry.count += 1
+      wpmSumMap.set(dateKey, wpmEntry)
+    }
 
-    // Top word packs (most played)
-    const topWordPacks = await prisma.gameSession.groupBy({
-      by: ['gameMode'],
-      _count: { id: true },
-      orderBy: { _count: { id: 'desc' } },
-      take: 10,
+    // Aggregate user registrations per day
+    const userCountMap = new Map<string, number>()
+    for (const u of usersInRange) {
+      const dateKey = u.createdAt.toISOString().slice(0, 10)
+      userCountMap.set(dateKey, (userCountMap.get(dateKey) ?? 0) + 1)
+    }
+
+    // Build WPM trend
+    const wpmTrend = Array.from({ length: days }, (_, i) => {
+      const d = daysAgo(days - 1 - i)
+      const label = d.toISOString().slice(0, 10)
+      const entry = wpmSumMap.get(label)
+      return {
+        date: label,
+        avgWpm: entry ? Math.round(entry.total / entry.count) : 0,
+      }
     })
 
     return ok({
@@ -129,8 +139,8 @@ export async function GET(request: Request) {
       dau: dauResult.length,
       wau: wauResult.length,
       mau: mauResult.length,
-      dailySessions,
-      userGrowth,
+      dailySessions: fillDateRange(days, sessionCountMap),
+      userGrowth: fillDateRange(days, userCountMap),
       wpmTrend,
       topWordPacks: topWordPacks.map((wp) => ({
         gameMode: wp.gameMode,
