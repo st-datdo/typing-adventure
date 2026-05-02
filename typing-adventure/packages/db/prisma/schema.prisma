@@ -32,6 +32,9 @@ model User {
   friendsInitiated  Friendship[]   @relation("FriendInitiator")
   friendsReceived   Friendship[]   @relation("FriendReceiver")
   raceResults       RaceResult[]
+  classroomsOwned   Classroom[]    @relation("ClassroomTeacher")
+  classroomMembers  ClassroomMember[]
+  assignments       Assignment[]
 
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
@@ -193,4 +196,53 @@ model RaceResult {
   createdAt     DateTime  @default(now())
 
   @@unique([roomId, userId])
+}
+
+// ============================================
+// CLASSROOM
+// ============================================
+model Classroom {
+  id            String              @id @default(cuid())
+  name          String
+  description   String?
+  inviteCode    String              @unique @default(cuid())
+  teacherId     String
+  teacher       User                @relation("ClassroomTeacher", fields: [teacherId], references: [id])
+  members       ClassroomMember[]
+  assignments   Assignment[]
+
+  createdAt     DateTime            @default(now())
+  updatedAt     DateTime            @updatedAt
+
+  @@index([teacherId])
+}
+
+model ClassroomMember {
+  id            String    @id @default(cuid())
+  classroomId   String
+  classroom     Classroom @relation(fields: [classroomId], references: [id], onDelete: Cascade)
+  userId        String
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  joinedAt      DateTime  @default(now())
+
+  @@unique([classroomId, userId])
+  @@index([userId])
+}
+
+model Assignment {
+  id            String    @id @default(cuid())
+  classroomId   String
+  classroom     Classroom @relation(fields: [classroomId], references: [id], onDelete: Cascade)
+  createdById   String
+  createdBy     User      @relation(fields: [createdById], references: [id])
+
+  title         String
+  gameMode      String
+  level         String
+  deadline      DateTime?
+
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@index([classroomId])
 }

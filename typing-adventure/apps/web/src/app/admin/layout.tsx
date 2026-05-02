@@ -10,6 +10,8 @@ const NAV_ITEMS = [
   { href: '/admin/dashboard', icon: '📊', label: 'Dashboard' },
   { href: '/admin/words', icon: '📝', label: 'Word Packs' },
   { href: '/admin/users', icon: '👥', label: 'Users' },
+  { href: '/admin/classroom', icon: '🏫', label: 'Classroom' },
+  { href: '/admin/heatmap', icon: '🔥', label: 'Heatmap' },
 ]
 
 export default function AdminLayout({

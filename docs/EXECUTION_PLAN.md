@@ -959,7 +959,7 @@ Server → Client:
 
 #### Task 6.1: Admin Dashboard Nâng Cao
 
-- [ ] Cập nhật `src/app/admin/dashboard/page.tsx`:
+- [x] Cập nhật `src/app/admin/dashboard/page.tsx`:
   - DAU / WAU / MAU charts
   - Sessions per day (30 ngày)
   - Average WPM trend
@@ -971,12 +971,12 @@ Server → Client:
 
 #### Task 6.2: Teacher Dashboard
 
-- [ ] `src/app/admin/classroom/page.tsx`:
+- [x] `src/app/admin/classroom/page.tsx`:
   - Tạo lớp học (tên, mô tả)
   - Thêm học sinh (bằng email hoặc invite link)
   - Danh sách học sinh: avatar, tên, total games, best WPM, last active
 
-- [ ] `src/app/admin/classroom/[id]/page.tsx`:
+- [x] `src/app/admin/classroom/[id]/page.tsx`:
   - Tiến bộ từng học sinh: WPM chart, accuracy trend
   - Thống kê lớp: WPM trung bình, phân bố accuracy, chữ hay sai nhất
   - Giao bài tập: chọn word pack + level + deadline
@@ -986,13 +986,13 @@ Server → Client:
 
 #### Task 6.3: Error Tracking & Monitoring
 
-- [ ] Tích hợp Sentry:
+- [x] Tích hợp Sentry:
   - `pnpm add @sentry/nextjs` trong apps/web
   - Cấu hình `sentry.client.config.ts` + `sentry.server.config.ts`
   - Source maps upload
   - Error boundaries trong React components
 
-- [ ] Performance monitoring:
+- [x] Performance monitoring:
   - Vercel Analytics (tự động với Vercel deploy)
   - Custom metrics: game load time, keypress latency, API response time
 
@@ -1000,11 +1000,11 @@ Server → Client:
 
 #### Task 6.4: Heatmap phím sai (toàn hệ thống)
 
-- [ ] API: aggregate `mistakeMap` từ tất cả GameSessions
+- [x] API: aggregate `mistakeMap` từ tất cả GameSessions
   - `GET /api/analytics/mistake-heatmap?period=weekly`
   - Trả về: `{ "q": 1234, "z": 987, ... }`
 
-- [ ] Admin dashboard: hiện heatmap trên keyboard layout
+- [x] Admin dashboard: hiện heatmap trên keyboard layout
   - Phím sai nhiều → đỏ đậm
   - Phím sai ít → xanh nhạt
 
@@ -1012,10 +1012,10 @@ Server → Client:
 
 ### Milestone 6: Kiểm tra
 
-- [ ] Admin dashboard hiện đúng DAU/WAU/MAU
-- [ ] Teacher tạo lớp → thêm học sinh → xem tiến bộ
-- [ ] Sentry bắt errors trong production
-- [ ] Mistake heatmap hiển thị chính xác
+- [x] Admin dashboard hiện đúng DAU/WAU/MAU
+- [x] Teacher tạo lớp → thêm học sinh → xem tiến bộ
+- [x] Sentry bắt errors trong production
+- [x] Mistake heatmap hiển thị chính xác
 
 ---
 

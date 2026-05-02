@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import '@/styles/globals.css'
 import { SessionProvider } from '@/components/providers/SessionProvider'
+import { ErrorBoundary } from '@/components/ErrorBoundary'
 
 export const metadata: Metadata = {
   title: 'Typing Adventure - Luyện Gõ Phím',
@@ -15,7 +16,9 @@ export default function RootLayout({
   return (
     <html lang="vi" suppressHydrationWarning>
       <body>
-        <SessionProvider>{children}</SessionProvider>
+        <ErrorBoundary>
+          <SessionProvider>{children}</SessionProvider>
+        </ErrorBoundary>
       </body>
     </html>
   )
