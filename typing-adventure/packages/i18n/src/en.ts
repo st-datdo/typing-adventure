@@ -133,4 +133,6 @@ export const en = {
   friendsGames: '{0} games',
   friendsWaiting: 'Waiting...',
   friendsLastActive: 'Last: {0}',
+  // Multiplayer
+  navMultiplayer: '🏁 Race',
 } as const

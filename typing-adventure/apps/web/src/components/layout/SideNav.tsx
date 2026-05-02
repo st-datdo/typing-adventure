@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import Link from 'next/link'
 import { useSettingsStore } from '@/stores/settings-store'
 import { t } from '@typing-adventure/i18n'
@@ -40,12 +40,24 @@ export function SideNav({
   const settings = useSettingsStore()
   const lang = settings.lang
   const [wordPacks, setWordPacks] = useState<WordPackSummary[]>([])
+  const [mobileOpen, setMobileOpen] = useState(false)
 
   useEffect(() => {
     getWordPacks().then((res) => {
       if (res.success && res.data) setWordPacks(res.data)
     })
   }, [])
+
+  // Close mobile nav on resize to desktop
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth > 768) setMobileOpen(false)
+    }
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
+
+  const closeMobile = useCallback(() => setMobileOpen(false), [])
 
   const handleWordPackSelect = (packId: string) => {
     if (packId === 'default') {
@@ -63,7 +75,21 @@ export function SideNav({
 
   return (
     <>
-      <nav className="side-nav">
+      {/* Mobile hamburger toggle */}
+      <button
+        className="sidenav-toggle"
+        onClick={() => setMobileOpen((o) => !o)}
+        aria-label="Toggle menu"
+      >
+        <span className={`sidenav-toggle-icon ${mobileOpen ? 'sidenav-toggle-icon--open' : ''}`} />
+      </button>
+
+      {/* Backdrop for mobile overlay */}
+      {mobileOpen && (
+        <div className="sidenav-backdrop" onClick={closeMobile} />
+      )}
+
+      <nav className={`side-nav ${mobileOpen ? 'side-nav--open' : ''}`}>
         <div className="nav-wrap has-tooltip" data-tooltip={t(lang, 'tipLang')}>
           <select
             className="nav-control nav-lang"
@@ -159,18 +185,21 @@ export function SideNav({
           </select>
         </div>
 
-        <button className="nav-btn has-tooltip" data-tooltip={t(lang, 'tipSettings')} onClick={onOpenSettings}>
+        <button className="nav-btn has-tooltip" data-tooltip={t(lang, 'tipSettings')} onClick={() => { onOpenSettings(); closeMobile() }}>
           {t(lang, 'btnSettings')}
         </button>
-        <button className="nav-btn has-tooltip" data-tooltip={t(lang, 'tipHistory')} onClick={onOpenHistory}>
+        <button className="nav-btn has-tooltip" data-tooltip={t(lang, 'tipHistory')} onClick={() => { onOpenHistory(); closeMobile() }}>
           {t(lang, 'btnHistory')}
         </button>
 
-        <Link href="/leaderboard" className="nav-btn has-tooltip" data-tooltip={t(lang, 'navLeaderboard')}>
+        <Link href="/leaderboard" className="nav-btn has-tooltip" data-tooltip={t(lang, 'navLeaderboard')} onClick={closeMobile}>
           {t(lang, 'navLeaderboard')}
         </Link>
-        <Link href="/friends" className="nav-btn has-tooltip" data-tooltip={t(lang, 'navFriends')}>
+        <Link href="/friends" className="nav-btn has-tooltip" data-tooltip={t(lang, 'navFriends')} onClick={closeMobile}>
           {t(lang, 'navFriends')}
+        </Link>
+        <Link href="/lobby" className="nav-btn has-tooltip" data-tooltip={t(lang, 'navMultiplayer')} onClick={closeMobile}>
+          {t(lang, 'navMultiplayer')}
         </Link>
       </nav>
 

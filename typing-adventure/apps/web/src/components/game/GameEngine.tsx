@@ -16,7 +16,7 @@ import { HistoryPanel } from '@/components/history/HistoryPanel'
 import { AchievementGrid } from '@/components/achievements/AchievementGrid'
 import { GuestBanner } from '@/components/auth/GuestBanner'
 import { SyncIndicator } from '@/components/auth/SyncIndicator'
-import { MigrateDialog } from '@/components/auth/MigrateDialog'
+
 import { saveSession, getStats, getHistory } from '@/lib/api/sessions'
 import { getProfile } from '@/lib/api/users'
 import { useRecordsStore } from '@/stores/records-store'
@@ -327,7 +327,6 @@ export function GameEngine() {
 
       <GuestBanner />
       <SyncIndicator status={syncStatus} />
-      <MigrateDialog />
     </div>
   )
 }

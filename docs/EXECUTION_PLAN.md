@@ -804,24 +804,21 @@ Quyết định: dùng NestJS riêng (nếu cần scale) hoặc Socket.IO với 
 
 **Option A: NestJS (khuyến nghị cho scale)**
 
-- [ ] Tạo `apps/api/` — NestJS project
-  ```bash
-  cd apps && pnpm dlx @nestjs/cli new api --strict --package-manager pnpm
-  ```
-- [ ] Install: `@nestjs/websockets @nestjs/platform-socket.io socket.io`
-- [ ] Tạo `src/modules/multiplayer/multiplayer.gateway.ts`
-- [ ] Tạo `src/modules/multiplayer/multiplayer.module.ts`
-- [ ] Auth guard cho WebSocket (verify JWT)
+- [ ] Tạo `apps/api/` — NestJS project _(skipped — chọn Option B)_
 
-**Option B: Socket.IO với Next.js (đơn giản hơn)**
+**Option B: Socket.IO với Next.js (đơn giản hơn)** ✅ Đã chọn
 
-- [ ] Custom server `apps/web/server.ts` với Socket.IO attach
+- [x] Custom server `apps/web/server.ts` với Socket.IO attach
+- [x] Install: `socket.io`, `socket.io-client`, `tsx`
+- [x] Tạo `src/lib/multiplayer/socket-gateway.ts` — event handler
+- [x] Tạo `src/lib/multiplayer/types.ts` — shared types
+- [x] Auth via socket handshake (userId, name, avatar)
 
 ---
 
 #### Task 5.1.2: Race Room Manager
 
-- [ ] `race-room.service.ts`:
+- [x] `race-room.service.ts`:
   - State machine: `WAITING → COUNTDOWN → RACING → FINISHED`
   - `createRoom(hostUserId, level)` → room code (6 ký tự)
   - `joinRoom(code, userId)` → room state
@@ -831,18 +828,18 @@ Quyết định: dùng NestJS riêng (nếu cần scale) hoặc Socket.IO với 
   - `playerFinish(roomId, userId, result)` → tính rank
   - `closeRoom(roomId)` → cleanup
 
-- [ ] Room settings:
+- [x] Room settings:
   - Max players: 2-4
   - Auto-close sau 5 phút không hoạt động
   - Auto-close sau khi tất cả finish
 
-- [ ] Lưu RaceRoom + RaceResult vào database khi race kết thúc
+- [x] Lưu RaceRoom + RaceResult vào database khi race kết thúc
 
 ---
 
 #### Task 5.1.3: Anti-cheat
 
-- [ ] `anti-cheat.service.ts`:
+- [x] `anti-cheat.service.ts`:
   - Server gửi text → client phải gõ đúng text đó
   - Validate progress: currentIndex chỉ tăng, không nhảy
   - WPM cap: flag nếu > 200 WPM
@@ -876,7 +873,7 @@ Server → Client:
   error           { code, message }
 ```
 
-- [ ] Implement tất cả events
+- [x] Implement tất cả events
 - [ ] Verify: 2 clients connect → tạo room → join → race → finish
 
 ---
@@ -885,58 +882,53 @@ Server → Client:
 
 #### Task 5.2.1: Lobby UI
 
-- [ ] `src/app/(multiplayer)/lobby/page.tsx`:
+- [x] `src/app/(multiplayer)/lobby/page.tsx`:
   - Hai nút lớn: "Tạo phòng" / "Tham gia phòng"
-  - Tạo phòng: chọn level → nhận code 6 ký tự → hiện QR code / copy link
+  - Tạo phòng: chọn level → nhận code 6 ký tự → copy code
   - Tham gia: nhập code 6 ký tự
-  - Public rooms list (optional): hiện phòng đang chờ
+  - Waiting room: danh sách players, nút "Sẵn sàng"
 
-- [ ] Socket.IO client setup:
-  ```typescript
-  // src/lib/socket.ts
-  import { io } from 'socket.io-client'
-  export const socket = io(process.env.NEXT_PUBLIC_WS_URL, { autoConnect: false })
-  ```
+- [x] Socket.IO client setup:
+  - `src/lib/multiplayer/socket-client.ts`
 
-- [ ] `src/hooks/useMultiplayer.ts` — Hook quản lý socket connection + room state
+- [x] `src/hooks/useMultiplayer.ts` — Hook quản lý socket connection + room state
 
 ---
 
 #### Task 5.2.2: Race UI
 
-- [ ] `src/app/(multiplayer)/race/[roomId]/page.tsx`:
+- [x] `src/app/(multiplayer)/race/[roomId]/page.tsx`:
   - Waiting state: danh sách players + nút "Sẵn sàng"
   - Countdown: 3... 2... 1... GO! (animation lớn)
   - Racing state:
     - Word display (giống game thường)
     - Progress bars cho mỗi player (tên, avatar, % hoàn thành, WPM)
-    - Keyboard highlight
   - Finished state: bảng kết quả
     - Xếp hạng: 🥇🥈🥉
     - WPM, accuracy, thời gian từng người
-    - Nút: "Chơi lại" / "Về lobby"
+    - Nút: "Về lobby" / "Về game"
 
-- [ ] `src/components/multiplayer/RaceTrack.tsx`:
+- [x] `src/components/multiplayer/RaceTrack.tsx`:
   - Progress bar dạng "đường đua" cho mỗi player
   - Avatar di chuyển theo progress
   - Real-time update
 
-- [ ] `src/components/multiplayer/PlayerList.tsx`:
+- [x] `src/components/multiplayer/PlayerList.tsx`:
   - Avatar + tên + trạng thái (ready/typing/finished)
 
-- [ ] `src/components/multiplayer/CountdownTimer.tsx`:
+- [x] `src/components/multiplayer/CountdownTimer.tsx`:
   - 3-2-1-GO animation full screen
 
 ---
 
 ### Sprint 5.3 — Polish (0.5-1 tuần)
 
-- [ ] Reconnection handling:
-  - Mất kết nối → auto reconnect 3 lần
-  - Nếu reconnect thành công → resume race
-  - Nếu fail → hiện "Mất kết nối" + nút "Về lobby"
+- [x] Reconnection handling:
+  - Mất kết nối → auto reconnect 3 lần (socket.io-client)
+  - Nếu reconnect thành công → resume race (server-side 15s grace)
+  - Player disconnected → broadcast → 15s timeout → leave
 
-- [ ] Edge cases:
+- [x] Edge cases:
   - Host rời phòng → chuyển host cho người khác
   - Tất cả rời → auto close room
   - 1 người finish, người khác chưa → timeout 60s → kết thúc race

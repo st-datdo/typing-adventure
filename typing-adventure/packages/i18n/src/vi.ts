@@ -133,4 +133,6 @@ export const vi = {
   friendsGames: '{0} trận',
   friendsWaiting: 'Đang chờ...',
   friendsLastActive: 'Lần cuối: {0}',
+  // Multiplayer
+  navMultiplayer: '🏁 Đua tốc độ',
 } as const
