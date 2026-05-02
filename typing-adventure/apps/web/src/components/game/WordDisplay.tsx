@@ -6,9 +6,10 @@ import { useSettingsStore } from '@/stores/settings-store'
 
 interface WordDisplayProps {
   gameState: GameState
+  onCustomText?: () => void
 }
 
-export function WordDisplay({ gameState }: WordDisplayProps) {
+export function WordDisplay({ gameState, onCustomText }: WordDisplayProps) {
   const keyboardCase = useSettingsStore(s => s.keyboardCase)
   const soundMode = useSettingsStore(s => s.soundMode)
   const { text, currentIndex } = gameState
@@ -43,6 +44,17 @@ export function WordDisplay({ gameState }: WordDisplayProps) {
 
   return (
     <section className="word-display-section">
+      {onCustomText && (
+        <button
+          className="btn-custom-text"
+          onClick={(e) => { e.stopPropagation(); onCustomText() }}
+          type="button"
+        >
+          <span className="btn-custom-tooltip">Custom text</span>
+          ✏️
+        </button>
+      )}
+
       {gameState.combo >= 2 && (
         <div className="combo-display combo--visible">
           x{gameState.combo}

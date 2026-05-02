@@ -34,6 +34,25 @@ export async function GET(
           },
           orderBy: { unlockedAt: 'desc' },
         },
+        raceResults: {
+          select: {
+            wpm: true,
+            accuracy: true,
+            position: true,
+            finishTime: true,
+            createdAt: true,
+            room: {
+              select: {
+                code: true,
+                level: true,
+                maxPlayers: true,
+                _count: { select: { results: true } },
+              },
+            },
+          },
+          orderBy: { createdAt: 'desc' },
+          take: 20,
+        },
       },
     })
 

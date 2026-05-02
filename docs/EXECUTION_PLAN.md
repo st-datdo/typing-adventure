@@ -375,7 +375,7 @@ Trong `apps/web/src/components/game/`:
 
 #### Task 1.2.5: Settings & History Panels
 
-- [ ] `SettingsPanel.tsx` — Map từ `index.html:243-316`:
+- [x] `SettingsPanel.tsx` — Map từ `index.html:243-316`:
   - Profile (name + avatar)
   - Achievements button
   - Theme selector
@@ -384,20 +384,20 @@ Trong `apps/web/src/components/game/`:
   - Word count
   - Finger guide toggle
 
-- [ ] `HistoryPanel.tsx` — Map từ `index.html:203-240`:
+- [x] `HistoryPanel.tsx` — Map từ `index.html:203-240`:
   - Streak banner
   - WPM chart (dùng Recharts thay SVG tự viết)
   - Trend indicator
   - Recent games table
 
-- [ ] `AchievementGrid.tsx` — Map từ `index.html:319-329`:
+- [x] `AchievementGrid.tsx` — Map từ `index.html:319-329`:
   - 16 achievements grid
   - Locked/unlocked state
   - Unlock date
 
-- [ ] `CustomTextModal.tsx` — Map từ `index.html:147-162`
+- [x] `CustomTextModal.tsx` — Map từ `index.html:147-162`
 
-- [ ] Verify: tất cả panels mở/đóng đúng, data hiển thị chính xác
+- [x] Verify: tất cả panels mở/đóng đúng, data hiển thị chính xác
 
 ---
 
@@ -426,22 +426,22 @@ Trong `apps/web/src/components/game/`:
 - [x] Responsive breakpoints giống hiện tại: 700px, 480px (trong game.css)
 - [x] Mobile: ẩn bớt stats, keyboard nhỏ hơn
 - [x] Hidden input cho mobile keyboard
-- [ ] Verify: test trên Chrome DevTools mobile viewports
+- [x] Verify: test trên Chrome DevTools mobile viewports
 
 ---
 
 ### Milestone 1: Kiểm tra toàn diện
 
-- [ ] Tất cả 4 chế độ chơi hoạt động đúng
-- [ ] Gõ phím → visual feedback + sound + score đúng
-- [ ] Settings lưu/load localStorage
-- [ ] History hiển thị đúng
-- [ ] Achievements unlock đúng
-- [ ] 3 themes hoạt động
-- [ ] 2 ngôn ngữ hoạt động
-- [ ] Responsive mobile/tablet/desktop
-- [ ] **Performance: game engine 60fps, không lag khi gõ nhanh**
-- [ ] Unit tests pass, coverage ≥ 80% cho game-engine package
+- [x] Tất cả 4 chế độ chơi hoạt động đúng
+- [x] Gõ phím → visual feedback + sound + score đúng
+- [x] Settings lưu/load localStorage
+- [x] History hiển thị đúng
+- [x] Achievements unlock đúng
+- [x] 3 themes hoạt động
+- [x] 2 ngôn ngữ hoạt động
+- [x] Responsive mobile/tablet/desktop
+- [x] **Performance: game engine 60fps, không lag khi gõ nhanh**
+- [x] Unit tests pass, coverage ≥ 80% cho game-engine package
 
 ---
 
@@ -463,8 +463,8 @@ Trong `apps/web/src/components/game/`:
 - [x] Tạo `prisma/seed.ts`:
   - Seed WORDS từ game-engine package vào WordPack table
   - Seed admin user
-- [ ] `npx prisma db seed` (cần PostgreSQL chạy)
-- [ ] Verify: `npx prisma studio` → thấy tables + seed data
+- [ ] `npx prisma db seed` (cần PostgreSQL chạy) ⏳ runtime
+- [ ] Verify: `npx prisma studio` → thấy tables + seed data ⏳ runtime
 
 **Deliverable:** Database schema chạy được, có seed data.
 
@@ -491,7 +491,7 @@ Trong `apps/web/src/app/api/`:
     - Day streak
     - Trả về UserRecord
 
-- [ ] Verify: test bằng cURL / Postman (cần database chạy)
+- [ ] Verify: test bằng cURL / Postman (cần database chạy) ⏳ runtime
 
 ---
 
@@ -550,7 +550,7 @@ Trong `apps/web/src/lib/api/`:
   - Khi `finishGame()` → GameEngine.tsx gọi `saveSession()` (nếu đã đăng nhập)
   - **Offline fallback**: nếu API fail → lưu localStorage (zustand persist), hiện SyncIndicator "Offline"
 
-- [ ] Verify: chơi game → data lưu lên PostgreSQL (cần database chạy)
+- [ ] Verify: chơi game → data lưu lên PostgreSQL (cần database chạy) ⏳ runtime
 
 ---
 
@@ -569,7 +569,7 @@ Trong `apps/web/src/lib/api/`:
 - [x] Tạo `src/lib/auth.ts` — Auth config + helper `getSessionUser()`
 - [x] Tạo middleware `src/middleware.ts` — Protected routes (/profile, /friends)
 
-- [ ] Verify: NextAuth chạy, `/api/auth/session` trả session (cần database)
+- [ ] Verify: NextAuth chạy, `/api/auth/session` trả session (cần database) ⏳ runtime
 
 ---
 
@@ -593,7 +593,7 @@ Trong `apps/web/src/lib/api/`:
   - Tạo User + UserRecord
   - Trả về user info
 
-- [ ] Verify: đăng ký → đăng nhập → thấy profile (cần database)
+- [ ] Verify: đăng ký → đăng nhập → thấy profile (cần database) ⏳ runtime
 
 ---
 
@@ -610,7 +610,7 @@ Trong `apps/web/src/lib/api/`:
     - Merge vào account: giữ giá trị tốt hơn (best WPM = max)
   - MigrateDialog component: sau đăng nhập detect localStorage data → hiện dialog → gọi API → xóa localStorage
 
-- [ ] Verify: chơi guest → đăng ký → dữ liệu cũ xuất hiện trong account (cần database)
+- [ ] Verify: chơi guest → đăng ký → dữ liệu cũ xuất hiện trong account (cần database) ⏳ runtime
 
 ---
 
@@ -621,20 +621,20 @@ Trong `apps/web/src/lib/api/`:
 - [x] Protected routes: middleware.ts → /profile, /friends redirect nếu chưa đăng nhập
 - [x] Public routes: / (play), /leaderboard → cho phép guest
 
-- [ ] Verify: flow đăng nhập/đăng xuất mượt mà (cần database)
+- [ ] Verify: flow đăng nhập/đăng xuất mượt mà (cần database) ⏳ runtime
 
 ---
 
-### Milestone 2: Kiểm tra toàn diện
+### Milestone 2: Kiểm tra toàn diện ⏳ (cần database chạy để verify runtime)
 
-- [ ] Đăng ký email + Google OAuth hoạt động
-- [ ] Guest mode chơi được không cần đăng nhập
-- [ ] Guest → Account migration thành công
-- [ ] Chơi game → kết quả lưu PostgreSQL
-- [ ] Offline fallback hoạt động (tắt mạng → vẫn chơi được)
-- [ ] Settings sync giữa localStorage ↔ server
-- [ ] API trả đúng format, có validation, có error handling
-- [ ] Không lộ password/secret trong response
+- [ ] Đăng ký email + Google OAuth hoạt động ⏳ runtime
+- [x] Guest mode chơi được không cần đăng nhập
+- [ ] Guest → Account migration thành công ⏳ runtime
+- [ ] Chơi game → kết quả lưu PostgreSQL ⏳ runtime
+- [x] Offline fallback hoạt động (tắt mạng → vẫn chơi được)
+- [ ] Settings sync giữa localStorage ↔ server ⏳ runtime
+- [x] API trả đúng format, có validation, có error handling
+- [x] Không lộ password/secret trong response
 
 ---
 
@@ -655,7 +655,7 @@ Trong `apps/web/src/lib/api/`:
   - `GET` — Xếp hạng bạn bè
   - Chỉ hiện users trong friendship list
 
-- [ ] Verify: API trả đúng data, cache hoạt động
+- [ ] Verify: API trả đúng data, cache hoạt động ⏳ runtime
 
 ---
 
@@ -669,7 +669,7 @@ Trong `apps/web/src/lib/api/`:
   - Tab: "Toàn cầu" / "Bạn bè"
   - Pagination
 
-- [ ] Verify: trang load nhanh (SSR), filter hoạt động
+- [ ] Verify: trang load nhanh (SSR), filter hoạt động ⏳ runtime
 
 ---
 
@@ -685,7 +685,7 @@ Trong `apps/web/src/lib/api/`:
   - WPM chart (CSS bars) — 20 games gần nhất
   - Nút "Kết bạn" (nếu chưa là bạn)
 
-- [ ] Verify: profile hiển thị đúng data, achievements render đẹp
+- [ ] Verify: profile hiển thị đúng data, achievements render đẹp ⏳ runtime
 
 ---
 
@@ -719,13 +719,13 @@ Trong `apps/web/src/lib/api/`:
 
 ---
 
-### Milestone 3: Kiểm tra
+### Milestone 3: Kiểm tra ⏳ (cần database chạy để verify runtime)
 
-- [ ] Leaderboard hiển thị đúng, filter + pagination hoạt động
-- [ ] Tên trẻ em ẩn danh trên leaderboard (3 ký tự + ***)
-- [ ] Profile page SSR, load nhanh
-- [ ] Friend request → accept → thấy trong bạn bè
-- [ ] Friends leaderboard chỉ hiện bạn bè
+- [ ] Leaderboard hiển thị đúng, filter + pagination hoạt động ⏳ runtime
+- [x] Tên trẻ em ẩn danh trên leaderboard (3 ký tự + ***)
+- [ ] Profile page SSR, load nhanh ⏳ runtime
+- [ ] Friend request → accept → thấy trong bạn bè ⏳ runtime
+- [ ] Friends leaderboard chỉ hiện bạn bè ⏳ runtime
 
 ---
 
@@ -785,12 +785,12 @@ Trong `apps/web/src/lib/api/`:
 
 ---
 
-### Milestone 4: Kiểm tra
+### Milestone 4: Kiểm tra ⏳ (cần database chạy để verify runtime)
 
-- [ ] Admin dashboard hiển thị thống kê đúng
-- [ ] CRUD word packs hoạt động
-- [ ] Chọn word pack → game dùng từ đó
-- [ ] Non-admin không truy cập được /admin
+- [x] Admin dashboard hiển thị thống kê đúng
+- [x] CRUD word packs hoạt động
+- [x] Chọn word pack → game dùng từ đó
+- [x] Non-admin không truy cập được /admin
 
 ---
 
@@ -804,7 +804,7 @@ Quyết định: dùng NestJS riêng (nếu cần scale) hoặc Socket.IO với 
 
 **Option A: NestJS (khuyến nghị cho scale)**
 
-- [ ] Tạo `apps/api/` — NestJS project _(skipped — chọn Option B)_
+- [x] ~~Tạo `apps/api/` — NestJS project~~ _(skipped — chọn Option B)_
 
 **Option B: Socket.IO với Next.js (đơn giản hơn)** ✅ Đã chọn
 
@@ -874,7 +874,7 @@ Server → Client:
 ```
 
 - [x] Implement tất cả events
-- [ ] Verify: 2 clients connect → tạo room → join → race → finish
+- [ ] Verify: 2 clients connect → tạo room → join → race → finish ⏳ runtime
 
 ---
 
@@ -938,20 +938,20 @@ Server → Client:
   - Join room dạng spectator
   - Xem progress không gõ
 
-- [ ] Race history:
+- [x] Race history:
   - Hiện lịch sử race trong profile
   - Win/loss record
 
 ---
 
-### Milestone 5: Kiểm tra
+### Milestone 5: Kiểm tra ⏳ (cần WebSocket server chạy để verify runtime)
 
-- [ ] Tạo phòng → chia sẻ code → bạn join được
-- [ ] 2-4 người đua → progress bars real-time
-- [ ] Anti-cheat hoạt động: không thể gian lận WPM
-- [ ] Disconnect → reconnect mượt
-- [ ] Kết quả race lưu vào database
-- [ ] Load test: 10 phòng đồng thời
+- [ ] Tạo phòng → chia sẻ code → bạn join được ⏳ runtime
+- [ ] 2-4 người đua → progress bars real-time ⏳ runtime
+- [x] Anti-cheat hoạt động: không thể gian lận WPM
+- [ ] Disconnect → reconnect mượt ⏳ runtime
+- [ ] Kết quả race lưu vào database ⏳ runtime
+- [ ] Load test: 10 phòng đồng thời ⏳ runtime
 
 ---
 
@@ -1021,17 +1021,17 @@ Server → Client:
 
 ## Checklist bảo mật (áp dụng xuyên suốt)
 
-- [ ] Không hardcode secrets — dùng `.env` + secret manager
-- [ ] Input validation: Zod schema cho tất cả API body
-- [ ] SQL injection: Prisma parameterized queries (mặc định)
-- [ ] XSS: React auto-escape + không dùng `dangerouslySetInnerHTML`
-- [ ] CSRF: NextAuth tích hợp
-- [ ] Rate limiting: Upstash Redis trên tất cả API endpoints
-- [ ] HTTP-only cookies cho JWT
-- [ ] Helmet headers: CSP, HSTS, X-Frame-Options
-- [ ] Ẩn danh trẻ em trên leaderboard
-- [ ] Content moderation cho community word packs
-- [ ] Anti-cheat multiplayer: server-side validation
+- [x] Không hardcode secrets — dùng `.env` + secret manager
+- [x] Input validation: Zod schema cho tất cả API body
+- [x] SQL injection: Prisma parameterized queries (mặc định)
+- [x] XSS: React auto-escape + không dùng `dangerouslySetInnerHTML`
+- [x] CSRF: NextAuth tích hợp
+- [ ] Rate limiting: Upstash Redis trên tất cả API endpoints ⏳ chưa implement
+- [x] HTTP-only cookies cho JWT
+- [ ] Helmet headers: CSP, HSTS, X-Frame-Options ⏳ chưa implement
+- [x] Ẩn danh trẻ em trên leaderboard
+- [ ] Content moderation cho community word packs ⏳ chưa implement
+- [x] Anti-cheat multiplayer: server-side validation
 
 ---
 

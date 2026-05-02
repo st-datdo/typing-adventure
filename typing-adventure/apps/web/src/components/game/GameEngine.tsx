@@ -14,6 +14,7 @@ import { SideNav } from '@/components/layout/SideNav'
 import { SettingsPanel } from '@/components/settings/SettingsPanel'
 import { HistoryPanel } from '@/components/history/HistoryPanel'
 import { AchievementGrid } from '@/components/achievements/AchievementGrid'
+import { CustomTextModal } from './CustomTextModal'
 import { GuestBanner } from '@/components/auth/GuestBanner'
 import { SyncIndicator } from '@/components/auth/SyncIndicator'
 
@@ -23,7 +24,7 @@ import { useRecordsStore } from '@/stores/records-store'
 import { t } from '@typing-adventure/i18n'
 import type { GameMode, Level } from '@typing-adventure/game-engine'
 
-type Panel = 'none' | 'settings' | 'history' | 'achievements'
+type Panel = 'none' | 'settings' | 'history' | 'achievements' | 'customText'
 
 export function GameEngine() {
   const {
@@ -285,7 +286,7 @@ export function GameEngine() {
 
       <main className="main">
         <StatsBar gameState={gameState} />
-        <WordDisplay gameState={gameState} />
+        <WordDisplay gameState={gameState} onCustomText={() => setPanel('customText')} />
         <Keyboard gameState={gameState} onKeyClick={handleKeyClick} lastKeyFlash={lastKeyFlash} />
         <HandGuide gameState={gameState} />
       </main>
@@ -313,6 +314,17 @@ export function GameEngine() {
 
       {panel === 'achievements' && (
         <AchievementGrid onClose={() => { setPanel('settings'); }} />
+      )}
+
+      {panel === 'customText' && (
+        <CustomTextModal
+          onStart={(text) => {
+            gameStore.startCustomGame(text, settings.level)
+            setPanel('none')
+            focusInput()
+          }}
+          onClose={() => { setPanel('none'); focusInput() }}
+        />
       )}
 
       <input

@@ -27,6 +27,19 @@ interface ProfileData {
     achievementId: string
     unlockedAt: string
   }>
+  raceResults: Array<{
+    wpm: number
+    accuracy: number
+    position: number
+    finishTime: number | null
+    createdAt: string
+    room: {
+      code: string
+      level: string
+      maxPlayers: number
+      _count: { results: number }
+    }
+  }>
 }
 
 interface RecentSession {
@@ -136,6 +149,9 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
   const records = profile.records
   const unlockedIds = new Set(profile.achievements.map(a => a.achievementId))
   const unlockedAchievements = ACHIEVEMENTS.filter(a => unlockedIds.has(a.id))
+  const raceResults = profile.raceResults ?? []
+  const raceWins = raceResults.filter(r => r.position === 1).length
+  const raceLosses = raceResults.length - raceWins
 
   const maxWpm = records
     ? Math.max(records.bestWpm.easy ?? 0, records.bestWpm.medium ?? 0, records.bestWpm.hard ?? 0)
@@ -281,6 +297,67 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
                 <span>{t(lang, a.nameKey as any)}</span>
               </div>
             ))}
+          </div>
+        </div>
+      )}
+
+      {/* Race History */}
+      {raceResults.length > 0 && (
+        <div style={{ marginBottom: 24 }}>
+          <h3 style={{ fontSize: '0.85rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--color-text-dim)', marginBottom: 10 }}>
+            {lang === 'vi' ? 'Lich su dua' : 'Race History'}
+            <span style={{ fontWeight: 400, marginLeft: 8, fontSize: '0.78rem' }}>
+              {raceWins}W / {raceLosses}L
+            </span>
+          </h3>
+          <div style={{
+            background: 'rgba(255,255,255,0.03)',
+            border: '1px solid rgba(255,255,255,0.06)',
+            borderRadius: 'var(--radius-sm)',
+            overflow: 'hidden',
+          }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.82rem' }}>
+              <thead>
+                <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+                  <th style={{ textAlign: 'left', padding: '8px 12px', fontWeight: 700, fontSize: '0.72rem', textTransform: 'uppercase', color: 'var(--color-text-dim)' }}>
+                    {lang === 'vi' ? 'Thu hang' : 'Rank'}
+                  </th>
+                  <th style={{ textAlign: 'left', padding: '8px 12px', fontWeight: 700, fontSize: '0.72rem', textTransform: 'uppercase', color: 'var(--color-text-dim)' }}>WPM</th>
+                  <th style={{ textAlign: 'left', padding: '8px 12px', fontWeight: 700, fontSize: '0.72rem', textTransform: 'uppercase', color: 'var(--color-text-dim)' }}>Acc</th>
+                  <th style={{ textAlign: 'left', padding: '8px 12px', fontWeight: 700, fontSize: '0.72rem', textTransform: 'uppercase', color: 'var(--color-text-dim)' }}>Level</th>
+                  <th style={{ textAlign: 'left', padding: '8px 12px', fontWeight: 700, fontSize: '0.72rem', textTransform: 'uppercase', color: 'var(--color-text-dim)' }}>
+                    {lang === 'vi' ? 'Ngay' : 'Date'}
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {raceResults.map((r, i) => {
+                  const medal = r.position === 1 ? '🥇' : r.position === 2 ? '🥈' : r.position === 3 ? '🥉' : `#${r.position}`
+                  return (
+                    <tr key={i} style={{ borderBottom: '1px solid rgba(255,255,255,0.03)' }}>
+                      <td style={{ padding: '8px 12px' }}>
+                        {medal}
+                        <span style={{ color: 'var(--color-text-dim)', marginLeft: 6, fontSize: '0.72rem' }}>
+                          /{r.room._count.results}
+                        </span>
+                      </td>
+                      <td style={{ padding: '8px 12px', fontWeight: 700, color: 'var(--color-accent)' }}>
+                        {r.wpm}
+                      </td>
+                      <td style={{ padding: '8px 12px' }}>
+                        {r.accuracy}%
+                      </td>
+                      <td style={{ padding: '8px 12px', textTransform: 'capitalize' }}>
+                        {r.room.level}
+                      </td>
+                      <td style={{ padding: '8px 12px', color: 'var(--color-text-dim)' }}>
+                        {new Date(r.createdAt).toLocaleDateString(lang === 'vi' ? 'vi-VN' : 'en-US')}
+                      </td>
+                    </tr>
+                  )
+                })}
+              </tbody>
+            </table>
           </div>
         </div>
       )}
