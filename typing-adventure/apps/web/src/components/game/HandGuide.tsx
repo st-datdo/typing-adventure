@@ -4,8 +4,9 @@ import { getFingerForKey } from '@typing-adventure/game-engine'
 import type { GameState, Finger } from '@typing-adventure/game-engine'
 import { useSettingsStore } from '@/stores/settings-store'
 import { t } from '@typing-adventure/i18n'
+import type { TranslationKey } from '@typing-adventure/i18n'
 
-const FINGER_LABEL_KEYS: Record<Finger, string> = {
+const FINGER_LABEL_KEYS: Record<Finger, TranslationKey> = {
   'left-pinky': 'fingerLeftPinky',
   'left-ring': 'fingerLeftRing',
   'left-middle': 'fingerLeftMiddle',
@@ -32,7 +33,7 @@ export function HandGuide({ gameState }: HandGuideProps) {
     : null
   const finger = expected !== null ? getFingerForKey(expected) : null
   const labelKey = finger ? FINGER_LABEL_KEYS[finger] : null
-  const label = labelKey ? t(lang, labelKey as any) : ''
+  const label = labelKey ? t(lang, labelKey) : ''
 
   const isActive = (id: string) => {
     if (!finger) return false

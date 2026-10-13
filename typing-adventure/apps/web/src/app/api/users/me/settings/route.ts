@@ -1,6 +1,6 @@
 import { NextRequest } from 'next/server'
 import { z } from 'zod'
-import { prisma } from '@typing-adventure/db'
+import { prisma, Prisma } from '@typing-adventure/db'
 import { getSessionUser } from '@/lib/auth'
 import { ok, err, unauthorized } from '@/lib/api-response'
 
@@ -36,7 +36,7 @@ export async function PUT(req: NextRequest) {
 
     const updated = await prisma.user.update({
       where: { id: user.id },
-      data: { settings: merged as any },
+      data: { settings: merged as Prisma.InputJsonObject },
       select: { settings: true },
     })
 

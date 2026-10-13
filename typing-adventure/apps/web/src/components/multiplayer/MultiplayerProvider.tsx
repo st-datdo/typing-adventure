@@ -62,9 +62,9 @@ export function MultiplayerProvider({ children }: { children: ReactNode }) {
   const socketRef = useRef<GameSocket | null>(null)
   const listenersAttached = useRef(false)
 
-  const userId = (session?.user as any)?.id as string | undefined
+  const userId = session?.user?.id
   const userName = session?.user?.name ?? 'Player'
-  const userAvatar = (session?.user as any)?.image ?? '🧒'
+  const userAvatar = session?.user?.image ?? '🧒'
 
   const connect = useCallback(() => {
     if (!userId) return

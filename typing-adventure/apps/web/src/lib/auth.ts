@@ -6,7 +6,7 @@ import { prisma } from '@typing-adventure/db'
 import bcrypt from 'bcryptjs'
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
-  adapter: PrismaAdapter(prisma) as any,
+  adapter: PrismaAdapter(prisma),
   session: { strategy: 'jwt' },
   pages: {
     signIn: '/login',

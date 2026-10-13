@@ -1,6 +1,6 @@
 import { NextRequest } from 'next/server'
 import { z } from 'zod'
-import { prisma } from '@typing-adventure/db'
+import { prisma, Prisma } from '@typing-adventure/db'
 import { ok, err } from '@/lib/api-response'
 
 const querySchema = z.object({
@@ -43,7 +43,7 @@ export async function GET(req: NextRequest) {
   const periodStart = getPeriodStart(period)
 
   try {
-    const where: Record<string, unknown> = {
+    const where: Prisma.GameSessionWhereInput = {
       gameMode: mode,
       level,
     }
@@ -54,7 +54,7 @@ export async function GET(req: NextRequest) {
     // Get best score per user for the given mode/level/period
     // We use a raw query approach: get top sessions grouped by user
     const sessions = await prisma.gameSession.findMany({
-      where: where as any,
+      where,
       orderBy: { score: 'desc' },
       distinct: ['userId'],
       take: limit,
@@ -75,7 +75,7 @@ export async function GET(req: NextRequest) {
 
     const total = await prisma.gameSession.groupBy({
       by: ['userId'],
-      where: where as any,
+      where,
     }).then(r => r.length)
 
     const leaderboard = sessions.map((s, i) => ({

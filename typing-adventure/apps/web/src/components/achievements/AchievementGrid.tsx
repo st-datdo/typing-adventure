@@ -4,6 +4,7 @@ import { ACHIEVEMENTS } from '@typing-adventure/game-engine'
 import { useSettingsStore } from '@/stores/settings-store'
 import { useRecordsStore } from '@/stores/records-store'
 import { t } from '@typing-adventure/i18n'
+import type { TranslationKey } from '@typing-adventure/i18n'
 
 interface AchievementGridProps {
   onClose: () => void
@@ -33,8 +34,8 @@ export function AchievementGrid({ onClose }: AchievementGridProps) {
                   className={`ach-card ${isUnlocked ? 'ach--unlocked' : 'ach--locked'}`}
                 >
                   <div className="ach-card-icon">{isUnlocked ? ach.icon : '🔒'}</div>
-                  <div className="ach-card-name">{t(lang, ach.nameKey as any)}</div>
-                  <div className="ach-card-desc">{t(lang, ach.descKey as any)}</div>
+                  <div className="ach-card-name">{t(lang, ach.nameKey as TranslationKey)}</div>
+                  <div className="ach-card-desc">{t(lang, ach.descKey as TranslationKey)}</div>
                 </div>
               )
             })}

@@ -1,6 +1,6 @@
 import { NextRequest } from 'next/server'
 import { z } from 'zod'
-import { prisma } from '@typing-adventure/db'
+import { prisma, Prisma } from '@typing-adventure/db'
 import { requireAdmin } from '@/lib/admin-guard'
 import { ok, err } from '@/lib/api-response'
 
@@ -24,7 +24,7 @@ export async function GET(req: NextRequest) {
   const { page, limit, search } = parsed.data
   const offset = (page - 1) * limit
 
-  const where: Record<string, unknown> = {}
+  const where: Prisma.UserWhereInput = {}
   if (search) {
     where.OR = [
       { name: { contains: search, mode: 'insensitive' } },
@@ -35,7 +35,7 @@ export async function GET(req: NextRequest) {
   try {
     const [users, total] = await Promise.all([
       prisma.user.findMany({
-        where: where as any,
+        where,
         orderBy: { createdAt: 'desc' },
         skip: offset,
         take: limit,
@@ -54,7 +54,7 @@ export async function GET(req: NextRequest) {
           },
         },
       }),
-      prisma.user.count({ where: where as any }),
+      prisma.user.count({ where }),
     ])
 
     return ok(users, { total, page, limit })

@@ -6,7 +6,7 @@ export class SoundEngine {
 
   init(): void {
     if (this.ctx) return
-    this.ctx = new (window.AudioContext || (window as any).webkitAudioContext)()
+    this.ctx = new (window.AudioContext || (window as Window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext)()
   }
 
   play(type: SoundType): void {

@@ -55,8 +55,9 @@ export function GameEngine() {
       settings.setIsLoggedIn(false)
       return
     }
-    const userId = (session.user as any).id as string
+    const userId = session.user.id
     settings.setIsLoggedIn(true)
+    if (!userId) return
     if (profileLoadedRef.current === userId) return
     profileLoadedRef.current = userId
 
@@ -76,9 +77,9 @@ export function GameEngine() {
     ]).then(([statsRes, historyRes]) => {
       if (!statsRes.success || !statsRes.data) return
       const serverHistory = historyRes.success && historyRes.data
-        ? historyRes.data.map((s: any) => ({
-            date: s.createdAt,
-            level: s.level,
+        ? historyRes.data.map((s) => ({
+            date: new Date(s.createdAt).toISOString(),
+            level: s.level as Level,
             wpm: s.wpm,
             cps: s.cps,
             accuracy: s.accuracy,
@@ -267,7 +268,7 @@ export function GameEngine() {
         <p className="subtitle">{t(settings.lang, 'subtitle')}</p>
         {session?.user ? (
           <p className="profile-greeting">
-            {settings.playerAvatar || (session.user as any).image || '🧒'}{' '}
+            {settings.playerAvatar || session.user.image || '🧒'}{' '}
             {settings.lang === 'vi' ? 'Chào' : 'Hi'}, {settings.playerName || session.user.name || session.user.email}!
             <button
               className="btn"
