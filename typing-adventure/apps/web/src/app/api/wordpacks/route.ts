@@ -1,6 +1,6 @@
 import { NextRequest } from 'next/server'
 import { z } from 'zod'
-import { prisma } from '@typing-adventure/db'
+import { prisma, Prisma } from '@typing-adventure/db'
 import { getSessionUser } from '@/lib/auth'
 import { requireAdmin } from '@/lib/admin-guard'
 import { ok, err, unauthorized } from '@/lib/api-response'
@@ -34,7 +34,7 @@ export async function GET(req: NextRequest) {
   const { language, level, category, page, limit } = parsed.data
   const offset = (page - 1) * limit
 
-  const where: Record<string, unknown> = {}
+  const where: Prisma.WordPackWhereInput = {}
   if (language) where.language = language
   if (level) where.level = level
   if (category) where.category = category
@@ -42,7 +42,7 @@ export async function GET(req: NextRequest) {
   try {
     const [packs, total] = await Promise.all([
       prisma.wordPack.findMany({
-        where: where as any,
+        where,
         orderBy: [{ isDefault: 'desc' }, { createdAt: 'desc' }],
         skip: offset,
         take: limit,
@@ -58,7 +58,7 @@ export async function GET(req: NextRequest) {
           words: true,
         },
       }),
-      prisma.wordPack.count({ where: where as any }),
+      prisma.wordPack.count({ where }),
     ])
 
     const data = packs.map((p) => ({

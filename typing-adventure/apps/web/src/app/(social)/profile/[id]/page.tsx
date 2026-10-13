@@ -8,6 +8,7 @@ import { sendFriendRequest, getFriends } from '@/lib/api/friends'
 import { ACHIEVEMENTS } from '@typing-adventure/game-engine'
 import { useSettingsStore } from '@/stores/settings-store'
 import { t, tReplace } from '@typing-adventure/i18n'
+import type { TranslationKey } from '@typing-adventure/i18n'
 
 interface ProfileData {
   id: string
@@ -292,9 +293,9 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
           </h3>
           <div className="profile-achievements">
             {unlockedAchievements.map(a => (
-              <div key={a.id} className="profile-ach" title={t(lang, a.descKey as any)}>
+              <div key={a.id} className="profile-ach" title={t(lang, a.descKey as TranslationKey)}>
                 <span className="profile-ach-icon">{a.icon}</span>
-                <span>{t(lang, a.nameKey as any)}</span>
+                <span>{t(lang, a.nameKey as TranslationKey)}</span>
               </div>
             ))}
           </div>
