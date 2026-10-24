@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import type { GameState } from '@typing-adventure/game-engine'
-import { formatTime } from '@typing-adventure/game-engine'
+import { formatTime, AGE_PROFILES } from '@typing-adventure/game-engine'
 import { useSettingsStore } from '@/stores/settings-store'
 import { useRecordsStore } from '@/stores/records-store'
 import { t } from '@typing-adventure/i18n'
@@ -13,6 +13,8 @@ interface StatsBarProps {
 
 export function StatsBar({ gameState }: StatsBarProps) {
   const lang = useSettingsStore(s => s.lang)
+  const ageGroup = useSettingsStore(s => s.ageGroup)
+  const showSpeed = ageGroup === null || AGE_PROFILES[ageGroup].showSpeedStats
   const records = useRecordsStore(s => s.records)
   const [liveStats, setLiveStats] = useState({ time: '0:00', cps: '0.00', wpm: 0, accuracy: 100 })
 
@@ -41,7 +43,7 @@ export function StatsBar({ gameState }: StatsBarProps) {
 
   const bestWpm = records.bestWpm[gameState.level] ?? 0
 
-  const stats = [
+  const allStats = [
     { cls: 'stat-time', icon: '⏳', label: t(lang, 'lblTime'), value: liveStats.time, tip: t(lang, 'tipTime') },
     { cls: 'stat-cps', icon: '⚡', label: 'CPS', value: liveStats.cps, tip: t(lang, 'tipCps') },
     { cls: 'stat-wpm', icon: '🚀', label: 'WPM', value: liveStats.wpm, tip: t(lang, 'tipWpm') },
@@ -50,9 +52,11 @@ export function StatsBar({ gameState }: StatsBarProps) {
     { cls: 'stat-best', icon: '👑', label: t(lang, 'lblBest'), value: bestWpm, tip: t(lang, 'tipBest') },
     { cls: 'stat-streak', icon: '🔥', label: 'Streak', value: `${records.dayStreak} ${t(lang, 'dayUnit')}`, tip: t(lang, 'tipStreak') },
   ]
+  const speedOnly = ['stat-cps', 'stat-wpm', 'stat-best']
+  const stats = showSpeed ? allStats : allStats.filter(s => !speedOnly.includes(s.cls))
 
   return (
-    <section className="stats-bar">
+    <section className={`stats-bar ${showSpeed ? '' : 'stats-bar--compact'}`}>
       {stats.map(s => (
         <div key={s.cls} className={`stat-card ${s.cls} has-tooltip`} data-tooltip={s.tip}>
           <div className="stat-icon">{s.icon}</div>

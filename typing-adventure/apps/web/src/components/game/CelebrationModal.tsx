@@ -1,7 +1,7 @@
 'use client'
 
 import type { GameState, GameResult } from '@typing-adventure/game-engine'
-import { formatTime, LESSONS } from '@typing-adventure/game-engine'
+import { formatTime, LESSONS, AGE_PROFILES } from '@typing-adventure/game-engine'
 import { useSettingsStore } from '@/stores/settings-store'
 import { useRecordsStore } from '@/stores/records-store'
 import { t, tReplace } from '@typing-adventure/i18n'
@@ -22,6 +22,8 @@ export function CelebrationModal({
   onPracticeWeak,
 }: CelebrationModalProps) {
   const lang = useSettingsStore(s => s.lang)
+  const ageGroup = useSettingsStore(s => s.ageGroup)
+  const showSpeed = ageGroup === null || AGE_PROFILES[ageGroup].showSpeedStats
   const records = useRecordsStore(s => s.records)
 
   const prevBestWpm = records.bestWpm[gameState.level] ?? 0
@@ -57,10 +59,10 @@ export function CelebrationModal({
         </div>
 
         <div className="celebration-record">
-          {isNewRecord && (
+          {showSpeed && isNewRecord && (
             <span className="new-record">{t(lang, 'celNewRecord')}</span>
           )}
-          {!isNewRecord && prevBestWpm > 0 && (prevBestWpm - result.wpm) <= 5 && (prevBestWpm - result.wpm) > 0 && (
+          {showSpeed && !isNewRecord && prevBestWpm > 0 && (prevBestWpm - result.wpm) <= 5 && (prevBestWpm - result.wpm) > 0 && (
             <span className="record-close">
               {tReplace(lang, 'celAlmostRecord', prevBestWpm - result.wpm)}
             </span>
@@ -75,14 +77,18 @@ export function CelebrationModal({
             <span className="cstat-val">{formatTime(result.timeSeconds)}</span>
             <span className="cstat-lbl">{t(lang, 'lblTimeStat')}</span>
           </div>
-          <div className="cstat">
-            <span className="cstat-val">{result.cps}</span>
-            <span className="cstat-lbl">CPS</span>
-          </div>
-          <div className="cstat">
-            <span className="cstat-val">{result.wpm}</span>
-            <span className="cstat-lbl">WPM</span>
-          </div>
+          {showSpeed && (
+            <>
+              <div className="cstat">
+                <span className="cstat-val">{result.cps}</span>
+                <span className="cstat-lbl">CPS</span>
+              </div>
+              <div className="cstat">
+                <span className="cstat-val">{result.wpm}</span>
+                <span className="cstat-lbl">WPM</span>
+              </div>
+            </>
+          )}
           <div className="cstat">
             <span className="cstat-val">{result.accuracy}%</span>
             <span className="cstat-lbl">{t(lang, 'lblAccStat')}</span>

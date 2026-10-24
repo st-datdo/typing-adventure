@@ -2,7 +2,7 @@
 
 import { useSettingsStore } from '@/stores/settings-store'
 import { t } from '@typing-adventure/i18n'
-import type { Theme, KeyboardCase, SpeechRate } from '@typing-adventure/game-engine'
+import type { Theme, KeyboardCase, SpeechRate, AgeGroup } from '@typing-adventure/game-engine'
 
 interface SettingsPanelProps {
   onClose: () => void
@@ -56,6 +56,20 @@ export function SettingsPanel({ onClose, onOpenAchievements }: SettingsPanelProp
             <button className="btn btn-achievements" onClick={onOpenAchievements}>
               {t(lang, 'achBtn')}
             </button>
+          </div>
+
+          <div className="setting-group">
+            <div className="setting-label">{t(lang, 'ageLabel')}</div>
+            <div className="setting-desc">{t(lang, 'ageDesc')}</div>
+            <select
+              className="setting-control"
+              value={settings.ageGroup ?? 'big'}
+              onChange={(e) => settings.setAgeGroup(e.target.value as AgeGroup)}
+            >
+              <option value="little">🐣 {t(lang, 'ageLittle')}</option>
+              <option value="kid">🐥 {t(lang, 'ageKid')}</option>
+              <option value="big">🦅 {t(lang, 'ageBig')}</option>
+            </select>
           </div>
 
           {/* Theme */}

@@ -14,6 +14,7 @@ const settingsSchema = z.object({
   wordCount: z.number().int().min(3).max(50).optional(),
   fingerGuide: z.boolean().optional(),
   lang: z.enum(['vi', 'en']).optional(),
+  ageGroup: z.enum(['little', 'kid', 'big']).nullable().optional(),
 }).passthrough()
 
 export async function PUT(req: NextRequest) {

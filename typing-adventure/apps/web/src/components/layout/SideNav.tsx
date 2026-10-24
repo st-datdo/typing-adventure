@@ -4,9 +4,17 @@ import { useEffect, useState, useCallback } from 'react'
 import Link from 'next/link'
 import { useSettingsStore } from '@/stores/settings-store'
 import { t } from '@typing-adventure/i18n'
-import { LESSONS } from '@typing-adventure/game-engine'
+import type { TranslationKey } from '@typing-adventure/i18n'
+import { LESSONS, AGE_PROFILES, isModeAllowed } from '@typing-adventure/game-engine'
 import type { GameMode, Level, SoundMode, Lang } from '@typing-adventure/game-engine'
 import { getWordPacks, type WordPackSummary } from '@/lib/api/wordpacks'
+
+const MODE_OPTIONS: { value: GameMode; label: TranslationKey }[] = [
+  { value: 'classic', label: 'modeClassic' },
+  { value: 'lesson', label: 'modeLesson' },
+  { value: 'timeAttack', label: 'modeTimeAttack' },
+  { value: 'challenge', label: 'modeChallenge' },
+]
 
 interface SideNavProps {
   gameMode: GameMode
@@ -39,6 +47,7 @@ export function SideNav({
 }: SideNavProps) {
   const settings = useSettingsStore()
   const lang = settings.lang
+  const showSocial = settings.ageGroup === null || AGE_PROFILES[settings.ageGroup].social
   const [wordPacks, setWordPacks] = useState<WordPackSummary[]>([])
   const [mobileOpen, setMobileOpen] = useState(false)
 
@@ -107,10 +116,9 @@ export function SideNav({
             value={gameMode}
             onChange={(e) => onModeChange(e.target.value as GameMode)}
           >
-            <option value="classic">{t(lang, 'modeClassic')}</option>
-            <option value="lesson">{t(lang, 'modeLesson')}</option>
-            <option value="timeAttack">{t(lang, 'modeTimeAttack')}</option>
-            <option value="challenge">{t(lang, 'modeChallenge')}</option>
+            {MODE_OPTIONS.filter(m => isModeAllowed(settings.ageGroup, m.value)).map(m => (
+              <option key={m.value} value={m.value}>{t(lang, m.label)}</option>
+            ))}
           </select>
         </div>
 
@@ -192,15 +200,19 @@ export function SideNav({
           {t(lang, 'btnHistory')}
         </button>
 
-        <Link href="/leaderboard" className="nav-btn has-tooltip" data-tooltip={t(lang, 'navLeaderboard')} onClick={closeMobile}>
-          {t(lang, 'navLeaderboard')}
-        </Link>
-        <Link href="/friends" className="nav-btn has-tooltip" data-tooltip={t(lang, 'navFriends')} onClick={closeMobile}>
-          {t(lang, 'navFriends')}
-        </Link>
-        <Link href="/lobby" className="nav-btn has-tooltip" data-tooltip={t(lang, 'navMultiplayer')} onClick={closeMobile}>
-          {t(lang, 'navMultiplayer')}
-        </Link>
+        {showSocial && (
+          <>
+            <Link href="/leaderboard" className="nav-btn has-tooltip" data-tooltip={t(lang, 'navLeaderboard')} onClick={closeMobile}>
+              {t(lang, 'navLeaderboard')}
+            </Link>
+            <Link href="/friends" className="nav-btn has-tooltip" data-tooltip={t(lang, 'navFriends')} onClick={closeMobile}>
+              {t(lang, 'navFriends')}
+            </Link>
+            <Link href="/lobby" className="nav-btn has-tooltip" data-tooltip={t(lang, 'navMultiplayer')} onClick={closeMobile}>
+              {t(lang, 'navMultiplayer')}
+            </Link>
+          </>
+        )}
       </nav>
 
       <aside className="quick-actions">

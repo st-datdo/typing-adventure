@@ -6,6 +6,7 @@
 @import './social.css';
 @import './admin.css';
 @import './multiplayer.css';
+@import './little.css';
 
 /* ── Theme: Dark (default) ── */
 :root {
