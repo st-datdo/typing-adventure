@@ -5,6 +5,45 @@ export type KeyboardCase = 'lower' | 'upper'
 export type Theme = 'dark' | 'light' | 'colorful'
 export type SpeechRate = 'slow' | 'normal' | 'fast'
 export type Lang = 'vi' | 'en'
+export type AgeGroup = 'little' | 'kid' | 'big'
+
+export interface AgeProfile {
+  allowedModes: GameMode[]
+  showSpeedStats: boolean
+  social: boolean
+}
+
+export interface LetterCard {
+  letter: string
+  word: string
+  emoji: string
+}
+
+export interface PictureWord {
+  word: string
+  emoji: string
+}
+
+export type LittleItem =
+  | { kind: 'letter'; target: string; card: LetterCard }
+  | { kind: 'word'; target: string; picture: PictureWord }
+
+export interface LittleSession {
+  stages: LittleItem[][]
+}
+
+export type LetterProgress = Record<string, { seen: number; firstTry: number }>
+
+export interface DailyPlay {
+  date: string
+  sessions: number
+  bonus: number
+}
+
+export interface Sticker {
+  emoji: string
+  name: string
+}
 
 export type Finger =
   | 'left-pinky'
@@ -75,6 +114,7 @@ export interface Settings {
   fingerGuide: boolean
   theme: Theme
   lang: Lang
+  ageGroup: AgeGroup | null
 }
 
 export interface UserRecord {

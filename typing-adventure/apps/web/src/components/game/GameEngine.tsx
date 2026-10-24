@@ -19,9 +19,9 @@ import { GuestBanner } from '@/components/auth/GuestBanner'
 import { SyncIndicator } from '@/components/auth/SyncIndicator'
 
 import { saveSession, getStats, getHistory } from '@/lib/api/sessions'
-import { getProfile } from '@/lib/api/users'
 import { useRecordsStore } from '@/stores/records-store'
 import { t } from '@typing-adventure/i18n'
+import { isModeAllowed } from '@typing-adventure/game-engine'
 import type { GameMode, Level } from '@typing-adventure/game-engine'
 
 type Panel = 'none' | 'settings' | 'history' | 'achievements' | 'customText'
@@ -48,27 +48,15 @@ export function GameEngine() {
   const [selectedWordPackId, setSelectedWordPackId] = useState<string | null>(null)
   const [selectedWordPackWords, setSelectedWordPackWords] = useState<string[] | undefined>(undefined)
 
-  // Load profile + settings from DB when logged in
   useEffect(() => {
     if (!session?.user) {
       profileLoadedRef.current = null
-      settings.setIsLoggedIn(false)
       return
     }
     const userId = session.user.id
-    settings.setIsLoggedIn(true)
     if (!userId) return
     if (profileLoadedRef.current === userId) return
     profileLoadedRef.current = userId
-
-    getProfile().then((res) => {
-      if (!res.success || !res.data) return
-      settings.loadFromServer({
-        name: res.data.name,
-        avatar: res.data.avatar,
-        settings: res.data.settings as Record<string, unknown> | null,
-      })
-    })
 
     // Load records + history from DB
     Promise.all([
@@ -180,6 +168,12 @@ export function GameEngine() {
   useEffect(() => {
     focusInput()
   }, [focusInput])
+
+  useEffect(() => {
+    if (!isModeAllowed(settings.ageGroup, gameState.gameMode)) {
+      gameStore.startGame('classic', settings.level, settings.wordCount, 0, 60, selectedWordPackWords)
+    }
+  }, [settings.ageGroup, gameState.gameMode])
 
   // Apply theme
   useEffect(() => {

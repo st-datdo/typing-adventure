@@ -697,6 +697,12 @@ body {
   gap: 12px;
 }
 
+@media (min-width: 701px) {
+  .stats-bar--compact {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
 .stat-card {
   background: rgba(255, 255, 255, 0.06);
   backdrop-filter: blur(12px);

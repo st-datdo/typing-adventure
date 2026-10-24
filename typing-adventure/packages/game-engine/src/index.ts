@@ -18,7 +18,52 @@ export type {
   AchievementDef,
   LessonDef,
   KeypressResult,
+  AgeGroup,
+  AgeProfile,
+  LetterCard,
+  PictureWord,
+  LittleItem,
+  LittleSession,
+  LetterProgress,
+  DailyPlay,
+  Sticker,
 } from './types'
+
+export { AGE_PROFILES, isModeAllowed } from './age'
+
+export {
+  LETTER_ORDER,
+  LETTER_CARDS,
+  PICTURE_WORDS,
+  STICKERS,
+  MASTERY_FIRST_TRY,
+  STAGE_COUNT,
+  ITEMS_PER_STAGE,
+  HINT_LEVEL_1_MS,
+  HINT_LEVEL_2_MS,
+  DEFAULT_DAILY_LIMIT,
+  MIN_DAILY_LIMIT,
+  MAX_DAILY_LIMIT,
+  PRAISE_COUNT,
+} from './little-content'
+
+export { buildLittleSession, getMasteredLetters, getLearningLetters } from './little-session'
+
+export type { LittleOutcome, LittleState } from './little-state'
+export {
+  createLittleState,
+  littleKeypress,
+  getCurrentItem,
+  getExpectedChar,
+  getHintLevel,
+  canStartLittleSession,
+  markLittleSessionStarted,
+  grantBonusSession,
+  sessionsLeftToday,
+  nextSticker,
+  pickPraiseIndex,
+  clampDailyLimit,
+} from './little-state'
 
 // Words
 export {

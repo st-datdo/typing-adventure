@@ -6,47 +6,73 @@ const RATES: Record<SpeechRate, number> = {
   fast: 1.1,
 }
 
+export type SpeechLang = 'vi' | 'en'
+
+export interface SpeechPart {
+  text: string
+  lang: SpeechLang
+}
+
+const LANG_TAGS: Record<SpeechLang, string> = { vi: 'vi-VN', en: 'en-US' }
+
 export class SpeechEngine {
-  private synth: SpeechSynthesis
+  private synth: SpeechSynthesis | null
   private rate: number = 0.85
-  private voice: SpeechSynthesisVoice | null = null
+  private voices: Record<SpeechLang, SpeechSynthesisVoice | null> = { vi: null, en: null }
 
   constructor() {
-    this.synth = window.speechSynthesis
-    this.loadVoice()
+    this.synth = typeof window !== 'undefined' && 'speechSynthesis' in window ? window.speechSynthesis : null
+    this.loadVoices()
   }
 
-  private loadVoice(): void {
-    const pickVoice = () => {
-      const voices = this.synth.getVoices()
-      this.voice =
-        voices.find(v => v.lang.startsWith('en') && v.localService) ??
-        voices.find(v => v.lang.startsWith('en')) ??
-        voices[0] ?? null
-    }
-    pickVoice()
-    if (this.synth.onvoiceschanged !== undefined) {
-      this.synth.onvoiceschanged = pickVoice
-    }
-  }
-
-  private speak(text: string): void {
+  private loadVoices(): void {
     if (!this.synth) return
-    this.synth.cancel()
+    const synth = this.synth
+    const pick = (prefix: string) => {
+      const voices = synth.getVoices()
+      return (
+        voices.find(v => v.lang.toLowerCase().startsWith(prefix) && v.localService) ??
+        voices.find(v => v.lang.toLowerCase().startsWith(prefix)) ??
+        null
+      )
+    }
+    const pickAll = () => {
+      this.voices = { vi: pick('vi'), en: pick('en') ?? synth.getVoices()[0] ?? null }
+    }
+    pickAll()
+    synth.addEventListener?.('voiceschanged', pickAll)
+  }
+
+  hasVoice(lang: SpeechLang): boolean {
+    return this.voices[lang] !== null
+  }
+
+  private utter(text: string, lang: SpeechLang): SpeechSynthesisUtterance {
     const utterance = new SpeechSynthesisUtterance(text)
     utterance.rate = this.rate
     utterance.pitch = 1.1
-    if (this.voice) utterance.voice = this.voice
-    utterance.lang = 'en-US'
-    this.synth.speak(utterance)
+    const voice = this.voices[lang]
+    if (voice) utterance.voice = voice
+    utterance.lang = LANG_TAGS[lang]
+    return utterance
+  }
+
+  speakSequence(parts: SpeechPart[], interrupt = true): void {
+    if (!this.synth) return
+    if (interrupt) this.synth.cancel()
+    for (const part of parts) {
+      if (!part.text) continue
+      if (part.lang === 'vi' && !this.hasVoice('vi')) continue
+      this.synth.speak(this.utter(part.text, part.lang))
+    }
   }
 
   speakLetter(char: string): void {
-    this.speak(char === ' ' ? 'space' : char)
+    this.speakSequence([{ text: char === ' ' ? 'space' : char, lang: 'en' }])
   }
 
   speakWord(word: string): void {
-    this.speak(word)
+    this.speakSequence([{ text: word, lang: 'en' }])
   }
 
   setRate(preset: SpeechRate): void {

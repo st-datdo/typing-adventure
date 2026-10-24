@@ -2,15 +2,25 @@
 
 import { useState, useEffect } from 'react'
 import { GameEngine } from '@/components/game/GameEngine'
+import { AgePicker } from '@/components/age/AgePicker'
+import { LittleMode } from '@/components/little/LittleMode'
+import { useSettingsStore } from '@/stores/settings-store'
+import { useProfileSync } from '@/hooks/useProfileSync'
 
 export default function PlayPage() {
-  const [mounted, setMounted] = useState(false)
+  const [hydrated, setHydrated] = useState(false)
+  const profileReady = useProfileSync()
+  const ageGroup = useSettingsStore(s => s.ageGroup)
 
   useEffect(() => {
-    setMounted(true)
+    if (useSettingsStore.persist.hasHydrated()) {
+      setHydrated(true)
+      return
+    }
+    return useSettingsStore.persist.onFinishHydration(() => setHydrated(true))
   }, [])
 
-  if (!mounted) {
+  if (!hydrated || !profileReady) {
     return (
       <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <div style={{ textAlign: 'center' }}>
@@ -21,5 +31,7 @@ export default function PlayPage() {
     )
   }
 
+  if (ageGroup === null) return <AgePicker />
+  if (ageGroup === 'little') return <LittleMode />
   return <GameEngine />
 }

@@ -2,7 +2,7 @@
 
 import { create } from 'zustand'
 import { persist, createJSONStorage } from 'zustand/middleware'
-import type { KeyboardCase, Level, SoundMode, SpeechRate, Theme, Lang } from '@typing-adventure/game-engine'
+import type { KeyboardCase, Level, SoundMode, SpeechRate, Theme, Lang, AgeGroup } from '@typing-adventure/game-engine'
 import { updateProfile, updateSettings } from '@/lib/api/users'
 
 interface SettingsState {
@@ -17,6 +17,7 @@ interface SettingsState {
   fingerGuide: boolean
   theme: Theme
   lang: Lang
+  ageGroup: AgeGroup | null
   playerName: string
   playerAvatar: string
 }
@@ -32,6 +33,7 @@ interface SettingsActions {
   setFingerGuide: (value: boolean) => void
   setTheme: (value: Theme) => void
   setLang: (value: Lang) => void
+  setAgeGroup: (value: AgeGroup | null) => void
   setPlayerName: (value: string) => void
   setPlayerAvatar: (value: string) => void
   loadFromServer: (profile: { name?: string | null; avatar?: string; settings?: Record<string, unknown> | null }) => void
@@ -51,6 +53,7 @@ const DEFAULTS: Omit<SettingsState, '_isLoggedIn'> = {
   fingerGuide: true,
   theme: 'dark',
   lang: 'vi',
+  ageGroup: null,
   playerName: '',
   playerAvatar: '🧒',
 }
@@ -110,6 +113,10 @@ export const useSettingsStore = create<SettingsStore>()(
         set({ lang: value })
         if (get()._isLoggedIn) syncSettingsToDB({ lang: value })
       },
+      setAgeGroup: (value) => {
+        set({ ageGroup: value })
+        if (get()._isLoggedIn) updateSettings({ ageGroup: value })
+      },
       setPlayerName: (value) => {
         set({ playerName: value })
         if (get()._isLoggedIn) syncProfileToDB({ name: value })
@@ -133,6 +140,7 @@ export const useSettingsStore = create<SettingsStore>()(
           ...(s.wordCount != null && { wordCount: s.wordCount as number }),
           ...(s.fingerGuide != null && { fingerGuide: s.fingerGuide as boolean }),
           ...(s.lang != null && { lang: s.lang as Lang }),
+          ...(s.ageGroup != null && { ageGroup: s.ageGroup as AgeGroup }),
         })
       },
 
