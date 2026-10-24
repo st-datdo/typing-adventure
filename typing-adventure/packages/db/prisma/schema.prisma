@@ -35,6 +35,7 @@ model User {
   classroomsOwned   Classroom[]    @relation("ClassroomTeacher")
   classroomMembers  ClassroomMember[]
   assignments       Assignment[]
+  childProgress     ChildProgress?
 
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
@@ -96,6 +97,19 @@ model UserRecord {
   maxDayStreak  Int       @default(0)
   lastPlayDate  DateTime?
 
+  updatedAt     DateTime  @updatedAt
+}
+
+// ============================================
+// CHILD PROGRESS (little mode + mini games)
+// ============================================
+model ChildProgress {
+  id            String    @id @default(cuid())
+  userId        String    @unique
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  data          Json      @default("{}")
+
+  createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 }
 

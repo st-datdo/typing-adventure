@@ -45,6 +45,59 @@ export interface Sticker {
   name: string
 }
 
+export type PetKind = 'kitty' | 'puppy' | 'dino'
+
+export interface PetState {
+  kind: PetKind | null
+  days: number
+  lastDay: string
+}
+
+export interface PetStage {
+  index: number
+  minDays: number
+  hatched: boolean
+  scale: number
+  accessory: string | null
+}
+
+export type IslandId = 'sun' | 'forest' | 'candy' | 'whale' | 'star'
+
+export interface Island {
+  id: IslandId
+  emoji: string
+  letters: string[]
+}
+
+export type IslandStatus = 'done' | 'current' | 'locked'
+
+export interface IslandView {
+  island: Island
+  mastered: string[]
+  status: IslandStatus
+}
+
+export type MiniGameId = 'balloon' | 'picture'
+
+export interface LittleSaved {
+  progress: LetterProgress
+  stickers: string[]
+  daily: DailyPlay
+  dailyLimit: number
+  pet: PetState
+}
+
+export interface GamesSaved {
+  best: Partial<Record<MiniGameId, number>>
+  plays: Partial<Record<MiniGameId, number>>
+}
+
+export interface ChildProgress {
+  little: LittleSaved
+  games: GamesSaved
+  updatedAt: number
+}
+
 export type Finger =
   | 'left-pinky'
   | 'left-ring'

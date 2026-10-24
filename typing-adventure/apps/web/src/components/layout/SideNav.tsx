@@ -200,6 +200,10 @@ export function SideNav({
           {t(lang, 'btnHistory')}
         </button>
 
+        <Link href="/games" className="nav-btn nav-btn--games has-tooltip" data-tooltip={t(lang, 'gamesTitle')} onClick={closeMobile}>
+          {t(lang, 'navGames')}
+        </Link>
+
         {showSocial && (
           <>
             <Link href="/leaderboard" className="nav-btn has-tooltip" data-tooltip={t(lang, 'navLeaderboard')} onClick={closeMobile}>

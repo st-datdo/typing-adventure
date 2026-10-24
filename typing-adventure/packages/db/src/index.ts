@@ -9,6 +9,7 @@ export type {
   WordPack,
   RaceRoom,
   RaceResult,
+  ChildProgress,
   Role,
   FriendStatus,
   RaceStatus,

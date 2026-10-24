@@ -3,26 +3,40 @@
 import { useCallback, useEffect, useMemo, useRef } from 'react'
 import { SoundEngine } from '@/lib/audio/sound-engine'
 import type { SoundType } from '@/lib/audio/sound-engine'
-import { SpeechEngine } from '@/lib/audio/speech-engine'
+import { VoiceEngine } from '@/lib/audio/voice-engine'
 import type { SpeechPart } from '@/lib/audio/speech-engine'
+import {
+  balloonResultClip,
+  cardClip,
+  cardText,
+  doneClip,
+  letterClip,
+  listVoiceClips,
+  pictureResultClip,
+  wordClip,
+} from '@/lib/audio/voice-clips'
+import type { VoiceLineKey } from '@/lib/audio/voice-clips'
 import { useSettingsStore } from '@/stores/settings-store'
 import { t, tReplace } from '@typing-adventure/i18n'
-import type { TranslationKey } from '@typing-adventure/i18n'
 import type { LittleItem } from '@typing-adventure/game-engine'
 
 const BOING_GAP_MS = 250
 
 let sharedSound: SoundEngine | null = null
-let sharedSpeech: SpeechEngine | null = null
+let sharedVoice: VoiceEngine | null = null
 
 function getSound(): SoundEngine {
   if (!sharedSound) sharedSound = new SoundEngine()
   return sharedSound
 }
 
-function getSpeech(): SpeechEngine {
-  if (!sharedSpeech) sharedSpeech = new SpeechEngine()
-  return sharedSpeech
+function getVoice(): VoiceEngine {
+  if (!sharedVoice) sharedVoice = new VoiceEngine()
+  return sharedVoice
+}
+
+function enPart(text: string): SpeechPart {
+  return { text, lang: 'en', clip: text.length === 1 ? letterClip(text.toLowerCase()) : wordClip(text) }
 }
 
 export function useLittleVoice() {
@@ -32,17 +46,17 @@ export function useLittleVoice() {
   const lastBoingRef = useRef(0)
 
   useEffect(() => {
-    getSpeech().setRate(speechRate)
+    getVoice().setRate(speechRate)
   }, [speechRate])
 
   useEffect(() => {
     getSound().enabled = soundEnabled
-    if (!soundEnabled) getSpeech().cancel()
+    if (!soundEnabled) getVoice().cancel()
   }, [soundEnabled])
 
   const say = useCallback((parts: SpeechPart[], interrupt = true) => {
     if (!soundEnabled) return
-    getSpeech().speakSequence(parts, interrupt)
+    getVoice().speak(parts, interrupt)
   }, [soundEnabled])
 
   const sound = useCallback((type: SoundType) => {
@@ -62,14 +76,13 @@ export function useLittleVoice() {
     engine.playNote(ch)
   }, [])
 
-  const line = useCallback((key: TranslationKey): SpeechPart => ({ text: t(lang, key), lang }), [lang])
+  const line = useCallback((key: VoiceLineKey): SpeechPart => ({ text: t(lang, key), lang, clip: key }), [lang])
 
   const prompt = useCallback((item: LittleItem, interrupt = true) => {
     if (item.kind === 'letter') {
-      const upper = item.target.toUpperCase()
-      say([line('littleFindLetter'), { text: `${upper}! ${upper} for ${item.card.word}.`, lang: 'en' }], interrupt)
+      say([line('littleFindLetter'), { text: cardText(item.target), lang: 'en', clip: cardClip(item.target) }], interrupt)
     } else {
-      say([line('littleTypeWord'), { text: item.target, lang: 'en' }], interrupt)
+      say([line('littleTypeWord'), enPart(item.target)], interrupt)
     }
   }, [say, line])
 
@@ -77,19 +90,37 @@ export function useLittleVoice() {
     sound,
     note,
     prompt,
-    letter: (ch: string) => say([{ text: ch.toUpperCase(), lang: 'en' }]),
-    word: (w: string, then?: TranslationKey) =>
-      say(then ? [{ text: w, lang: 'en' }, line(then)] : [{ text: w, lang: 'en' }]),
-    praise: (i: number, before?: string) =>
-      say(before ? [{ text: before, lang: 'en' }, line(`praise${i}` as TranslationKey)] : [line(`praise${i}` as TranslationKey)]),
-    stickerName: (name: string) => say([{ text: name, lang: 'en' }]),
+    say,
+    lines: (keys: VoiceLineKey[], interrupt = true) => say(keys.map(line), interrupt),
+    letter: (ch: string) => say([enPart(ch.toUpperCase())]),
+    word: (w: string, interrupt = true) => say([enPart(w)], interrupt),
+    praise: (i: number, before?: string) => {
+      const praiseLine = line(`praise${i}` as VoiceLineKey)
+      say(before ? [enPart(before), praiseLine] : [praiseLine])
+    },
+    stickerName: (name: string) => say([enPart(name)]),
     hello: () => say([line('littleHello')]),
     sleep: (interrupt = true) => say([line('littleSleep')], interrupt),
-    done: (n: number) => say([{ text: tReplace(lang, 'littleDone', n), lang }, line('littleNewSticker')]),
-    testVoice: () => say([line('littleHello'), { text: 'A! A for apple.', lang: 'en' }]),
-    hasViVoice: () => getSpeech().hasVoice('vi'),
+    done: (n: number) => say([
+      { text: tReplace(lang, 'littleDone', n), lang, clip: doneClip(n) },
+      line('littleNewSticker'),
+    ]),
+    balloonResult: (popped: number) => say([
+      { text: tReplace(lang, 'gameBalloonResult', popped), lang, clip: balloonResultClip(popped) },
+    ]),
+    pictureResult: (firstTry: number, total: number) => say([
+      { text: tReplace(lang, 'gamePictureResult', firstTry, total), lang, clip: pictureResultClip(firstTry, total) },
+    ]),
+    testVoice: () => say([line('littleHello'), { text: cardText('a'), lang: 'en', clip: cardClip('a') }]),
+    hasViVoice: () => getVoice().hasVoice('vi'),
+    clipStats: async () => {
+      const voice = getVoice()
+      await voice.whenReady()
+      const all = listVoiceClips()
+      return { have: voice.countClips(all), total: all.length }
+    },
     unlockAudio: () => getSound().init(),
-    stop: () => getSpeech().cancel(),
+    stop: () => getVoice().cancel(),
   }), [sound, note, prompt, say, line, lang])
 }
 

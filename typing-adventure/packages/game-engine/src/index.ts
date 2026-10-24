@@ -27,7 +27,63 @@ export type {
   LetterProgress,
   DailyPlay,
   Sticker,
+  PetKind,
+  PetState,
+  PetStage,
+  IslandId,
+  Island,
+  IslandStatus,
+  IslandView,
+  MiniGameId,
+  LittleSaved,
+  GamesSaved,
+  ChildProgress,
 } from './types'
+
+export {
+  PET_KINDS,
+  PET_EMOJI,
+  PET_STAGES,
+  EMPTY_PET,
+  choosePet,
+  getPetStage,
+  daysToNextStage,
+  feedPet,
+} from './pet'
+
+export { ISLANDS, getIslandViews, countDoneIslands, getCurrentIsland, newlyReachedIsland } from './islands'
+
+export {
+  emptyChildProgress,
+  normalizeChildProgress,
+  mergeChildProgress,
+  sameChildProgress,
+} from './child-progress'
+
+export type { Balloon, BalloonGameState } from './balloon-game'
+export {
+  BALLOON_TARGET,
+  BALLOON_COLORS,
+  BALLOON_SPAWN_MS,
+  createBalloonGame,
+  tickBalloons,
+  popBalloon,
+  balloonStars,
+  balloonCapacity,
+  balloonSpeed,
+} from './balloon-game'
+
+export type { PictureGameState, PictureOutcome } from './picture-game'
+export {
+  KID_PICTURE_WORDS,
+  PICTURE_ROUND_SIZE,
+  PICTURE_HINT_IDLE_MS,
+  createPictureGame,
+  getPictureWord,
+  pictureKeypress,
+  shouldShowPictureHint,
+  pictureStars,
+} from './picture-game'
 
 export { AGE_PROFILES, isModeAllowed } from './age'
 
