@@ -7,6 +7,7 @@
 @import './admin.css';
 @import './multiplayer.css';
 @import './little.css';
+@import './little-world.css';
 
 /* ── Theme: Dark (default) ── */
 :root {

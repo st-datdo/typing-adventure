@@ -1,13 +1,15 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { LETTER_ORDER, MASTERY_FIRST_TRY, sessionsLeftToday } from '@typing-adventure/game-engine'
+import { useSession } from 'next-auth/react'
+import { LETTER_ORDER, MASTERY_FIRST_TRY, PET_EMOJI, daysToNextStage, sessionsLeftToday } from '@typing-adventure/game-engine'
 import type { AgeGroup } from '@typing-adventure/game-engine'
-import { t } from '@typing-adventure/i18n'
+import { t, tReplace } from '@typing-adventure/i18n'
 import { useSettingsStore } from '@/stores/settings-store'
 import { useLittleStore } from '@/stores/little-store'
 import { localToday } from '@/lib/little/today'
 import type { LittleVoice } from '@/hooks/useLittleVoice'
+import { PET_NAME_KEYS } from './Pet'
 
 interface ParentPanelProps {
   voice: LittleVoice
@@ -20,12 +22,24 @@ export function ParentPanel({ voice, onClose }: ParentPanelProps) {
   const little = useLittleStore()
   const today = localToday()
   const [hasVi, setHasVi] = useState(true)
+  const [clips, setClips] = useState<{ have: number; total: number } | null>(null)
+  const { status } = useSession()
 
   useEffect(() => {
     setHasVi(voice.hasViVoice())
     const timer = setTimeout(() => setHasVi(voice.hasViVoice()), 1000)
-    return () => clearTimeout(timer)
+    let alive = true
+    voice.clipStats().then(stats => {
+      if (alive) setClips(stats)
+    })
+    return () => {
+      alive = false
+      clearTimeout(timer)
+    }
   }, [voice])
+
+  const pet = little.pet
+  const nextIn = daysToNextStage(pet.days)
 
   const usedToday = little.daily.date === today ? little.daily.sessions : 0
   const allowedToday = little.dailyLimit + (little.daily.date === today ? little.daily.bonus : 0)
@@ -78,6 +92,26 @@ export function ParentPanel({ voice, onClose }: ParentPanelProps) {
 
         <section className="parent-section">
           <div className="parent-row">
+            <span>{t(lang, 'parentPet')}</span>
+            {pet.kind === null ? (
+              <span className="parent-dim">{t(lang, 'parentPetNone')}</span>
+            ) : (
+              <b>{PET_EMOJI[pet.kind]} {t(lang, PET_NAME_KEYS[pet.kind])} · {tReplace(lang, 'parentPetDays', pet.days)}</b>
+            )}
+          </div>
+          {pet.kind !== null && (
+            <p className="parent-dim">
+              {nextIn === null ? t(lang, 'parentPetMax') : tReplace(lang, 'parentPetNext', nextIn)}
+            </p>
+          )}
+          <div className="parent-row">
+            <span>{t(lang, 'parentSync')}</span>
+            <span className="parent-dim">{status === 'authenticated' ? `☁️ ${t(lang, 'parentSyncOn')}` : `📱 ${t(lang, 'parentSyncOff')}`}</span>
+          </div>
+        </section>
+
+        <section className="parent-section">
+          <div className="parent-row">
             <span>{t(lang, 'parentAge')}</span>
             <select
               className="parent-select"
@@ -107,6 +141,12 @@ export function ParentPanel({ voice, onClose }: ParentPanelProps) {
               </button>
             </span>
           </div>
+          {clips && (
+            <div className="parent-row">
+              <span>{t(lang, 'parentVoiceClips')}</span>
+              <b>{tReplace(lang, 'parentVoiceClipsValue', clips.have, clips.total)}</b>
+            </div>
+          )}
           {lang === 'vi' && !hasVi && <p className="parent-warn">{t(lang, 'parentNoViVoice')}</p>}
         </section>
 

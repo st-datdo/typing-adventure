@@ -11,7 +11,11 @@ export type SpeechLang = 'vi' | 'en'
 export interface SpeechPart {
   text: string
   lang: SpeechLang
+  clip?: string
 }
+
+const SPEAK_TIMEOUT_BASE_MS = 2000
+const SPEAK_TIMEOUT_PER_CHAR_MS = 200
 
 const LANG_TAGS: Record<SpeechLang, string> = { vi: 'vi-VN', en: 'en-US' }
 
@@ -65,6 +69,22 @@ export class SpeechEngine {
       if (part.lang === 'vi' && !this.hasVoice('vi')) continue
       this.synth.speak(this.utter(part.text, part.lang))
     }
+  }
+
+  speakAsync(part: SpeechPart): Promise<void> {
+    const synth = this.synth
+    if (!synth || !part.text || (part.lang === 'vi' && !this.hasVoice('vi'))) return Promise.resolve()
+    return new Promise(resolve => {
+      const utterance = this.utter(part.text, part.lang)
+      const finish = () => {
+        clearTimeout(timer)
+        resolve()
+      }
+      const timer = setTimeout(finish, (SPEAK_TIMEOUT_BASE_MS + part.text.length * SPEAK_TIMEOUT_PER_CHAR_MS) / this.rate)
+      utterance.onend = finish
+      utterance.onerror = finish
+      synth.speak(utterance)
+    })
   }
 
   speakLetter(char: string): void {

@@ -6,10 +6,12 @@ import { AgePicker } from '@/components/age/AgePicker'
 import { LittleMode } from '@/components/little/LittleMode'
 import { useSettingsStore } from '@/stores/settings-store'
 import { useProfileSync } from '@/hooks/useProfileSync'
+import { useChildProgressSync } from '@/hooks/useChildProgressSync'
 
 export default function PlayPage() {
   const [hydrated, setHydrated] = useState(false)
   const profileReady = useProfileSync()
+  useChildProgressSync()
   const ageGroup = useSettingsStore(s => s.ageGroup)
 
   useEffect(() => {

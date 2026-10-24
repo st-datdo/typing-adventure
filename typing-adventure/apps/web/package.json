@@ -8,7 +8,8 @@
     "build": "next build",
     "start": "next start",
     "start:ws": "node --import tsx server.ts",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "voice:clips": "tsx scripts/voice-clips.ts"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.7.0",

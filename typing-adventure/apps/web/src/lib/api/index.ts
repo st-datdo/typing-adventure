@@ -12,3 +12,4 @@ export {
 } from './friends'
 export { getWordPacks } from './wordpacks'
 export type { WordPackSummary } from './wordpacks'
+export { getChildProgress, saveChildProgress } from './progress'
