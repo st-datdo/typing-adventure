@@ -276,13 +276,6 @@
   background: linear-gradient(135deg, rgba(255, 207, 77, 0.25), rgba(92, 194, 58, 0.25));
 }
 
-.games-back {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-decoration: none;
-}
-
 .games-cards {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
@@ -348,7 +341,7 @@
 }
 
 .games-star {
-  color: #d9d2ea;
+  color: var(--ink-faint);
 }
 
 .games-star--on {
@@ -399,8 +392,8 @@
   height: min(48vh, 420px);
   border-radius: 34px;
   overflow: hidden;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.55), rgba(255, 255, 255, 0.15));
-  box-shadow: inset 0 0 0 4px rgba(255, 255, 255, 0.7);
+  background: linear-gradient(180deg, var(--tray), transparent);
+  box-shadow: inset 0 0 0 4px var(--tray);
 }
 
 .games-balloon-item {

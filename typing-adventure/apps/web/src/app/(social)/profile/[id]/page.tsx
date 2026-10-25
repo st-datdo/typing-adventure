@@ -2,13 +2,14 @@
 
 import { useState, useEffect, use } from 'react'
 import { useSession } from 'next-auth/react'
-import Link from 'next/link'
 import { apiClient } from '@/lib/api/client'
 import { sendFriendRequest, getFriends } from '@/lib/api/friends'
 import { ACHIEVEMENTS } from '@typing-adventure/game-engine'
 import { useSettingsStore } from '@/stores/settings-store'
 import { t, tReplace } from '@typing-adventure/i18n'
 import type { TranslationKey } from '@typing-adventure/i18n'
+import { TopBar } from '@/components/ui/TopBar'
+import { LoadingScreen } from '@/components/ui/LoadingScreen'
 
 interface ProfileData {
   id: string
@@ -125,23 +126,16 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
   }
 
   if (loading) {
-    return (
-      <div className="social-page">
-        <div className="social-empty">
-          <div className="social-empty-icon">⏳</div>
-          <div className="social-empty-text">{t(lang, 'lbLoading')}</div>
-        </div>
-      </div>
-    )
+    return <LoadingScreen label={t(lang, 'lbLoading')} />
   }
 
   if (!profile) {
     return (
-      <div className="social-page">
-        <Link href="/" className="social-back">{t(lang, 'backHome')}</Link>
-        <div className="social-empty">
-          <div className="social-empty-icon">🙅</div>
-          <div className="social-empty-text">{t(lang, 'profileNotFound')}</div>
+      <div className="ui-page social-page">
+        <TopBar back={{ href: '/', label: t(lang, 'backHome').replace('← ', '') }} title={t(lang, 'profileTitle')} />
+        <div className="ui-card ui-empty">
+          <span className="ui-empty-icon" aria-hidden>🙅</span>
+          {t(lang, 'profileNotFound')}
         </div>
       </div>
     )
@@ -165,13 +159,13 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
   const maxChartWpm = Math.max(1, ...recentGames.map(g => g.wpm))
 
   return (
-    <div className="social-page">
-      <Link href="/leaderboard" className="social-back">
-        {t(lang, 'backLeaderboard')}
-      </Link>
+    <div className="ui-page social-page">
+      <TopBar
+        back={{ href: '/leaderboard', label: t(lang, 'backLeaderboard').replace('← ', '') }}
+        title={t(lang, 'profileTitle')}
+      />
 
-      {/* Profile Card */}
-      <div className="profile-card">
+      <div className="ui-card profile-card">
         <div className="profile-avatar-lg">{profile.avatar}</div>
         <div className="profile-name-lg">{profile.name ?? t(lang, 'profilePlayer')}</div>
         <div className="profile-joined">
@@ -179,7 +173,8 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
         </div>
         {friendStatus === 'none' && currentUserId && (
           <button
-            className="btn"
+            type="button"
+            className="ui-btn ui-btn--primary"
             onClick={handleAddFriend}
             disabled={addingFriend}
           >
@@ -194,103 +189,76 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
         )}
       </div>
 
-      {/* Stats Grid */}
       <div className="profile-stats">
-        <div className="profile-stat">
+        <div className="ui-card profile-stat">
           <span className="profile-stat-value lb-wpm">{maxWpm}</span>
           <span className="profile-stat-label">{t(lang, 'profileBestWpm')}</span>
         </div>
-        <div className="profile-stat">
+        <div className="ui-card profile-stat">
           <span className="profile-stat-value lb-accuracy">{maxAcc}%</span>
           <span className="profile-stat-label">{t(lang, 'profileBestAcc')}</span>
         </div>
-        <div className="profile-stat">
+        <div className="ui-card profile-stat">
           <span className="profile-stat-value">{records?.totalGames ?? 0}</span>
           <span className="profile-stat-label">{t(lang, 'profileTotalGames')}</span>
         </div>
-        <div className="profile-stat">
+        <div className="ui-card profile-stat">
           <span className="profile-stat-value">{records?.totalWords ?? 0}</span>
           <span className="profile-stat-label">{t(lang, 'profileTotalWords')}</span>
         </div>
-        <div className="profile-stat">
-          <span className="profile-stat-value" style={{ color: '#ff5252' }}>
+        <div className="ui-card profile-stat">
+          <span className="profile-stat-value profile-stat-value--streak">
             {records?.maxDayStreak ?? 0}
           </span>
           <span className="profile-stat-label">{t(lang, 'profileMaxStreak')}</span>
         </div>
-        <div className="profile-stat">
-          <span className="profile-stat-value" style={{ color: '#ff9800' }}>
+        <div className="ui-card profile-stat">
+          <span className="profile-stat-value profile-stat-value--today">
             {records?.dayStreak ?? 0}
           </span>
           <span className="profile-stat-label">{t(lang, 'profileCurrentStreak')}</span>
         </div>
       </div>
 
-      {/* Best records by level */}
       {records && (
-        <div style={{ marginBottom: 24 }}>
-          <h3 style={{ fontSize: '0.85rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--color-text-dim)', marginBottom: 10 }}>
-            {t(lang, 'profileRecordByLevel')}
-          </h3>
+        <section className="ui-card profile-section">
+          <h2 className="ui-section-title">{t(lang, 'profileRecordByLevel')}</h2>
           <div className="profile-stats">
             {(['easy', 'medium', 'hard'] as const).map(lvl => (
-              <div key={lvl} className="profile-stat">
+              <div key={lvl} className="ui-card ui-card--inset profile-stat">
                 <span className="profile-stat-value lb-wpm">
                   {records.bestWpm[lvl] ?? 0}
                 </span>
-                <span className="profile-stat-label">
+                <span className="profile-stat-label profile-label-cap">
                   {lvl} WPM
                 </span>
               </div>
             ))}
           </div>
-        </div>
+        </section>
       )}
 
-      {/* WPM Chart (simple bars) */}
       {recentGames.length > 0 && (
-        <div style={{ marginBottom: 24 }}>
-          <h3 style={{ fontSize: '0.85rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--color-text-dim)', marginBottom: 10 }}>
-            {t(lang, 'profileRecentGames')}
-          </h3>
-          <div style={{
-            display: 'flex',
-            alignItems: 'flex-end',
-            gap: 3,
-            height: 80,
-            padding: '8px 0',
-            background: 'rgba(255,255,255,0.03)',
-            border: '1px solid rgba(255,255,255,0.06)',
-            borderRadius: 'var(--radius-sm)',
-            paddingInline: 8,
-          }}>
-            {recentGames.slice().reverse().map((g, i) => {
-              const h = Math.max(4, (g.wpm / maxChartWpm) * 64)
-              return (
-                <div
-                  key={i}
-                  title={`WPM: ${g.wpm} | ${t(lang, 'lblAccuracy')}: ${g.accuracy}%`}
-                  style={{
-                    flex: 1,
-                    height: h,
-                    background: 'linear-gradient(to top, var(--color-accent), #e040fb)',
-                    borderRadius: 2,
-                    minWidth: 4,
-                    transition: 'height 0.3s ease',
-                  }}
-                />
-              )
-            })}
+        <section className="ui-card profile-section">
+          <h2 className="ui-section-title">{t(lang, 'profileRecentGames')}</h2>
+          <div className="ui-card--inset profile-chart">
+            {recentGames.slice().reverse().map((g, i) => (
+              <div
+                key={i}
+                className="profile-chart-bar"
+                title={`WPM: ${g.wpm} | ${t(lang, 'lblAccuracy')}: ${g.accuracy}%`}
+                style={{ height: Math.max(4, (g.wpm / maxChartWpm) * 72) }}
+              />
+            ))}
           </div>
-        </div>
+        </section>
       )}
 
-      {/* Achievements Showcase */}
       {unlockedAchievements.length > 0 && (
-        <div style={{ marginBottom: 24 }}>
-          <h3 style={{ fontSize: '0.85rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--color-text-dim)', marginBottom: 10 }}>
+        <section className="ui-card profile-section">
+          <h2 className="ui-section-title">
             {tReplace(lang, 'profileAchievements', unlockedAchievements.length, ACHIEVEMENTS.length)}
-          </h3>
+          </h2>
           <div className="profile-achievements">
             {unlockedAchievements.map(a => (
               <div key={a.id} className="profile-ach" title={t(lang, a.descKey as TranslationKey)}>
@@ -299,68 +267,46 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
               </div>
             ))}
           </div>
-        </div>
+        </section>
       )}
 
-      {/* Race History */}
       {raceResults.length > 0 && (
-        <div style={{ marginBottom: 24 }}>
-          <h3 style={{ fontSize: '0.85rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--color-text-dim)', marginBottom: 10 }}>
+        <section className="ui-card profile-section">
+          <h2 className="ui-section-title">
             {lang === 'vi' ? 'Lich su dua' : 'Race History'}
-            <span style={{ fontWeight: 400, marginLeft: 8, fontSize: '0.78rem' }}>
-              {raceWins}W / {raceLosses}L
-            </span>
-          </h3>
-          <div style={{
-            background: 'rgba(255,255,255,0.03)',
-            border: '1px solid rgba(255,255,255,0.06)',
-            borderRadius: 'var(--radius-sm)',
-            overflow: 'hidden',
-          }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.82rem' }}>
-              <thead>
-                <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
-                  <th style={{ textAlign: 'left', padding: '8px 12px', fontWeight: 700, fontSize: '0.72rem', textTransform: 'uppercase', color: 'var(--color-text-dim)' }}>
-                    {lang === 'vi' ? 'Thu hang' : 'Rank'}
-                  </th>
-                  <th style={{ textAlign: 'left', padding: '8px 12px', fontWeight: 700, fontSize: '0.72rem', textTransform: 'uppercase', color: 'var(--color-text-dim)' }}>WPM</th>
-                  <th style={{ textAlign: 'left', padding: '8px 12px', fontWeight: 700, fontSize: '0.72rem', textTransform: 'uppercase', color: 'var(--color-text-dim)' }}>Acc</th>
-                  <th style={{ textAlign: 'left', padding: '8px 12px', fontWeight: 700, fontSize: '0.72rem', textTransform: 'uppercase', color: 'var(--color-text-dim)' }}>Level</th>
-                  <th style={{ textAlign: 'left', padding: '8px 12px', fontWeight: 700, fontSize: '0.72rem', textTransform: 'uppercase', color: 'var(--color-text-dim)' }}>
-                    {lang === 'vi' ? 'Ngay' : 'Date'}
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {raceResults.map((r, i) => {
-                  const medal = r.position === 1 ? '🥇' : r.position === 2 ? '🥈' : r.position === 3 ? '🥉' : `#${r.position}`
-                  return (
-                    <tr key={i} style={{ borderBottom: '1px solid rgba(255,255,255,0.03)' }}>
-                      <td style={{ padding: '8px 12px' }}>
-                        {medal}
-                        <span style={{ color: 'var(--color-text-dim)', marginLeft: 6, fontSize: '0.72rem' }}>
-                          /{r.room._count.results}
-                        </span>
-                      </td>
-                      <td style={{ padding: '8px 12px', fontWeight: 700, color: 'var(--color-accent)' }}>
-                        {r.wpm}
-                      </td>
-                      <td style={{ padding: '8px 12px' }}>
-                        {r.accuracy}%
-                      </td>
-                      <td style={{ padding: '8px 12px', textTransform: 'capitalize' }}>
-                        {r.room.level}
-                      </td>
-                      <td style={{ padding: '8px 12px', color: 'var(--color-text-dim)' }}>
-                        {new Date(r.createdAt).toLocaleDateString(lang === 'vi' ? 'vi-VN' : 'en-US')}
-                      </td>
-                    </tr>
-                  )
-                })}
-              </tbody>
-            </table>
-          </div>
-        </div>
+            <span>{raceWins}W / {raceLosses}L</span>
+          </h2>
+          <table className="social-table">
+            <thead>
+              <tr>
+                <th>{lang === 'vi' ? 'Thu hang' : 'Rank'}</th>
+                <th>WPM</th>
+                <th>Acc</th>
+                <th>Level</th>
+                <th>{lang === 'vi' ? 'Ngay' : 'Date'}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {raceResults.map((r, i) => {
+                const medal = r.position === 1 ? '🥇' : r.position === 2 ? '🥈' : r.position === 3 ? '🥉' : `#${r.position}`
+                return (
+                  <tr key={i}>
+                    <td>
+                      {medal}
+                      <span className="social-table-of">/{r.room._count.results}</span>
+                    </td>
+                    <td className="lb-wpm">{r.wpm}</td>
+                    <td>{r.accuracy}%</td>
+                    <td className="profile-label-cap">{r.room.level}</td>
+                    <td className="social-table-dim">
+                      {new Date(r.createdAt).toLocaleDateString(lang === 'vi' ? 'vi-VN' : 'en-US')}
+                    </td>
+                  </tr>
+                )
+              })}
+            </tbody>
+          </table>
+        </section>
       )}
     </div>
   )

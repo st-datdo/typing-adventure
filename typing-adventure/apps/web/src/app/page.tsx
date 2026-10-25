@@ -7,6 +7,7 @@ import { LittleMode } from '@/components/little/LittleMode'
 import { useSettingsStore } from '@/stores/settings-store'
 import { useProfileSync } from '@/hooks/useProfileSync'
 import { useChildProgressSync } from '@/hooks/useChildProgressSync'
+import { LoadingScreen } from '@/components/ui/LoadingScreen'
 
 export default function PlayPage() {
   const [hydrated, setHydrated] = useState(false)
@@ -23,14 +24,7 @@ export default function PlayPage() {
   }, [])
 
   if (!hydrated || !profileReady) {
-    return (
-      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <div style={{ textAlign: 'center' }}>
-          <div style={{ fontSize: '3rem', marginBottom: 8 }}>🎹</div>
-          <div style={{ color: 'var(--color-text-dim)', fontSize: '0.9rem' }}>Loading...</div>
-        </div>
-      </div>
-    )
+    return <LoadingScreen />
   }
 
   if (ageGroup === null) return <AgePicker />

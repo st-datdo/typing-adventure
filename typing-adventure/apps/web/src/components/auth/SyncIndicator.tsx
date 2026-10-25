@@ -17,14 +17,8 @@ export function SyncIndicator({ status }: SyncIndicatorProps) {
     offline: 'Offline 📴',
   }
 
-  const cls: Record<string, string> = {
-    saved: 'sync--saved',
-    syncing: 'sync--syncing',
-    offline: 'sync--offline',
-  }
-
   return (
-    <div className={`sync-indicator ${cls[status] ?? ''}`}>
+    <div className={`sync-indicator sync--${status}`} role="status">
       {labels[status]}
     </div>
   )

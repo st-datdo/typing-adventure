@@ -3,9 +3,13 @@
 import { useState } from 'react'
 import { signIn } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
+import { t } from '@typing-adventure/i18n'
+import { TopBar } from '@/components/ui/TopBar'
+import { useSettingsStore } from '@/stores/settings-store'
 
 export default function LoginPage() {
   const router = useRouter()
+  const lang = useSettingsStore(s => s.lang)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
@@ -33,41 +37,42 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="auth-page">
-      <div className="auth-card">
-        <div className="auth-emoji">🎹</div>
-        <h1 className="auth-title">Đăng nhập</h1>
-        <p className="auth-subtitle">Chào mừng bạn trở lại!</p>
+    <div className="ui-page ui-page--narrow auth-page">
+      <TopBar back={{ href: '/', label: t(lang, 'backHome').replace('← ', '') }} />
+      <div className="ui-card auth-card">
+        <div className="auth-mascot" aria-hidden>🦉</div>
+        <h1 className="ui-title">Đăng nhập</h1>
+        <p className="ui-subtitle">Chào mừng bạn trở lại!</p>
 
         {error && <div className="auth-error">{error}</div>}
 
         <form onSubmit={handleSubmit} className="auth-form">
-          <label className="auth-label">
+          <label className="ui-label">
             📧 Email
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="auth-input"
+              className="ui-input"
               placeholder="email@example.com"
               required
             />
           </label>
 
-          <label className="auth-label">
+          <label className="ui-label">
             🔒 Mật khẩu
             <input
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="auth-input"
+              className="ui-input"
               placeholder="••••••"
               required
               minLength={6}
             />
           </label>
 
-          <button type="submit" className="btn auth-btn-primary" disabled={loading}>
+          <button type="submit" className="ui-btn ui-btn--primary ui-btn--block" disabled={loading}>
             {loading ? '⏳ Đang đăng nhập...' : '🚀 Đăng nhập'}
           </button>
         </form>
@@ -77,7 +82,8 @@ export default function LoginPage() {
         </div>
 
         <button
-          className="btn auth-btn-google"
+          type="button"
+          className="ui-btn ui-btn--block"
           onClick={() => signIn('google', { callbackUrl: '/' })}
         >
           🌐 Đăng nhập với Google

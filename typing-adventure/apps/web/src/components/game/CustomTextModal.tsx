@@ -21,45 +21,55 @@ export function CustomTextModal({ onStart, onClose }: CustomTextModalProps) {
   }
 
   return (
-    <div className="settings-overlay settings--visible" onClick={onClose}>
+    <div className="ui-overlay" onClick={onClose}>
       <div
-        className="settings-panel custom-text-panel"
+        className="ui-modal ta-modal ta-modal--sm"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="custom-title"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="settings-title">
-          {lang === 'vi' ? 'Nhập văn bản tùy chỉnh' : 'Custom Text'}
+        <div className="ta-modal-head">
+          <h2 id="custom-title" className="ta-modal-title">
+            ✏️ {lang === 'vi' ? 'Nhập văn bản tùy chỉnh' : 'Custom Text'}
+          </h2>
+          <button type="button" className="ui-chip" aria-label={t(lang, 'navClose')} title={t(lang, 'navClose')} onClick={onClose}>✕</button>
         </div>
-        <p style={{ fontSize: '0.82rem', color: 'var(--color-text-dim)', marginBottom: 12 }}>
-          {lang === 'vi'
-            ? 'Nhập đoạn văn bản bạn muốn luyện gõ:'
-            : 'Type any text you want to practice:'}
-        </p>
-        <textarea
-          className="custom-text-input"
-          placeholder={
-            lang === 'vi'
-              ? 'Ví dụ: Con mèo ngồi trên mái nhà...'
-              : 'e.g. The quick brown fox jumps over the lazy dog...'
-          }
-          value={text}
-          onChange={(e) => setText(e.target.value)}
-          autoFocus
-        />
-        <div style={{ fontSize: '0.72rem', color: 'var(--color-text-dim)', marginTop: 6 }}>
-          {wordCount} {lang === 'vi' ? 'từ' : 'words'} / {trimmed.length}{' '}
-          {lang === 'vi' ? 'ký tự' : 'chars'}
-        </div>
-        <div className="custom-text-actions">
-          <button className="btn" onClick={onClose}>
-            {lang === 'vi' ? 'Hủy' : 'Cancel'}
-          </button>
-          <button
-            className="btn btn-primary"
-            onClick={handleStart}
-            disabled={trimmed.length < 2}
-          >
-            {lang === 'vi' ? 'Bắt đầu luyện' : 'Start Typing'}
-          </button>
+        <div className="ta-modal-body">
+          <label className="ui-label" htmlFor="custom-text">
+            {lang === 'vi'
+              ? 'Nhập đoạn văn bản bạn muốn luyện gõ:'
+              : 'Type any text you want to practice:'}
+          </label>
+          <textarea
+            id="custom-text"
+            className="ui-input ta-textarea"
+            placeholder={
+              lang === 'vi'
+                ? 'Ví dụ: Con mèo ngồi trên mái nhà...'
+                : 'e.g. The quick brown fox jumps over the lazy dog...'
+            }
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+            autoFocus
+          />
+          <div className="ta-hint">
+            {wordCount} {lang === 'vi' ? 'từ' : 'words'} / {trimmed.length}{' '}
+            {lang === 'vi' ? 'ký tự' : 'chars'}
+          </div>
+          <div className="ta-modal-actions">
+            <button type="button" className="ui-btn" onClick={onClose}>
+              {lang === 'vi' ? 'Hủy' : 'Cancel'}
+            </button>
+            <button
+              type="button"
+              className="ui-btn ui-btn--go"
+              onClick={handleStart}
+              disabled={trimmed.length < 2}
+            >
+              {lang === 'vi' ? 'Bắt đầu luyện' : 'Start Typing'}
+            </button>
+          </div>
         </div>
       </div>
     </div>

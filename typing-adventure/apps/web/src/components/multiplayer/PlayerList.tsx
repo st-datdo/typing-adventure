@@ -13,7 +13,7 @@ export function PlayerList({ players, currentUserId }: PlayerListProps) {
       {players.map((p) => (
         <div
           key={p.userId}
-          className={`mp-player-card ${p.finished ? 'mp-player-finished' : ''} ${p.disconnected ? 'mp-player-dc' : ''}`}
+          className={`mp-player-card ${p.ready ? 'mp-player-ready' : ''} ${p.finished ? 'mp-player-finished' : ''} ${p.disconnected ? 'mp-player-dc' : ''} ${p.userId === currentUserId ? 'mp-player-me' : ''}`}
         >
           <span className="mp-player-avatar">{p.avatar}</span>
           <span className="mp-player-name">

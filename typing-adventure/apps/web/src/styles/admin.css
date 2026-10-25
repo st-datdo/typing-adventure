@@ -104,7 +104,7 @@
   margin-bottom: 32px;
 }
 
-.stat-card {
+.admin-layout .stat-card {
   background: var(--bg-tertiary);
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: var(--radius-md);
@@ -112,18 +112,18 @@
   text-align: center;
 }
 
-.stat-card-icon {
+.admin-layout .stat-card-icon {
   font-size: 1.8rem;
   margin-bottom: 8px;
 }
 
-.stat-card-value {
+.admin-layout .stat-card-value {
   font-size: 1.8rem;
   font-weight: 800;
   color: var(--color-accent);
 }
 
-.stat-card-label {
+.admin-layout .stat-card-label {
   font-size: 0.78rem;
   color: var(--color-text-dim);
   margin-top: 4px;
@@ -874,7 +874,7 @@
   border-right-color: #e2e8f0;
 }
 
-[data-theme="light"] .stat-card,
+[data-theme="light"] .admin-layout .stat-card,
 [data-theme="light"] .chart-card,
 [data-theme="light"] .admin-table-wrap {
   background: #ffffff;

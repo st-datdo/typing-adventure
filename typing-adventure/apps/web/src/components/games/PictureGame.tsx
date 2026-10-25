@@ -157,7 +157,7 @@ export function PictureGame({ voice, onBack }: PictureGameProps) {
   return (
     <div className="little-screen games-play games-picture">
       <header className="little-top">
-        <button type="button" className="little-chip" aria-label={t(lang, 'gameMenu')} onClick={onBack}>↩</button>
+        <button type="button" className="little-chip" aria-label={t(lang, 'gameMenu')} onClick={onBack}>⬅️</button>
         <h1 className="little-title">🖼️ {t(lang, 'gamePicture')}</h1>
         <span className="games-counter">
           {Math.min(game.wordIndex + (solved ? 0 : 1), game.words.length)}/{game.words.length}

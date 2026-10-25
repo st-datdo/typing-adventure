@@ -14,23 +14,23 @@ export function SettingsPanel({ onClose, onOpenAchievements }: SettingsPanelProp
   const lang = settings.lang
 
   return (
-    <div className="settings-overlay settings--visible" onClick={(e) => {
+    <div className="ui-overlay" onClick={(e) => {
       if (e.target === e.currentTarget) onClose()
     }}>
-      <div className="settings-panel">
-        <div className="settings-header">
-          <h2 className="settings-title">{t(lang, 'settingsTitle')}</h2>
-          <button className="settings-close" onClick={onClose}>✕</button>
+      <div className="ui-modal ta-modal" role="dialog" aria-modal="true" aria-labelledby="settings-title">
+        <div className="ta-modal-head">
+          <h2 id="settings-title" className="ta-modal-title">{t(lang, 'settingsTitle')}</h2>
+          <button type="button" className="ui-chip" aria-label={t(lang, 'navClose')} title={t(lang, 'navClose')} onClick={onClose}>✕</button>
         </div>
 
-        <div className="settings-body">
-          {/* Profile */}
-          <div className="setting-group">
-            <div className="setting-label">{t(lang, 'profileLabel')}</div>
-            <div className="setting-desc">{t(lang, 'profileDesc')}</div>
-            <div className="profile-row">
+        <div className="ta-modal-body">
+          <div className="ta-field">
+            <label className="ui-label" htmlFor="set-name">{t(lang, 'profileLabel')}</label>
+            <div className="ta-hint">{t(lang, 'profileDesc')}</div>
+            <div className="ta-profile-row">
               <select
-                className="setting-control profile-avatar-select"
+                aria-label={t(lang, 'profileLabel')}
+                className="ui-select ta-avatar-select"
                 value={settings.playerAvatar}
                 onChange={(e) => settings.setPlayerAvatar(e.target.value)}
               >
@@ -39,8 +39,9 @@ export function SettingsPanel({ onClose, onOpenAchievements }: SettingsPanelProp
                 ))}
               </select>
               <input
+                id="set-name"
                 type="text"
-                className="setting-control profile-name-input"
+                className="ui-input"
                 value={settings.playerName}
                 onChange={(e) => settings.setPlayerName(e.target.value)}
                 placeholder={t(lang, 'profilePlaceholder')}
@@ -49,20 +50,20 @@ export function SettingsPanel({ onClose, onOpenAchievements }: SettingsPanelProp
             </div>
           </div>
 
-          {/* Achievements */}
-          <div className="setting-group">
-            <div className="setting-label">{t(lang, 'achLabel')}</div>
-            <div className="setting-desc">{t(lang, 'achDesc')}</div>
-            <button className="btn btn-achievements" onClick={onOpenAchievements}>
+          <div className="ta-field">
+            <div className="ui-label">{t(lang, 'achLabel')}</div>
+            <div className="ta-hint">{t(lang, 'achDesc')}</div>
+            <button type="button" className="ui-btn ui-btn--sun ui-btn--block" onClick={onOpenAchievements}>
               {t(lang, 'achBtn')}
             </button>
           </div>
 
-          <div className="setting-group">
-            <div className="setting-label">{t(lang, 'ageLabel')}</div>
-            <div className="setting-desc">{t(lang, 'ageDesc')}</div>
+          <div className="ta-field">
+            <label className="ui-label" htmlFor="set-age">{t(lang, 'ageLabel')}</label>
+            <div className="ta-hint">{t(lang, 'ageDesc')}</div>
             <select
-              className="setting-control"
+              id="set-age"
+              className="ui-select"
               value={settings.ageGroup ?? 'big'}
               onChange={(e) => settings.setAgeGroup(e.target.value as AgeGroup)}
             >
@@ -72,27 +73,27 @@ export function SettingsPanel({ onClose, onOpenAchievements }: SettingsPanelProp
             </select>
           </div>
 
-          {/* Theme */}
-          <div className="setting-group">
-            <div className="setting-label">{t(lang, 'themeLabel')}</div>
-            <div className="setting-desc">{t(lang, 'themeDesc')}</div>
+          <div className="ta-field">
+            <label className="ui-label" htmlFor="set-theme">{t(lang, 'themeLabel')}</label>
+            <div className="ta-hint">{t(lang, 'themeDesc')}</div>
             <select
-              className="setting-control"
+              id="set-theme"
+              className="ui-select"
               value={settings.theme}
               onChange={(e) => settings.setTheme(e.target.value as Theme)}
             >
-              <option value="dark">{t(lang, 'themeDark')}</option>
               <option value="light">{t(lang, 'themeLight')}</option>
+              <option value="dark">{t(lang, 'themeDark')}</option>
               <option value="colorful">{t(lang, 'themeColorful')}</option>
             </select>
           </div>
 
-          {/* Keyboard case */}
-          <div className="setting-group">
-            <div className="setting-label">{t(lang, 'caseLabel')}</div>
-            <div className="setting-desc">{t(lang, 'caseDesc')}</div>
+          <div className="ta-field">
+            <label className="ui-label" htmlFor="set-case">{t(lang, 'caseLabel')}</label>
+            <div className="ta-hint">{t(lang, 'caseDesc')}</div>
             <select
-              className="setting-control"
+              id="set-case"
+              className="ui-select"
               value={settings.keyboardCase}
               onChange={(e) => settings.setKeyboardCase(e.target.value as KeyboardCase)}
             >
@@ -101,12 +102,12 @@ export function SettingsPanel({ onClose, onOpenAchievements }: SettingsPanelProp
             </select>
           </div>
 
-          {/* Speech rate */}
-          <div className="setting-group">
-            <div className="setting-label">{t(lang, 'speechLabel')}</div>
-            <div className="setting-desc">{t(lang, 'speechDesc')}</div>
+          <div className="ta-field">
+            <label className="ui-label" htmlFor="set-speech">{t(lang, 'speechLabel')}</label>
+            <div className="ta-hint">{t(lang, 'speechDesc')}</div>
             <select
-              className="setting-control"
+              id="set-speech"
+              className="ui-select"
               value={settings.speechRate}
               onChange={(e) => settings.setSpeechRate(e.target.value as SpeechRate)}
             >
@@ -116,39 +117,38 @@ export function SettingsPanel({ onClose, onOpenAchievements }: SettingsPanelProp
             </select>
           </div>
 
-          {/* Word count */}
-          <div className="setting-group">
-            <div className="setting-label">{t(lang, 'wcLabel')}</div>
-            <div className="setting-desc">{t(lang, 'wcDesc')}</div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginTop: 4 }}>
+          <div className="ta-field">
+            <label className="ui-label" htmlFor="set-wc">{t(lang, 'wcLabel')}</label>
+            <div className="ta-hint">{t(lang, 'wcDesc')}</div>
+            <div className="ta-range-row">
               <input
+                id="set-wc"
                 type="range"
+                className="ta-range"
                 min={3}
                 max={30}
                 value={settings.wordCount}
                 onChange={(e) => settings.setWordCount(parseInt(e.target.value))}
-                style={{ flex: 1 }}
               />
-              <span style={{ fontSize: '0.9rem', fontWeight: 700, minWidth: 50, textAlign: 'center' }}>
+              <span className="ta-range-value">
                 {settings.wordCount} {t(lang, 'wcUnit')}
               </span>
             </div>
           </div>
 
-          {/* Finger guide */}
-          <div className="setting-group">
-            <div className="setting-label">{t(lang, 'fgLabel')}</div>
-            <div className="setting-desc">{t(lang, 'fgDesc')}</div>
-            <label className="setting-toggle">
+          <div className="ta-field">
+            <div className="ui-label">{t(lang, 'fgLabel')}</div>
+            <div className="ta-hint">{t(lang, 'fgDesc')}</div>
+            <label className="ta-toggle">
               <input
                 type="checkbox"
                 checked={settings.fingerGuide}
                 onChange={(e) => settings.setFingerGuide(e.target.checked)}
               />
-              <span className="toggle-track">
-                <span className="toggle-thumb" />
+              <span className="ta-toggle-track">
+                <span className="ta-toggle-thumb" />
               </span>
-              <span className="toggle-label">
+              <span className="ta-toggle-label">
                 {settings.fingerGuide ? t(lang, 'toggleOn') : t(lang, 'toggleOff')}
               </span>
             </label>

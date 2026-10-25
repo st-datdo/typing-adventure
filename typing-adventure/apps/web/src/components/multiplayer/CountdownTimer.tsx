@@ -5,10 +5,11 @@ interface CountdownTimerProps {
 }
 
 export function CountdownTimer({ seconds }: CountdownTimerProps) {
+  const go = seconds === 0
   return (
-    <div className="mp-countdown-overlay">
-      <div className="mp-countdown-number" key={seconds}>
-        {seconds === 0 ? 'GO!' : seconds}
+    <div className="ui-overlay mp-countdown-overlay" role="status" aria-live="assertive">
+      <div className={`mp-countdown-bubble ${go ? 'mp-countdown-bubble--go' : ''}`} key={seconds}>
+        {go ? 'GO!' : seconds}
       </div>
     </div>
   )

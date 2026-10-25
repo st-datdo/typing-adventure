@@ -129,7 +129,7 @@ export function BalloonGame({ voice, onBack }: BalloonGameProps) {
   return (
     <div className="little-screen games-play games-balloon">
       <header className="little-top">
-        <button type="button" className="little-chip" aria-label={t(lang, 'gameMenu')} onClick={onBack}>↩</button>
+        <button type="button" className="little-chip" aria-label={t(lang, 'gameMenu')} onClick={onBack}>⬅️</button>
         <h1 className="little-title">🎈 {t(lang, 'gameBalloon')}</h1>
         <span className="games-counter">{game.popped}/{game.target}</span>
       </header>

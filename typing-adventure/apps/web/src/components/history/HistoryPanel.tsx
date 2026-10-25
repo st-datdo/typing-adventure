@@ -53,16 +53,16 @@ export function HistoryPanel({ onClose }: HistoryPanelProps) {
   const padding = 20
 
   return (
-    <div className="settings-overlay settings--visible" onClick={(e) => {
+    <div className="ui-overlay" onClick={(e) => {
       if (e.target === e.currentTarget) onClose()
     }}>
-      <div className="settings-panel history-panel">
-        <div className="settings-header">
-          <h2 className="settings-title">{t(lang, 'historyTitle')}</h2>
-          <button className="settings-close" onClick={onClose}>✕</button>
+      <div className="ui-modal ta-modal" role="dialog" aria-modal="true" aria-labelledby="history-title">
+        <div className="ta-modal-head">
+          <h2 id="history-title" className="ta-modal-title">{t(lang, 'historyTitle')}</h2>
+          <button type="button" className="ui-chip" aria-label={t(lang, 'navClose')} title={t(lang, 'navClose')} onClick={onClose}>✕</button>
         </div>
 
-        <div className="settings-body">
+        <div className="ta-modal-body">
           {/* Streak */}
           <div className="history-streak">
             <span className="streak-fire">🔥</span>{' '}
@@ -76,11 +76,11 @@ export function HistoryPanel({ onClose }: HistoryPanelProps) {
           {/* Chart */}
           {chartData.length >= 2 ? (
             <div className="history-chart-section">
-              <div className="history-section-title">{t(lang, 'chartTitle')}</div>
+              <h3 className="ui-section-title">{t(lang, 'chartTitle')}</h3>
               <svg className="history-chart" viewBox={`0 0 ${chartW} ${chartH + 20}`}>
                 <polyline
                   fill="none"
-                  stroke="var(--color-accent)"
+                  stroke="var(--berry)"
                   strokeWidth="2.5"
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -95,8 +95,8 @@ export function HistoryPanel({ onClose }: HistoryPanelProps) {
                   const y = chartH - padding - ((d.wpm / maxWpm) * (chartH - padding * 2))
                   return (
                     <g key={i}>
-                      <circle cx={x} cy={y} r="4" fill="var(--color-accent)" />
-                      <text x={x} y={y - 8} textAnchor="middle" fontSize="10" fill="var(--color-text-dim)">
+                      <circle cx={x} cy={y} r="4" fill="var(--berry)" />
+                      <text x={x} y={y - 8} textAnchor="middle" fontSize="10" fill="var(--ink-dim)">
                         {d.wpm}
                       </text>
                     </g>
@@ -105,7 +105,7 @@ export function HistoryPanel({ onClose }: HistoryPanelProps) {
               </svg>
             </div>
           ) : (
-            <div className="history-empty">{t(lang, 'chartMin')}</div>
+            <div className="ui-empty">{t(lang, 'chartMin')}</div>
           )}
 
           {/* Trend */}
@@ -113,9 +113,9 @@ export function HistoryPanel({ onClose }: HistoryPanelProps) {
 
           {/* Recent games table */}
           <div>
-            <div className="history-section-title">{t(lang, 'recentTitle')}</div>
+            <h3 className="ui-section-title">{t(lang, 'recentTitle')}</h3>
             {recent.length === 0 ? (
-              <div className="history-empty">{t(lang, 'emptyHistory')}</div>
+              <div className="ui-empty">{t(lang, 'emptyHistory')}</div>
             ) : (
               <div className="history-table-wrap">
                 <table className="history-table">

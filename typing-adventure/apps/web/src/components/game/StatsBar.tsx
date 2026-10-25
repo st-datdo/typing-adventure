@@ -56,9 +56,9 @@ export function StatsBar({ gameState }: StatsBarProps) {
   const stats = showSpeed ? allStats : allStats.filter(s => !speedOnly.includes(s.cls))
 
   return (
-    <section className={`stats-bar ${showSpeed ? '' : 'stats-bar--compact'}`}>
+    <section className={`stats-bar ${showSpeed ? 'stats-bar--strip' : 'stats-bar--cards'}`}>
       {stats.map(s => (
-        <div key={s.cls} className={`stat-card ${s.cls} has-tooltip`} data-tooltip={s.tip}>
+        <div key={s.cls} className={`stat-card ${s.cls}`} title={s.tip}>
           <div className="stat-icon">{s.icon}</div>
           <div className="stat-info">
             <span className="stat-label">{s.label}</span>

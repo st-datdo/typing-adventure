@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import Link from 'next/link'
+import { TopBar } from '@/components/ui/TopBar'
 import { t, tReplace } from '@typing-adventure/i18n'
 import type { TranslationKey } from '@typing-adventure/i18n'
 import type { MiniGameId } from '@typing-adventure/game-engine'
@@ -33,11 +33,7 @@ export function GamesHub() {
     <div className="little-root games-root">
       {screen === 'hub' && (
         <div className="little-screen games-hub">
-          <header className="little-top">
-            <Link href="/" className="little-chip games-back" aria-label={t(lang, 'gamesBack')}>⌨️</Link>
-            <h1 className="little-title">🎮 {t(lang, 'gamesTitle')}</h1>
-            <span className="little-top-spacer" />
-          </header>
+          <TopBar back={{ href: '/', label: t(lang, 'gamesBack') }} title={`🎮 ${t(lang, 'gamesTitle')}`} />
           <div className="games-cards">
             {GAMES.map(g => (
               <button

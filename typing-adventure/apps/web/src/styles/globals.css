@@ -1,6 +1,7 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+@import './ui.css';
 @import './game.css';
 @import './auth.css';
 @import './social.css';
@@ -9,70 +10,127 @@
 @import './little.css';
 @import './little-world.css';
 
-/* ── Theme: Dark (default) ── */
 :root {
-  --bg-primary: #0f0c29;
-  --bg-secondary: #302b63;
-  --bg-tertiary: #24243e;
-  --color-text: #f0e6ff;
-  --color-text-dim: #a89cc8;
-  --color-correct: #00e676;
-  --color-wrong: #ff5252;
-  --color-active: #ffeb3b;
-  --color-accent: #7c4dff;
-  --color-accent-glow: rgba(124, 77, 255, 0.4);
-  --key-bg: #1a1a3e;
-  --key-bg-hover: #2a2a5e;
-  --key-border: #3d3d6b;
-  --key-shadow: rgba(0, 0, 0, 0.5);
-  --radius-sm: 8px;
-  --radius-md: 14px;
-  --radius-lg: 20px;
+  --sky: #bfe9ff;
+  --sky-soft: #dff4ff;
+  --cream: #fff6d6;
+  --sun: #ffcf4d;
+  --sun-deep: #e0a91f;
+  --coral: #d0462b;
+  --coral-deep: #9c3015;
+  --leaf: #33852a;
+  --leaf-deep: #24611d;
+  --berry: #7c3aed;
+  --berry-deep: #5b21b6;
+  --ocean: #2f8fd8;
+  --ocean-deep: #1f6aa6;
+  --lilac: #e2d9f3;
+  --hill: #a8e27c;
+  --hill-deep: #8fd365;
+
+  --font-ui: var(--font-kid), 'Nunito', 'Comic Sans MS', system-ui, sans-serif;
+
+  --radius-sm: 10px;
+  --radius-md: 18px;
+  --radius-lg: 26px;
+  --radius-pill: 999px;
+  --tap-min: 48px;
+
   --duration-fast: 120ms;
   --duration-normal: 250ms;
   --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* ── Theme: Light ── */
-[data-theme="light"] {
-  --bg-primary: #fffbeb;
-  --bg-secondary: #fef3c7;
-  --bg-tertiary: #fef9e7;
-  --color-text: #0f172a;
-  --color-text-dim: #475569;
-  --color-correct: #059669;
-  --color-wrong: #dc2626;
-  --color-active: #d97706;
-  --color-accent: #7c3aed;
-  --color-accent-glow: rgba(124, 58, 237, 0.2);
-  --key-bg: #ffffff;
-  --key-bg-hover: #f5f3ff;
-  --key-border: #cbd5e1;
-  --key-shadow: rgba(0, 0, 0, 0.06);
+:root,
+[data-theme="light"],
+[data-theme="colorful"],
+.little-root:not(.games-root) {
+  --ink: #3b3355;
+  --ink-dim: #6d6488;
+  --surface: #ffffff;
+  --surface-2: #f6f2ff;
+  --surface-edge: #e2d9f3;
+  --ink-faint: #b9b2c9;
+  --line: #e7e1f3;
+  --tray: rgba(255, 255, 255, 0.5);
+  --overlay: rgba(59, 51, 85, 0.35);
+  --scene:
+    radial-gradient(circle at 12% 18%, rgba(255, 255, 255, 0.85) 0 60px, transparent 61px),
+    radial-gradient(circle at 20% 15%, rgba(255, 255, 255, 0.85) 0 45px, transparent 46px),
+    radial-gradient(circle at 84% 12%, rgba(255, 255, 255, 0.8) 0 50px, transparent 51px),
+    radial-gradient(circle at 90% 16%, rgba(255, 255, 255, 0.8) 0 38px, transparent 39px),
+    radial-gradient(ellipse 60% 14% at 18% 104%, var(--hill) 0 98%, transparent 100%),
+    radial-gradient(ellipse 70% 16% at 86% 106%, var(--hill-deep) 0 98%, transparent 100%),
+    linear-gradient(180deg, var(--sky) 0%, var(--sky-soft) 45%, var(--cream) 100%);
+
+  --bg-primary: var(--sky-soft);
+  --bg-secondary: var(--cream);
+  --bg-tertiary: var(--surface-2);
+  --color-text: var(--ink);
+  --color-text-dim: var(--ink-dim);
+  --color-correct: var(--leaf);
+  --color-wrong: var(--coral);
+  --color-active: var(--sun-deep);
+  --color-accent: var(--berry);
+  --color-accent-glow: rgba(124, 58, 237, 0.22);
+  --key-bg: var(--surface);
+  --key-bg-hover: var(--surface-2);
+  --key-border: var(--line);
+  --key-shadow: var(--surface-edge);
 }
 
-/* ── Theme: Colorful ── */
 [data-theme="colorful"] {
-  --bg-primary: #1a0533;
-  --bg-secondary: #2d1b69;
-  --bg-tertiary: #1f0f47;
-  --color-text: #f8f0ff;
-  --color-text-dim: #c4b5d9;
-  --color-correct: #00ffab;
-  --color-wrong: #ff6b6b;
-  --color-active: #ffd93d;
-  --color-accent: #c084fc;
-  --color-accent-glow: rgba(192, 132, 252, 0.4);
-  --key-bg: #2a1052;
-  --key-bg-hover: #3d1a75;
-  --key-border: #5b2d99;
-  --key-shadow: rgba(0, 0, 0, 0.5);
+  --berry: #c026d3;
+  --berry-deep: #86198f;
+  --surface-2: #fff0fb;
+  --surface-edge: #f5c6ec;
+  --color-accent-glow: rgba(192, 38, 211, 0.22);
+}
+
+[data-theme="dark"] {
+  --ink: #eef0ff;
+  --ink-dim: #a9b0d6;
+  --surface: #262b56;
+  --surface-2: #1d2147;
+  --surface-edge: #131634;
+  --ink-faint: #7a81b3;
+  --line: #3a4078;
+  --tray: rgba(255, 255, 255, 0.07);
+  --overlay: rgba(6, 8, 24, 0.6);
+  --sun-deep: #ffcf4d;
+  --leaf: #4cc23f;
+  --coral: #ff6b52;
+  --berry: #a78bfa;
+  --berry-deep: #6d4bd8;
+  --ocean: #5fb3f0;
+  --scene:
+    radial-gradient(circle at 15% 14%, rgba(255, 255, 255, 0.9) 0 2px, transparent 3px),
+    radial-gradient(circle at 32% 26%, rgba(255, 255, 255, 0.7) 0 1.5px, transparent 2.5px),
+    radial-gradient(circle at 58% 9%, rgba(255, 255, 255, 0.85) 0 2px, transparent 3px),
+    radial-gradient(circle at 76% 22%, rgba(255, 255, 255, 0.7) 0 1.5px, transparent 2.5px),
+    radial-gradient(circle at 86% 12%, #fff6c8 0 34px, transparent 35px),
+    radial-gradient(ellipse 60% 14% at 18% 104%, #1e3d2a 0 98%, transparent 100%),
+    radial-gradient(ellipse 70% 16% at 86% 106%, #183322 0 98%, transparent 100%),
+    linear-gradient(180deg, #0e1230 0%, #1b2257 55%, #2a2f66 100%);
+
+  --bg-primary: #0e1230;
+  --bg-secondary: #1b2257;
+  --color-accent-glow: rgba(167, 139, 250, 0.35);
+}
+
+html {
+  color-scheme: light;
+}
+
+html[data-theme="dark"] {
+  color-scheme: dark;
 }
 
 body {
-  background: linear-gradient(135deg, var(--bg-primary), var(--bg-secondary));
-  color: var(--color-text);
+  background: var(--scene);
+  background-attachment: fixed;
+  color: var(--ink);
   min-height: 100vh;
-  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  font-family: var(--font-ui);
 }

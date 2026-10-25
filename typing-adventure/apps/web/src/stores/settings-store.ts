@@ -51,7 +51,7 @@ const DEFAULTS: Omit<SettingsState, '_isLoggedIn'> = {
   speechRate: 'normal',
   wordCount: 10,
   fingerGuide: true,
-  theme: 'dark',
+  theme: 'light',
   lang: 'vi',
   ageGroup: null,
   playerName: '',
@@ -150,6 +150,12 @@ export const useSettingsStore = create<SettingsStore>()(
     }),
     {
       name: 'typingAdventure_settings',
+      version: 1,
+      migrate: (persisted, version) => {
+        const state = (persisted ?? {}) as Partial<SettingsState>
+        if (version < 1) return { ...state, theme: 'light' as Theme }
+        return state
+      },
       storage: createJSONStorage(() => localStorage),
       partialize: (state) => {
         // Don't persist internal flags

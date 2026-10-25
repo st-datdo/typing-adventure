@@ -6,6 +6,7 @@ import { GamesHub } from '@/components/games/GamesHub'
 import { useSettingsStore } from '@/stores/settings-store'
 import { useProfileSync } from '@/hooks/useProfileSync'
 import { useChildProgressSync } from '@/hooks/useChildProgressSync'
+import { LoadingScreen } from '@/components/ui/LoadingScreen'
 
 export default function GamesPage() {
   const router = useRouter()
@@ -29,11 +30,7 @@ export default function GamesPage() {
   }, [blocked, router])
 
   if (!hydrated || !profileReady || blocked) {
-    return (
-      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <div style={{ fontSize: '3rem' }}>🎈</div>
-      </div>
-    )
+    return <LoadingScreen icon="🎈" />
   }
 
   return <GamesHub />

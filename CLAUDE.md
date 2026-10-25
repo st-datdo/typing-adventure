@@ -2,9 +2,7 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-Typing Adventure: kids' typing-practice web app (Vietnamese/English). Turborepo + pnpm 9 monorepo, Node >= 20. Run all commands from `typing-adventure/`.
-
-The main app is located in `typing-adventure/`, and `pnpm` commands are run within that directory.
+Typing Adventure: kids' typing-practice web app (Vietnamese/English). Turborepo + pnpm 9 monorepo, Node >= 20. The app lives in `typing-adventure/`; run all `pnpm` commands from there. `.claude/` (rules, skills) and this file sit at the repo root, so rule `paths` start with `typing-adventure/`.
 
 ## Commands
 
@@ -24,7 +22,9 @@ pnpm --filter @typing-adventure/game-engine exec vitest run scoring        # sin
 pnpm --filter @typing-adventure/game-engine exec vitest run -t "combo"   # single test by name
 ```
 
-No ESLint/Prettier config is committed yet, so `pnpm lint` (`next lint`) will prompt for setup. Use `npx tsc --noEmit -p apps/web` for type checks.
+`pnpm lint` runs `eslint .` in `apps/web` only (flat config `apps/web/eslint.config.mjs`, next/core-web-vitals + next/typescript; existing warnings, 0 errors). `pnpm format` applies the root `.prettierrc`. There is no `typecheck` script; use `npx tsc --noEmit -p apps/web`.
+
+`DATABASE_URL` is read from three `.env` files (root, `apps/web/.env`, `packages/db/.env`), so keep all three in sync. NextAuth v5 reads `AUTH_SECRET`.
 
 ## Architecture
 

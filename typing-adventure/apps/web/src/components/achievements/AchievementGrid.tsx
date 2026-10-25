@@ -15,16 +15,16 @@ export function AchievementGrid({ onClose }: AchievementGridProps) {
   const unlocked = useRecordsStore(s => s.unlockedAchievements)
 
   return (
-    <div className="settings-overlay settings--visible" onClick={(e) => {
+    <div className="ui-overlay" onClick={(e) => {
       if (e.target === e.currentTarget) onClose()
     }}>
-      <div className="settings-panel">
-        <div className="settings-header">
-          <h2 className="settings-title">{t(lang, 'achTitle')}</h2>
-          <button className="settings-close" onClick={onClose}>✕</button>
+      <div className="ui-modal ta-modal" role="dialog" aria-modal="true" aria-labelledby="ach-title">
+        <div className="ta-modal-head">
+          <h2 id="ach-title" className="ta-modal-title">{t(lang, 'achTitle')}</h2>
+          <button type="button" className="ui-chip" aria-label={t(lang, 'navClose')} title={t(lang, 'navClose')} onClick={onClose}>✕</button>
         </div>
 
-        <div className="settings-body">
+        <div className="ta-modal-body">
           <div className="achievements-grid">
             {ACHIEVEMENTS.map((ach) => {
               const isUnlocked = unlocked.includes(ach.id)

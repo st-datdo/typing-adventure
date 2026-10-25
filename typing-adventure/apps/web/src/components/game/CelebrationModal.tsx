@@ -48,10 +48,10 @@ export function CelebrationModal({
   const showLevelUp = result.stars === 3 && nextLevel[gameState.level]
 
   return (
-    <div className="celebration celebration--visible">
-      <div className="celebration-content">
+    <div className="ui-overlay ta-celebration">
+      <div className="ui-modal ta-modal celebration-content" role="dialog" aria-modal="true" aria-labelledby="celebration-title">
         <div className="celebration-emoji">{emoji}</div>
-        <h2>{title}</h2>
+        <h2 id="celebration-title" className="celebration-title">{title}</h2>
 
         <div className="celebration-stars">{starDisplay}</div>
         <div className="celebration-score">
@@ -142,12 +142,13 @@ export function CelebrationModal({
         </div>
 
         <div className="celebration-actions">
-          <button className="btn btn-restart" onClick={onPlayAgain}>
+          <button type="button" className="ui-btn ui-btn--go" onClick={onPlayAgain}>
             {t(lang, 'btnPlayAgain')}
           </button>
           {showLevelUp && (
             <button
-              className="btn btn-level-up"
+              type="button"
+              className="ui-btn ui-btn--sun"
               onClick={() => onTryLevel(nextLevel[gameState.level])}
             >
               {tReplace(lang, 'btnTryLevel',
@@ -157,7 +158,8 @@ export function CelebrationModal({
           )}
           {top3.length > 0 && (
             <button
-              className="btn btn-practice"
+              type="button"
+              className="ui-btn"
               onClick={() => onPracticeWeak(mistakes.slice(0, 5).map(([ch]) => ch))}
             >
               {t(lang, 'btnPracticeWeak')}

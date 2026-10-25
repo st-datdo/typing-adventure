@@ -12,6 +12,8 @@ import { PlayerList } from '@/components/multiplayer/PlayerList'
 import { CountdownTimer } from '@/components/multiplayer/CountdownTimer'
 import { WordDisplay } from '@/components/game/WordDisplay'
 import { Keyboard } from '@/components/game/Keyboard'
+import { TopBar } from '@/components/ui/TopBar'
+import { LoadingScreen } from '@/components/ui/LoadingScreen'
 import type { GameState, Level } from '@typing-adventure/game-engine'
 
 interface KeyFlash {
@@ -245,26 +247,40 @@ export default function RacePage() {
     router.push('/lobby')
   }
 
+  const medals = ['🥇', '🥈', '🥉', '4️⃣']
+
   // ── COUNTDOWN ──
   if (state.status === 'COUNTDOWN' && state.countdownSeconds !== null) {
     return (
-      <div className="mp-page">
+      <div className="ui-page ui-page--narrow">
+        <TopBar title="🏁 Phòng Đua" />
         <CountdownTimer seconds={state.countdownSeconds} />
-        <PlayerList players={state.players} currentUserId={userId} />
+        <section className="ui-card">
+          <PlayerList players={state.players} currentUserId={userId} />
+        </section>
       </div>
     )
   }
 
   // ── RACING ──
   if (state.status === 'RACING') {
-    const medals = ['🥇', '🥈', '🥉', '4️⃣']
     const othersStillRacing = state.players.filter(
       (p) => !p.finished && !p.disconnected && p.userId !== userId,
     )
     const otherPlayers = state.players.filter((p) => p.userId !== userId)
 
     return (
-      <div className="mp-page mp-race-page" onClick={!finished ? focusInput : undefined}>
+      <div className="ui-page mp-race-page" onClick={!finished ? focusInput : undefined}>
+        <TopBar
+          title="🏁 Phòng Đua"
+          end={!finished && (
+            <div className="mp-race-stats">
+              <span className="mp-stat-pill">⚡ {localWpm} WPM</span>
+              <span className="mp-stat-pill">🎯 {localAccuracy}%</span>
+            </div>
+          )}
+        />
+
         <RaceTrack
           players={state.players}
           textLength={state.text.length}
@@ -273,11 +289,6 @@ export default function RacePage() {
 
         {!finished && (
           <>
-            <div className="mp-race-stats">
-              <span>{localWpm} WPM</span>
-              <span>{localAccuracy}%</span>
-            </div>
-
             <WordDisplay gameState={gameState} />
 
             <input
@@ -300,80 +311,74 @@ export default function RacePage() {
         )}
 
         {finished && (
-          <div className="mp-finish-overlay">
-            <div className="mp-finish-card">
-              <div className="mp-finish-medal">
-                {medals[(myRank ?? 1) - 1] ?? `#${myRank}`}
-              </div>
-              <h2 className="mp-finish-heading">
-                {myRank === 1 ? 'Bạn về nhất!' : `Bạn xếp thứ ${myRank}`}
-              </h2>
-
-              <div className="mp-finish-stats">
-                <div className="mp-finish-stat">
-                  <span className="mp-finish-stat-value">{localWpm}</span>
-                  <span className="mp-finish-stat-label">WPM</span>
-                </div>
-                <div className="mp-finish-stat">
-                  <span className="mp-finish-stat-value">{localAccuracy}%</span>
-                  <span className="mp-finish-stat-label">Accuracy</span>
-                </div>
-                <div className="mp-finish-stat">
-                  <span className="mp-finish-stat-value">{finishTimeSeconds.toFixed(1)}s</span>
-                  <span className="mp-finish-stat-label">Time</span>
-                </div>
-              </div>
-
-              {otherPlayers.length > 0 && (
-                <div className="mp-finish-waiting">
-                  {othersStillRacing.length > 0 ? (
-                    <p className="mp-finish-waiting-text">
-                      Đang chờ {othersStillRacing.length} người chơi khác...
-                    </p>
-                  ) : (
-                    <p className="mp-finish-waiting-text">
-                      Tất cả đã hoàn thành! Đang tổng kết...
-                    </p>
-                  )}
-                  <div className="mp-finish-others">
-                    {otherPlayers.map((p) => {
-                      const progress =
-                        state.text.length > 0
-                          ? Math.round((p.currentIndex / state.text.length) * 100)
-                          : 0
-                      return (
-                        <div
-                          key={p.userId}
-                          className={`mp-finish-other-row ${p.finished ? 'mp-finish-other-done' : ''} ${p.disconnected ? 'mp-finish-other-dc' : ''}`}
-                        >
-                          <span className="mp-finish-other-avatar">{p.avatar}</span>
-                          <span className="mp-finish-other-name">
-                            {p.name}
-                            {p.isHost && <span className="mp-host-badge mp-host-badge-sm">👑</span>}
-                          </span>
-                          <div className="mp-finish-other-bar">
-                            <div
-                              className="mp-finish-other-fill"
-                              style={{ width: `${Math.min(progress, 100)}%` }}
-                            />
-                          </div>
-                          <span className="mp-finish-other-pct">
-                            {p.disconnected ? '⚠️' : p.finished ? '🏁' : `${progress}%`}
-                          </span>
-                          <span className="mp-finish-other-wpm">
-                            {p.disconnected ? 'DC' : `${p.wpm} WPM`}
-                          </span>
-                        </div>
-                      )
-                    })}
-                  </div>
-                </div>
-              )}
-
-              {otherPlayers.length === 0 && (
-                <p className="mp-finish-waiting-text">Đang tổng kết...</p>
-              )}
+          <div className="ui-card mp-finish-card">
+            <div className="mp-finish-medal">
+              {medals[(myRank ?? 1) - 1] ?? `#${myRank}`}
             </div>
+            <h2 className="mp-finish-heading">
+              {myRank === 1 ? 'Bạn về nhất!' : `Bạn xếp thứ ${myRank}`}
+            </h2>
+
+            <div className="mp-finish-stats">
+              <div className="ui-card ui-card--inset mp-finish-stat">
+                <span className="mp-finish-stat-value">{localWpm}</span>
+                <span className="mp-finish-stat-label">WPM</span>
+              </div>
+              <div className="ui-card ui-card--inset mp-finish-stat">
+                <span className="mp-finish-stat-value">{localAccuracy}%</span>
+                <span className="mp-finish-stat-label">Accuracy</span>
+              </div>
+              <div className="ui-card ui-card--inset mp-finish-stat">
+                <span className="mp-finish-stat-value">{finishTimeSeconds.toFixed(1)}s</span>
+                <span className="mp-finish-stat-label">Time</span>
+              </div>
+            </div>
+
+            {otherPlayers.length > 0 && (
+              <div className="mp-finish-waiting">
+                <p className="mp-finish-waiting-text">
+                  {othersStillRacing.length > 0
+                    ? `Đang chờ ${othersStillRacing.length} người chơi khác...`
+                    : 'Tất cả đã hoàn thành! Đang tổng kết...'}
+                </p>
+                <div className="mp-finish-others">
+                  {otherPlayers.map((p) => {
+                    const progress =
+                      state.text.length > 0
+                        ? Math.round((p.currentIndex / state.text.length) * 100)
+                        : 0
+                    return (
+                      <div
+                        key={p.userId}
+                        className={`mp-finish-other-row ${p.finished ? 'mp-finish-other-done' : ''} ${p.disconnected ? 'mp-finish-other-dc' : ''}`}
+                      >
+                        <span className="mp-finish-other-avatar">{p.avatar}</span>
+                        <span className="mp-finish-other-name">
+                          {p.name}
+                          {p.isHost && <span className="mp-host-badge mp-host-badge-sm">👑</span>}
+                        </span>
+                        <div className="mp-finish-other-bar">
+                          <div
+                            className="mp-finish-other-fill"
+                            style={{ width: `${Math.min(progress, 100)}%` }}
+                          />
+                        </div>
+                        <span className="mp-finish-other-pct">
+                          {p.disconnected ? '⚠️' : p.finished ? '🏁' : `${progress}%`}
+                        </span>
+                        <span className="mp-finish-other-wpm">
+                          {p.disconnected ? 'DC' : `${p.wpm} WPM`}
+                        </span>
+                      </div>
+                    )
+                  })}
+                </div>
+              </div>
+            )}
+
+            {otherPlayers.length === 0 && (
+              <p className="mp-finish-waiting-text">Đang tổng kết...</p>
+            )}
           </div>
         )}
       </div>
@@ -382,68 +387,74 @@ export default function RacePage() {
 
   // ── FINISHED ──
   if (state.status === 'FINISHED' && state.results) {
-    const medals = ['🥇', '🥈', '🥉', '4️⃣']
     return (
-      <div className="mp-page">
-        <div className="mp-results">
-          <h1 className="mp-title">🏁 Kết quả</h1>
-          <div className="mp-results-table">
-            {state.results.map((r, i) => {
-              const player = state.players.find((p) => p.userId === r.userId)
-              return (
-                <div key={r.userId} className={`mp-result-row ${r.userId === userId ? 'mp-result-me' : ''}`}>
-                  <span className="mp-result-rank">{medals[i] ?? `#${i + 1}`}</span>
-                  <span className="mp-result-avatar">{player?.avatar ?? '🧒'}</span>
-                  <span className="mp-result-name">
-                    {player?.name ?? 'Player'}
-                    {r.userId === userId && ' (bạn)'}
-                  </span>
+      <div className="ui-page ui-page--narrow">
+        <TopBar back={{ href: '/', label: 'Về game' }} title="🏁 Kết quả" />
+        <ol className="mp-results-table">
+          {state.results.map((r, i) => {
+            const player = state.players.find((p) => p.userId === r.userId)
+            return (
+              <li
+                key={r.userId}
+                className={`ui-card mp-result-row mp-result-rank-${i + 1} ${r.userId === userId ? 'mp-result-me' : ''}`}
+              >
+                <span className="mp-result-rank">{medals[i] ?? `#${i + 1}`}</span>
+                <span className="mp-result-avatar">{player?.avatar ?? '🧒'}</span>
+                <span className="mp-result-name">
+                  {player?.name ?? 'Player'}
+                  {r.userId === userId && ' (bạn)'}
+                </span>
+                <span className="mp-result-stats">
                   <span className="mp-result-wpm">{r.wpm} WPM</span>
                   <span className="mp-result-acc">{r.accuracy}%</span>
                   <span className="mp-result-time">
                     {r.finishTime ? `${r.finishTime.toFixed(1)}s` : 'DNF'}
                   </span>
-                </div>
-              )
-            })}
-          </div>
-          <div className="mp-actions">
-            <button className="mp-btn mp-btn-primary" onClick={handleBackToLobby}>
-              🏠 Về lobby
-            </button>
-            <Link href="/" className="mp-btn mp-btn-back">← Về game</Link>
-          </div>
+                </span>
+              </li>
+            )
+          })}
+        </ol>
+        <div className="mp-actions">
+          <button className="ui-btn ui-btn--go ui-btn--lg" onClick={handleBackToLobby}>
+            🏠 Về lobby
+          </button>
+          <Link href="/" className="ui-btn">← Về game</Link>
         </div>
       </div>
     )
   }
 
+  if (!state.connected && !state.roomId) {
+    return <LoadingScreen icon="🏁" label="Đang kết nối..." />
+  }
+
   // ── WAITING ──
   return (
-    <div className="mp-page">
-      <div className="mp-room">
-        <h1 className="mp-title">🏁 Chờ bắt đầu...</h1>
+    <div className="ui-page ui-page--narrow">
+      <TopBar back={{ onClick: handleLeave, label: 'Rời phòng' }} title="🏁 Chờ bắt đầu..." />
 
-        {state.code && (
-          <div className="mp-room-code-wrap">
-            <span className="mp-room-code-label">Mã phòng:</span>
-            <span className="mp-room-code">{state.code}</span>
-          </div>
-        )}
-
-        <PlayerList players={state.players} currentUserId={userId} />
-
-        <div className="mp-actions">
-          <button className="mp-btn mp-btn-primary mp-btn-lg" onClick={setReady}>
-            ✋ Sẵn sàng!
-          </button>
-          <button className="mp-btn mp-btn-danger" onClick={handleLeave}>
-            🚪 Rời phòng
-          </button>
+      {state.code && (
+        <div className="mp-room-code-wrap">
+          <span className="mp-room-code-label">Mã phòng:</span>
+          <span className="mp-room-code">{state.code}</span>
         </div>
+      )}
 
-        {state.error && <p className="mp-error">{state.error}</p>}
+      <section className="ui-card">
+        <PlayerList players={state.players} currentUserId={userId} />
+      </section>
+
+      <div className="mp-actions">
+        <button className="ui-btn ui-btn--go ui-btn--lg" onClick={setReady}>
+          ✋ Sẵn sàng!
+        </button>
+        <button className="ui-btn ui-btn--danger" onClick={handleLeave}>
+          🚪 Rời phòng
+        </button>
       </div>
+
+      {state.error && <p className="mp-error" role="alert">{state.error}</p>}
     </div>
   )
 }

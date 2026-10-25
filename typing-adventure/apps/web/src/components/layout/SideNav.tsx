@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useSettingsStore } from '@/stores/settings-store'
 import { t } from '@typing-adventure/i18n'
@@ -17,6 +17,8 @@ const MODE_OPTIONS: { value: GameMode; label: TranslationKey }[] = [
 ]
 
 interface SideNavProps {
+  open: boolean
+  onClose: () => void
   gameMode: GameMode
   lessonIndex: number
   timeAttackDuration: number
@@ -26,12 +28,13 @@ interface SideNavProps {
   onLessonChange: (index: number) => void
   onTimeAttackChange: (duration: number) => void
   onWordPackChange: (packId: string | null, words: string[] | undefined) => void
-  onRestart: () => void
   onOpenSettings: () => void
   onOpenHistory: () => void
 }
 
 export function SideNav({
+  open,
+  onClose,
   gameMode,
   lessonIndex,
   timeAttackDuration,
@@ -41,7 +44,6 @@ export function SideNav({
   onLessonChange,
   onTimeAttackChange,
   onWordPackChange,
-  onRestart,
   onOpenSettings,
   onOpenHistory,
 }: SideNavProps) {
@@ -49,7 +51,6 @@ export function SideNav({
   const lang = settings.lang
   const showSocial = settings.ageGroup === null || AGE_PROFILES[settings.ageGroup].social
   const [wordPacks, setWordPacks] = useState<WordPackSummary[]>([])
-  const [mobileOpen, setMobileOpen] = useState(false)
 
   useEffect(() => {
     getWordPacks().then((res) => {
@@ -57,16 +58,14 @@ export function SideNav({
     })
   }, [])
 
-  // Close mobile nav on resize to desktop
   useEffect(() => {
-    const handleResize = () => {
-      if (window.innerWidth > 768) setMobileOpen(false)
+    if (!open) return
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose()
     }
-    window.addEventListener('resize', handleResize)
-    return () => window.removeEventListener('resize', handleResize)
-  }, [])
-
-  const closeMobile = useCallback(() => setMobileOpen(false), [])
+    document.addEventListener('keydown', handleKey)
+    return () => document.removeEventListener('keydown', handleKey)
+  }, [open, onClose])
 
   const handleWordPackSelect = (packId: string) => {
     if (packId === 'default') {
@@ -77,31 +76,28 @@ export function SideNav({
     }
   }
 
-  // Filter packs by current level
-  const filteredPacks = wordPacks.filter(
-    (p) => p.level === settings.level || p.isDefault === false,
-  )
-
   return (
     <>
-      {/* Mobile hamburger toggle */}
-      <button
-        className="sidenav-toggle"
-        onClick={() => setMobileOpen((o) => !o)}
-        aria-label="Toggle menu"
+      {open && <div className="sidenav-backdrop" onClick={onClose} />}
+
+      <nav
+        id="side-nav"
+        className={`side-nav ${open ? 'side-nav--open' : ''}`}
+        aria-hidden={!open}
+        inert={!open}
       >
-        <span className={`sidenav-toggle-icon ${mobileOpen ? 'sidenav-toggle-icon--open' : ''}`} />
-      </button>
+        <div className="side-nav-head">
+          <span className="side-nav-title">🦉 {t(lang, 'navMenu')}</span>
+          <button type="button" className="ui-chip" aria-label={t(lang, 'navClose')} title={t(lang, 'navClose')} onClick={onClose}>
+            ✕
+          </button>
+        </div>
 
-      {/* Backdrop for mobile overlay */}
-      {mobileOpen && (
-        <div className="sidenav-backdrop" onClick={closeMobile} />
-      )}
-
-      <nav className={`side-nav ${mobileOpen ? 'side-nav--open' : ''}`}>
-        <div className="nav-wrap has-tooltip" data-tooltip={t(lang, 'tipLang')}>
+        <div className="side-nav-field">
+          <label className="ui-label" htmlFor="nav-lang">{t(lang, 'langLabel')}</label>
           <select
-            className="nav-control nav-lang"
+            id="nav-lang"
+            className="ui-select"
             value={lang}
             onChange={(e) => settings.setLang(e.target.value as Lang)}
           >
@@ -110,9 +106,11 @@ export function SideNav({
           </select>
         </div>
 
-        <div className="nav-wrap has-tooltip" data-tooltip={t(lang, 'tipGameMode')}>
+        <div className="side-nav-field">
+          <label className="ui-label" htmlFor="nav-mode">{t(lang, 'lblGameMode')}</label>
           <select
-            className="nav-control"
+            id="nav-mode"
+            className="ui-select"
             value={gameMode}
             onChange={(e) => onModeChange(e.target.value as GameMode)}
           >
@@ -123,9 +121,11 @@ export function SideNav({
         </div>
 
         {gameMode === 'lesson' && (
-          <div className="nav-wrap nav-sub has-tooltip" data-tooltip={t(lang, 'tipLesson')}>
+          <div className="side-nav-field">
+            <label className="ui-label" htmlFor="nav-lesson">{t(lang, 'lblLessonPick')}</label>
             <select
-              className="nav-control"
+              id="nav-lesson"
+              className="ui-select"
               value={lessonIndex}
               onChange={(e) => onLessonChange(parseInt(e.target.value))}
             >
@@ -139,9 +139,11 @@ export function SideNav({
         )}
 
         {gameMode === 'timeAttack' && (
-          <div className="nav-wrap nav-sub has-tooltip" data-tooltip={t(lang, 'tipTimeAttack')}>
+          <div className="side-nav-field">
+            <label className="ui-label" htmlFor="nav-duration">{t(lang, 'lblDuration')}</label>
             <select
-              className="nav-control"
+              id="nav-duration"
+              className="ui-select"
               value={timeAttackDuration}
               onChange={(e) => onTimeAttackChange(parseInt(e.target.value))}
             >
@@ -152,9 +154,11 @@ export function SideNav({
           </div>
         )}
 
-        <div className="nav-wrap has-tooltip" data-tooltip={t(lang, 'tipLevel')}>
+        <div className="side-nav-field">
+          <label className="ui-label" htmlFor="nav-level">{t(lang, 'lblLevelPick')}</label>
           <select
-            className="nav-control"
+            id="nav-level"
+            className="ui-select"
             value={settings.level}
             onChange={(e) => onLevelChange(e.target.value as Level)}
           >
@@ -165,9 +169,11 @@ export function SideNav({
         </div>
 
         {wordPacks.length > 0 && (
-          <div className="nav-wrap has-tooltip" data-tooltip={lang === 'vi' ? 'Chọn bộ từ' : 'Choose word pack'}>
+          <div className="side-nav-field">
+            <label className="ui-label" htmlFor="nav-pack">{t(lang, 'lblWordPack')}</label>
             <select
-              className="nav-control"
+              id="nav-pack"
+              className="ui-select"
               value={selectedWordPackId ?? 'default'}
               onChange={(e) => handleWordPackSelect(e.target.value)}
             >
@@ -181,9 +187,11 @@ export function SideNav({
           </div>
         )}
 
-        <div className="nav-wrap has-tooltip" data-tooltip={t(lang, 'tipSoundMode')}>
+        <div className="side-nav-field">
+          <label className="ui-label" htmlFor="nav-sound">{t(lang, 'lblSoundMode')}</label>
           <select
-            className="nav-control"
+            id="nav-sound"
+            className="ui-select"
             value={settings.soundMode}
             onChange={(e) => settings.setSoundMode(e.target.value as SoundMode)}
           >
@@ -193,42 +201,35 @@ export function SideNav({
           </select>
         </div>
 
-        <button className="nav-btn has-tooltip" data-tooltip={t(lang, 'tipSettings')} onClick={() => { onOpenSettings(); closeMobile() }}>
-          {t(lang, 'btnSettings')}
-        </button>
-        <button className="nav-btn has-tooltip" data-tooltip={t(lang, 'tipHistory')} onClick={() => { onOpenHistory(); closeMobile() }}>
-          {t(lang, 'btnHistory')}
-        </button>
+        <div className="side-nav-actions">
+          <button type="button" className="ui-btn ui-btn--sm ui-btn--block" title={t(lang, 'tipSettings')} onClick={() => { onOpenSettings(); onClose() }}>
+            {t(lang, 'btnSettings')}
+          </button>
+          <button type="button" className="ui-btn ui-btn--sm ui-btn--block" title={t(lang, 'tipHistory')} onClick={() => { onOpenHistory(); onClose() }}>
+            {t(lang, 'btnHistory')}
+          </button>
+        </div>
 
-        <Link href="/games" className="nav-btn nav-btn--games has-tooltip" data-tooltip={t(lang, 'gamesTitle')} onClick={closeMobile}>
-          {t(lang, 'navGames')}
-        </Link>
-
-        {showSocial && (
-          <>
-            <Link href="/leaderboard" className="nav-btn has-tooltip" data-tooltip={t(lang, 'navLeaderboard')} onClick={closeMobile}>
-              {t(lang, 'navLeaderboard')}
-            </Link>
-            <Link href="/friends" className="nav-btn has-tooltip" data-tooltip={t(lang, 'navFriends')} onClick={closeMobile}>
-              {t(lang, 'navFriends')}
-            </Link>
-            <Link href="/lobby" className="nav-btn has-tooltip" data-tooltip={t(lang, 'navMultiplayer')} onClick={closeMobile}>
-              {t(lang, 'navMultiplayer')}
-            </Link>
-          </>
-        )}
+        <div className="side-nav-section">{t(lang, 'navMore')}</div>
+        <div className="side-nav-actions">
+          <Link href="/games" className="ui-btn ui-btn--sm ui-btn--block ui-btn--sun" onClick={onClose}>
+            {t(lang, 'navGames')}
+          </Link>
+          {showSocial && (
+            <>
+              <Link href="/leaderboard" className="ui-btn ui-btn--sm ui-btn--block" onClick={onClose}>
+                {t(lang, 'navLeaderboard')}
+              </Link>
+              <Link href="/friends" className="ui-btn ui-btn--sm ui-btn--block" onClick={onClose}>
+                {t(lang, 'navFriends')}
+              </Link>
+              <Link href="/lobby" className="ui-btn ui-btn--sm ui-btn--block" onClick={onClose}>
+                {t(lang, 'navMultiplayer')}
+              </Link>
+            </>
+          )}
+        </div>
       </nav>
-
-      <aside className="quick-actions">
-        <button className="qa-btn has-tooltip" data-tooltip={t(lang, 'tipRestart')} onClick={onRestart}>🔃</button>
-        <button
-          className="qa-btn has-tooltip"
-          data-tooltip={t(lang, 'tipSound')}
-          onClick={() => settings.setSoundEnabled(!settings.soundEnabled)}
-        >
-          {settings.soundEnabled ? '🔊' : '🔇'}
-        </button>
-      </aside>
     </>
   )
 }

@@ -3,11 +3,15 @@
 import { useState } from 'react'
 import { signIn } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
+import { t } from '@typing-adventure/i18n'
+import { TopBar } from '@/components/ui/TopBar'
+import { useSettingsStore } from '@/stores/settings-store'
 
 const AVATARS = ['🧒', '👦', '👧', '🧒🏻', '👦🏻', '👧🏻', '🦸', '🧙', '🧚', '🤖', '👽', '🐱', '🐶', '🦊', '🐼', '🐸']
 
 export default function RegisterPage() {
   const router = useRouter()
+  const lang = useSettingsStore(s => s.lang)
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -57,16 +61,17 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="auth-page">
-      <div className="auth-card">
-        <div className="auth-emoji">✨</div>
-        <h1 className="auth-title">Đăng ký</h1>
-        <p className="auth-subtitle">Tạo tài khoản để lưu tiến bộ!</p>
+    <div className="ui-page ui-page--narrow auth-page">
+      <TopBar back={{ href: '/', label: t(lang, 'backHome').replace('← ', '') }} />
+      <div className="ui-card auth-card">
+        <div className="auth-mascot" aria-hidden>🦉</div>
+        <h1 className="ui-title">Đăng ký</h1>
+        <p className="ui-subtitle">Tạo tài khoản để lưu tiến bộ!</p>
 
         {error && <div className="auth-error">{error}</div>}
 
         <form onSubmit={handleSubmit} className="auth-form">
-          <label className="auth-label">
+          <div className="ui-label" role="group" aria-label="Avatar">
             😀 Chọn avatar
             <div className="avatar-picker">
               {AVATARS.map((a) => (
@@ -74,53 +79,54 @@ export default function RegisterPage() {
                   key={a}
                   type="button"
                   className={`avatar-option ${a === avatar ? 'avatar-option--selected' : ''}`}
+                  aria-pressed={a === avatar}
                   onClick={() => setAvatar(a)}
                 >
                   {a}
                 </button>
               ))}
             </div>
-          </label>
+          </div>
 
-          <label className="auth-label">
+          <label className="ui-label">
             👤 Tên hiển thị
             <input
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="auth-input"
+              className="ui-input"
               placeholder="Tên của bạn"
               required
               maxLength={50}
             />
           </label>
 
-          <label className="auth-label">
+          <label className="ui-label">
             📧 Email
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="auth-input"
+              className="ui-input"
               placeholder="email@example.com"
               required
             />
           </label>
 
-          <label className="auth-label">
+          <label className="ui-label">
             🔒 Mật khẩu (ít nhất 6 ký tự)
             <input
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="auth-input"
+              className="ui-input"
               placeholder="••••••"
               required
               minLength={6}
             />
           </label>
 
-          <button type="submit" className="btn auth-btn-primary" disabled={loading}>
+          <button type="submit" className="ui-btn ui-btn--primary ui-btn--block" disabled={loading}>
             {loading ? '⏳ Đang tạo...' : '🎉 Tạo tài khoản'}
           </button>
         </form>
@@ -130,7 +136,8 @@ export default function RegisterPage() {
         </div>
 
         <button
-          className="btn auth-btn-google"
+          type="button"
+          className="ui-btn ui-btn--block"
           onClick={() => signIn('google', { callbackUrl: '/' })}
         >
           🌐 Đăng ký với Google

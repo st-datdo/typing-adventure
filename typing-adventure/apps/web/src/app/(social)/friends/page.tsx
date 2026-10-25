@@ -12,6 +12,8 @@ import {
 import type { Friend, FriendRequest } from '@/lib/api/friends'
 import { useSettingsStore } from '@/stores/settings-store'
 import { t, tReplace } from '@typing-adventure/i18n'
+import { TopBar } from '@/components/ui/TopBar'
+import { LoadingScreen } from '@/components/ui/LoadingScreen'
 
 type Tab = 'friends' | 'requests' | 'search'
 
@@ -105,31 +107,33 @@ export default function FriendsPage() {
   const pendingCount = requests.received.length
 
   return (
-    <div className="social-page">
-      <Link href="/" className="social-back">
-        {t(lang, 'backHome')}
-      </Link>
+    <div className="ui-page social-page">
+      <TopBar back={{ href: '/', label: t(lang, 'backHome').replace('← ', '') }} title={t(lang, 'friendsTitle')} />
 
-      <div className="social-header">
-        <h1 className="social-title">{t(lang, 'friendsTitle')}</h1>
-      </div>
-
-      {/* Tabs */}
-      <div className="tab-bar">
+      <div className="ui-tabs" role="tablist">
         <button
-          className={`tab-btn ${tab === 'friends' ? 'tab-btn--active' : ''}`}
+          type="button"
+          role="tab"
+          aria-selected={tab === 'friends'}
+          className={`ui-tab ${tab === 'friends' ? 'ui-tab--active' : ''}`}
           onClick={() => setTab('friends')}
         >
           {tReplace(lang, 'friendsTabList', friends.length)}
         </button>
         <button
-          className={`tab-btn ${tab === 'requests' ? 'tab-btn--active' : ''}`}
+          type="button"
+          role="tab"
+          aria-selected={tab === 'requests'}
+          className={`ui-tab ${tab === 'requests' ? 'ui-tab--active' : ''}`}
           onClick={() => setTab('requests')}
         >
           {t(lang, 'friendsTabRequests')} {pendingCount > 0 && `(${pendingCount})`}
         </button>
         <button
-          className={`tab-btn ${tab === 'search' ? 'tab-btn--active' : ''}`}
+          type="button"
+          role="tab"
+          aria-selected={tab === 'search'}
+          className={`ui-tab ${tab === 'search' ? 'ui-tab--active' : ''}`}
           onClick={() => setTab('search')}
         >
           {t(lang, 'friendsTabSearch')}
@@ -137,25 +141,21 @@ export default function FriendsPage() {
       </div>
 
       {loading ? (
-        <div className="social-empty">
-          <div className="social-empty-icon">⏳</div>
-          <div className="social-empty-text">{t(lang, 'lbLoading')}</div>
+        <div className="social-loading">
+          <LoadingScreen label={t(lang, 'lbLoading')} />
         </div>
       ) : (
         <>
-          {/* Friends list */}
           {tab === 'friends' && (
             friends.length === 0 ? (
-              <div className="social-empty">
-                <div className="social-empty-icon">👋</div>
-                <div className="social-empty-text">
-                  {t(lang, 'friendsEmpty')}
-                </div>
+              <div className="ui-card ui-empty">
+                <span className="ui-empty-icon" aria-hidden>👋</span>
+                {t(lang, 'friendsEmpty')}
               </div>
             ) : (
-              <div className="friend-list">
+              <div className="social-list">
                 {friends.map(f => (
-                  <div key={f.friendshipId} className="friend-item">
+                  <div key={f.friendshipId} className="ui-card friend-item">
                     <span className="friend-avatar">{f.avatar}</span>
                     <div className="friend-info">
                       <div className="friend-name">{f.name ?? t(lang, 'profilePlayer')}</div>
@@ -169,12 +169,13 @@ export default function FriendsPage() {
                     <div className="friend-actions">
                       <Link
                         href={`/profile/${f.id}`}
-                        className="friend-btn friend-btn--view"
+                        className="ui-btn ui-btn--sm"
                       >
                         {t(lang, 'friendsView')}
                       </Link>
                       <button
-                        className="friend-btn friend-btn--reject"
+                        type="button"
+                        className="ui-btn ui-btn--danger ui-btn--sm social-btn-danger"
                         onClick={() => handleRemoveFriend(f.friendshipId)}
                       >
                         {t(lang, 'friendsRemove')}
@@ -186,17 +187,16 @@ export default function FriendsPage() {
             )
           )}
 
-          {/* Requests */}
           {tab === 'requests' && (
             <>
               {requests.received.length > 0 && (
-                <div style={{ marginBottom: 20 }}>
-                  <h3 style={{ fontSize: '0.85rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--color-text-dim)', marginBottom: 10 }}>
+                <section>
+                  <h2 className="ui-section-title">
                     {tReplace(lang, 'friendsReceived', requests.received.length)}
-                  </h3>
-                  <div className="friend-list">
+                  </h2>
+                  <div className="social-list">
                     {requests.received.map(r => (
-                      <div key={r.friendshipId} className="friend-item">
+                      <div key={r.friendshipId} className="ui-card friend-item">
                         <span className="friend-avatar">{r.user.avatar}</span>
                         <div className="friend-info">
                           <div className="friend-name">{r.user.name ?? r.user.email}</div>
@@ -204,13 +204,15 @@ export default function FriendsPage() {
                         </div>
                         <div className="friend-actions">
                           <button
-                            className="friend-btn friend-btn--accept"
+                            type="button"
+                            className="ui-btn ui-btn--go ui-btn--sm social-btn-go"
                             onClick={() => handleAccept(r.friendshipId)}
                           >
                             {t(lang, 'friendsAccept')}
                           </button>
                           <button
-                            className="friend-btn friend-btn--reject"
+                            type="button"
+                            className="ui-btn ui-btn--danger ui-btn--sm social-btn-danger"
                             onClick={() => handleReject(r.friendshipId)}
                           >
                             {t(lang, 'friendsReject')}
@@ -219,17 +221,17 @@ export default function FriendsPage() {
                       </div>
                     ))}
                   </div>
-                </div>
+                </section>
               )}
 
               {requests.sent.length > 0 && (
-                <div>
-                  <h3 style={{ fontSize: '0.85rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--color-text-dim)', marginBottom: 10 }}>
+                <section>
+                  <h2 className="ui-section-title">
                     {tReplace(lang, 'friendsSent', requests.sent.length)}
-                  </h3>
-                  <div className="friend-list">
+                  </h2>
+                  <div className="social-list">
                     {requests.sent.map(r => (
-                      <div key={r.friendshipId} className="friend-item">
+                      <div key={r.friendshipId} className="ui-card friend-item">
                         <span className="friend-avatar">{r.user.avatar}</span>
                         <div className="friend-info">
                           <div className="friend-name">{r.user.name ?? r.user.email}</div>
@@ -237,7 +239,8 @@ export default function FriendsPage() {
                         </div>
                         <div className="friend-actions">
                           <button
-                            className="friend-btn friend-btn--reject"
+                            type="button"
+                            className="ui-btn ui-btn--sm"
                             onClick={() => handleReject(r.friendshipId)}
                           >
                             {t(lang, 'friendsCancel')}
@@ -246,26 +249,26 @@ export default function FriendsPage() {
                       </div>
                     ))}
                   </div>
-                </div>
+                </section>
               )}
 
               {requests.received.length === 0 && requests.sent.length === 0 && (
-                <div className="social-empty">
-                  <div className="social-empty-icon">📬</div>
-                  <div className="social-empty-text">{t(lang, 'friendsNoRequests')}</div>
+                <div className="ui-card ui-empty">
+                  <span className="ui-empty-icon" aria-hidden>📬</span>
+                  {t(lang, 'friendsNoRequests')}
                 </div>
               )}
             </>
           )}
 
-          {/* Search */}
           {tab === 'search' && (
-            <div>
-              <form onSubmit={handleSearch}>
+            <div className="ui-card">
+              <form onSubmit={handleSearch} className="social-search">
                 <input
-                  className="search-input"
+                  className="ui-input"
                   type="email"
                   placeholder={t(lang, 'friendsSearchPlaceholder')}
+                  aria-label={t(lang, 'friendsSearchPlaceholder')}
                   value={searchEmail}
                   onChange={e => {
                     setSearchEmail(e.target.value)
@@ -273,10 +276,9 @@ export default function FriendsPage() {
                   }}
                 />
                 <button
-                  className="btn"
+                  className="ui-btn ui-btn--primary ui-btn--block"
                   type="submit"
                   disabled={searchStatus === 'sending' || !searchEmail.trim()}
-                  style={{ width: '100%' }}
                 >
                   {searchStatus === 'sending'
                     ? t(lang, 'friendsSearchSending')
@@ -285,33 +287,15 @@ export default function FriendsPage() {
               </form>
 
               {searchStatus === 'sent' && (
-                <div style={{
-                  marginTop: 12,
-                  padding: '10px 14px',
-                  background: 'rgba(0, 230, 118, 0.1)',
-                  border: '1px solid rgba(0, 230, 118, 0.2)',
-                  borderRadius: 'var(--radius-sm)',
-                  color: 'var(--color-correct)',
-                  fontSize: '0.85rem',
-                  fontWeight: 600,
-                }}>
+                <p className="social-note social-note--ok" role="status">
                   {t(lang, 'friendsSearchSent')}
-                </div>
+                </p>
               )}
 
               {searchStatus === 'error' && (
-                <div style={{
-                  marginTop: 12,
-                  padding: '10px 14px',
-                  background: 'rgba(255, 82, 82, 0.1)',
-                  border: '1px solid rgba(255, 82, 82, 0.2)',
-                  borderRadius: 'var(--radius-sm)',
-                  color: 'var(--color-wrong)',
-                  fontSize: '0.85rem',
-                  fontWeight: 600,
-                }}>
+                <p className="social-note social-note--err" role="alert">
                   {searchError}
-                </div>
+                </p>
               )}
             </div>
           )}
