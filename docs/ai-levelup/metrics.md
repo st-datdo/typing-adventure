@@ -24,7 +24,7 @@
 | L5 | `lefthook run pre-commit` (1 file `.tsx` staged trong `apps/web`) | <30s | 8 | 3.25 s (gitleaks 0.03, prettier 0.72, eslint 3.19) | 30/10/2026 |
 | L5 | `lefthook run pre-push --force` (typecheck + engine test) | — | 8 | 1.37 s turbo ấm; 4.20 s `TURBO_FORCE=true`; 6.95 s trong worktree EX-5 (đỏ đúng) | 30/10/2026 |
 | L5 | PostToolUse `format-lint.sh` / 1 file `.tsx` | — | 8 | 0.86–0.95 s (3 lần) | 30/10/2026 |
-| L5 | Thời lượng CI (`gh run view`, createdAt→updatedAt) | — | 8 | 1m58s (run 40923821932), 1m56s (run 40924598948); `checks` 1m54s | 30/10/2026 |
+| L5 | Thời lượng CI (`gh run view`, createdAt→updatedAt) | — | 8 | 1m58s (run 40923821932), 1m56s (40924598948), 1m18s (40925206012), 2m07s (40926187909); `checks` là job dài nhất | 30/10/2026 |
 | L5 | Ma trận lọt lớp (EX-5) | 6/6 đúng lớp | — | 6/6: (1)(2) agent hook, (3) pre-push, (4) pre-commit gitleaks, (5)(6) `guard-diff.sh`; (5) còn bị agent hook + pre-commit eslint chặn sớm hơn | 30/10/2026 |
 | L5 | Gitleaks toàn lịch sử (49 commit) | 0 secret thật | — | 4 dương tính giả `generic-api-key` → 0 sau allowlist path+regex | 30/10/2026 |
 | L5 | Plan khớp diff: agent-hooks / git-hooks-ci / script-fixes / mcp-postgres | ≥80% | 8 | 5/5, 8/9 (89%, v2 thêm `.gitignore`), 5/5, 1/1 | 30/10/2026 |

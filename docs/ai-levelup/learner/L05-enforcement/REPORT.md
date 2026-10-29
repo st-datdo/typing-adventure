@@ -73,7 +73,8 @@ CI chạy thật trên draft PR #8:
 |---|---|---|---|---|---|
 | [40923821932](https://github.com/st-datdo/typing-adventure/actions/runs/40923821932) | `913e101` | success (1m54s) | success (6 s) | **failure** (thiếu label) | 17:42:04→17:44:02Z = 1m58s |
 | [40924598948](https://github.com/st-datdo/typing-adventure/actions/runs/40924598948) | `2a4a3aa` | success | success | failure (thiếu label) | 1m56s |
-| [40925206012](https://github.com/st-datdo/typing-adventure/actions/runs/40925206012) | `71bceaa` | xem PR | success | failure (thiếu label) | — |
+| [40925206012](https://github.com/st-datdo/typing-adventure/actions/runs/40925206012) | `71bceaa` | success | success | failure (thiếu label) | 1m18s |
+| [40926187909](https://github.com/st-datdo/typing-adventure/actions/runs/40926187909) | `5f83500` | success | success | failure (thiếu label) | 2m07s |
 
 Log `guard` (run 1): `base has no guard script yet, using the one from this change` rồi `guard-diff: FAIL: protected config changed without label config-change-approved (a human must review and add it):` + `.claude/hooks/*` (5), `.github/rulesets/main.json`, `.github/workflows/ci.yml`, `.gitleaks.toml`, `lefthook.yml`, `scripts/ci/*` (2). `gh pr view 8` → `isDraft: true`, `mergeStateStatus: BLOCKED`, `labels: []`.
 
@@ -152,7 +153,7 @@ Toolbox không có cờ read-only. Lớp chặn ghi: role `mcp_ro` (chỉ `SELEC
 | `lefthook run pre-push --force` | 1.37 s turbo ấm; 4.20 s `TURBO_FORCE=true`; 6.95 s trong worktree EX-5 (đỏ do lỗi type) |
 | PostToolUse `format-lint.sh` / 1 file `.tsx` | 0.86–0.95 s (3 lần) |
 | Gitleaks toàn lịch sử local | 0.57 s, 49 commit, 4 → 0 finding |
-| CI run (GitHub `createdAt→updatedAt`) | 1m58s, 1m56s (`checks` 1m54s là job dài nhất) |
+| CI run (GitHub `createdAt→updatedAt`) | 1m58s, 1m56s, 1m18s, 2m07s (`checks` là job dài nhất) |
 | Ma trận lọt lớp | 6/6 chặn đúng lớp hoặc sớm hơn; 0 lọt tới CI với (1)–(4) |
 | Plan khớp | agent-hooks 5/5, git-hooks-ci 8/9 (89%, v2 thêm `.gitignore`), script-fixes 5/5, mcp-postgres 1/1 |
 | Plan approved trước code | 4/4 (+ v2 trước code) |
