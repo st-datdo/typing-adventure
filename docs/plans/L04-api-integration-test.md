@@ -47,3 +47,13 @@ DATABASE_URL=postgresql://x:y@127.0.0.1:1/none pnpm --filter @typing-adventure/w
 - v1 2026-10-29 23:51: bản đầu, approved.
 
 ## Thực tế
+Điền 2026-10-29 23:57, sau khi code xong. Không có v2; mục dự đoán giữ nguyên từ commit `fb79f38` (giờ commit thật 23:49:47; giờ ở Lịch sử là ước lượng lúc viết).
+
+Lệnh: `git diff --name-only lesson/L04-isolation...lesson/L04-api-test -- . ':!docs/ai-levelup/'` (merge-base `c25d065`) ra 6 file.
+
+- Khớp (6): `docs/plans/L04-api-integration-test.md`, `apps/web/package.json` (script `test:integration`), `apps/web/vitest.config.ts` (`exclude`), `apps/web/vitest.integration.config.ts`, `apps/web/src/test/integration-global-setup.ts`, `apps/web/src/app/api/__tests__/auth-leaderboard.int.test.ts`.
+- Dự đoán mà không đổi (0): không.
+- Đổi mà không dự đoán (0): không.
+- Tỉ lệ khớp: 6 / 6 = 100%.
+- Lệch nhỏ so với Interface: thêm `testTimeout: 20000` và `test.env.DATABASE_URL` trong config integration; 6 test thay vì tối thiểu 4 (thêm `current_schema()` và leaderboard 400). `next build` không phàn nàn thư mục `__tests__` (rủi ro ở Tự review không xảy ra).
+- Design round 2: không.
