@@ -2,7 +2,10 @@ import { NextRequest } from 'next/server'
 import { z } from 'zod'
 import { prisma } from '@typing-adventure/db'
 import { getSessionUser } from '@/lib/auth'
-import { ok, err, unauthorized } from '@/lib/api-response'
+import { ok, err, unauthorized, tooManyRequests } from '@/lib/api-response'
+import { createRateLimiter } from '@/lib/rate-limit'
+
+const sessionsLimiter = createRateLimiter({ limit: 30, windowMs: 60 * 1000 })
 
 const createSessionSchema = z.object({
   gameMode: z.enum(['classic', 'lesson', 'timeAttack', 'challenge']),
@@ -23,6 +26,9 @@ const createSessionSchema = z.object({
 export async function POST(req: NextRequest) {
   const user = await getSessionUser()
   if (!user) return unauthorized()
+
+  const rl = sessionsLimiter.check(user.id)
+  if (!rl.allowed) return tooManyRequests(rl.retryAfterMs)
 
   try {
     const body = await req.json()

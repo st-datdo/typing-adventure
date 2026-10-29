@@ -27,3 +27,9 @@ export function err(message: string, status = 400) {
 export function unauthorized() {
   return err('Unauthorized', 401)
 }
+
+export function tooManyRequests(retryAfterMs: number) {
+  const res = err('Too many requests', 429)
+  res.headers.set('Retry-After', String(Math.max(1, Math.ceil(retryAfterMs / 1000))))
+  return res
+}
