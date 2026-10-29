@@ -14,6 +14,6 @@
 | 2026-10-29 | Đọc bản tóm tắt của `rtk` ("All files formatted correctly") trong khi exit 1 | 1 | ghi REPORT L04; kiểm bằng `rtk proxy` + exit code |
 | 2026-10-29 | Ghi giờ ước lượng vào mục Lịch sử của plan thay vì giờ thật (`date`) | 1 | ghi REPORT L04; giờ thật trong `## Thực tế` |
 | 2026-10-29 | Smoke worktree không có commit riêng nên prune coi là đã merge, xoá branch, không chứng minh được nhánh "giữ branch" | 1 | ghi REPORT L04; dựng lại smoke có 1 commit |
-| 2026-10-30 | Lại ghi giờ ước lượng vào Lịch sử plan (`L04-review-fixes.md` ghi 00:20, commit thật 00:16:56) | 2 | Đề xuất rule: dòng Lịch sử lấy từ `date '+%F %H:%M'` ngay trước commit plan (thêm vào `_template.md` ở lesson sau, qua plan riêng) |
+| 2026-10-30 | Lại ghi giờ ước lượng vào Lịch sử plan (`L04-review-fixes.md` ghi 00:20, commit thật 00:16:56) | 2 | Đã thành rule: `docs/plans/_template.md` mục `## Lịch sử` ghi lệnh `date '+%F %H:%M'` chạy ngay trước khi commit plan (L05 EX-1) |
 | 2026-10-30 | Kiểm "password không có trong argv" bằng `grep -cF $PW` khi DB dev có user = password → dương tính giả (khớp `-U`) | 1 | ghi REPORT L04; test bằng `.env` giả có password riêng + stub `psql` |
 | 2026-10-30 | Xoá branch squash-merge chỉ theo tên branch của PR merged (review PR #7, blocking) | 1 | `wt-prune.sh` so `headRefOid` với tip, xoá bằng `update-ref` có old value |

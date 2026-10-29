@@ -28,7 +28,8 @@ Lesson/PR: <LNN hoặc #PR>
 3. Rollback thế nào? <revert commit / tắt cờ>
 
 ## Lịch sử
-- v1 <ngày giờ>: bản đầu.
+- v1 <giờ từ `date '+%F %H:%M'`, chạy ngay trước khi commit plan; không ước lượng>: bản đầu.
+- v2 <`date '+%F %H:%M'`>: <đổi gì, vì sao> (sửa Lịch sử trước khi sửa code).
 
 ## Thực tế
 <điền sau khi code: file thật, 3 nhóm khớp / dự đoán mà không đổi / đổi mà không dự đoán, tỉ lệ khớp, design round 2>
