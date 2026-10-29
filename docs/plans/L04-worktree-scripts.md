@@ -50,3 +50,13 @@ grep -nE 'set -x|cat .*\.env|echo .*(DATABASE_URL|SECRET)' scripts/wt-*.sh   # k
 - v1 2026-10-29 23:47: bản đầu, approved.
 
 ## Thực tế
+Điền 2026-10-29 23:57, sau khi code xong, trước khi merge 2 branch task. Không có v2; mục dự đoán giữ nguyên từ commit `f52ebb8` (giờ commit thật 23:45:51; giờ ở Lịch sử là ước lượng lúc viết).
+
+Lệnh: `git diff --name-only fd10ae7...lesson/L04-isolation -- . ':!docs/ai-levelup/'` (trước merge) ra 5 file.
+
+- Khớp (5): `docs/plans/L04-worktree-scripts.md`, `scripts/wt-new.sh`, `scripts/wt-prune.sh`, `.gitignore` (`.worktrees/`, `.wt-env`), `CLAUDE.md` (1 dòng Commands, 62 dòng).
+- Dự đoán mà không đổi (0): không.
+- Đổi mà không dự đoán (0): không. Ngoài git: `wt-new.sh` ghi `.wt-env` vào `.git/info/exclude` (đã nêu ở Tự review, không phải file tracked).
+- Tỉ lệ khớp: 5 / 5 = 100%.
+- Lệch nhỏ: `wt-new.sh` kiểm lại sau khi ghi (`grep -c schema=<schema>` = 1 cho cả 3 file) trước khi `db push`; `wt-prune.sh` thêm điều kiện từ chối khi `WT_SCHEMA` trong `.wt-env` lệch với `.env`, và khi `--into` không tồn tại.
+- Design round 2: không.
