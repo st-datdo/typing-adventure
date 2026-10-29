@@ -91,11 +91,13 @@ Mỗi lesson một section. Mỗi file thay đổi xuất hiện đúng 1 lần 
 | Feature | File | Loại | Verify bằng |
 |---|---|---|---|
 | Bài học L04 (teacher) | `docs/ai-levelup/lessons/L04-isolation/LESSON.md` | thêm | đọc tay |
-| Backlog follow-up từ review (teacher) | `docs/ai-levelup/lessons/BACKLOG.md` | thêm | đọc tay |
-| Mục lục: L03 PR #6, L04 đang học, link BACKLOG (teacher) | `docs/ai-levelup/lessons/README.md` | sửa | đọc tay |
+| Backlog follow-up từ review (teacher; #7–#9 từ GRADE L04, trạng thái đã xong sau sửa) | `docs/ai-levelup/lessons/BACKLOG.md` | thêm | đọc tay |
+| Chấm điểm L04 (teacher) | `docs/ai-levelup/lessons/L04-isolation/GRADE.md` | thêm | kết luận PASS |
+| Mục lục: L03 PR #6, L04 đã đạt + link GRADE, link BACKLOG (teacher) | `docs/ai-levelup/lessons/README.md` | sửa | đọc tay |
 | Plan worktree scripts (approved, commit `f52ebb8`) | `docs/plans/L04-worktree-scripts.md` | thêm | commit trước code; Thực tế 5/5 |
-| Tạo worktree cô lập (worktree + port + schema + env) | `scripts/wt-new.sh` | thêm | `bash -n`, `shellcheck`, `/usr/bin/time` 15.11 s / 7.44 s, AC-3 |
-| Dọn worktree an toàn (từ chối bẩn/main/public, drop schema, xoá branch đã merge) | `scripts/wt-prune.sh` | thêm | EX-5 (a)–(d), prune 2 branch task |
+| Tạo worktree cô lập (worktree + port + schema + env); sau chấm: từ chối schema đã có, file tạm `mktemp` + `trap` | `scripts/wt-new.sh` | thêm | `bash -n`, `shellcheck`, `/usr/bin/time` 15.11 s / 7.44 s, AC-3; smoke collision/orphan → REFUSED |
+| Dọn worktree an toàn (từ chối bẩn/main/public/locked/host lạ, remove trước rồi drop schema, xoá branch đã merge) | `scripts/wt-prune.sh` | thêm | EX-5 (a)–(d), prune 2 branch task; smoke host lạ/`?host=`/locked/remove lỗi |
+| Plan hardening sau chấm (approved, commit `abb516c`) | `docs/plans/L04-wt-hardening.md` | thêm | commit trước code `c35caf9`; Thực tế 3/3 |
 | Ignore `.worktrees/`, `.wt-env` | `.gitignore` | sửa | `git check-ignore -q .worktrees/x` |
 | Dòng lệnh worktree trong Commands | `CLAUDE.md` | sửa | `wc -l` 62, dòng 23 |
 | Plan API integration test (approved, commit `fb79f38`) | `docs/plans/L04-api-integration-test.md` | thêm | commit trước code; Thực tế 6/6 |

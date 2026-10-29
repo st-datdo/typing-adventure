@@ -26,7 +26,7 @@ Follow-up không chặn từ review: [BACKLOG.md](BACKLOG.md).
 | L01 | Basic setup | `chore/agent-init` | #1, #3 | đã đạt (trước khoá) | [GUIDE-W0-L1](../GUIDE-W0-L1.md) |
 | L02 | Advanced setup | `lesson/L02-advanced-setup` | #5 | đã đạt | [GRADE](L02-advanced-setup/GRADE.md) |
 | L03 | Plan-first | `lesson/L03-plan-first` | #6 | đã đạt | [GRADE](L03-plan-first/GRADE.md) |
-| L04 | Isolation | `lesson/L04-isolation` | | đang học | [LESSON](L04-isolation/LESSON.md) |
+| L04 | Isolation | `lesson/L04-isolation` | | đã đạt | [GRADE](L04-isolation/GRADE.md) |
 | L05 | Enforcement | | | chưa học | |
 | L06 | Spec + TDD | | | chưa học | |
 | L07 | Parallel | | | chưa học | |

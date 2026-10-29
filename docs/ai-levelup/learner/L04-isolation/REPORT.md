@@ -1,6 +1,6 @@
 # L04 · Isolation — Báo cáo
 
-Branch: `lesson/L04-isolation` (từ `main` = `origin/main` = `fd10ae7`) · PR: chưa mở (chờ lệnh) · Chấm: chưa có GRADE
+Branch: `lesson/L04-isolation` (từ `main` = `origin/main` = `fd10ae7`) · PR: xem cuối báo cáo · Chấm: [GRADE.md](../../lessons/L04-isolation/GRADE.md) PASS
 
 Phiên bắt đầu 23:44:20, xong code + verify 23:59:32. Baseline đầu phiên: `public."User"` = 12 dòng, `public` có 13 bảng, không có schema `wt_%`, `git worktree list` 1 dòng, `lsof -iTCP:3000-3010 -sTCP:LISTEN` rỗng.
 
@@ -149,4 +149,26 @@ fb79f38 23:49:47 docs(plans): L04 API integration test plan (approved)          
 7b58fb9 23:56:43 docs(plans): fill Thực tế for worktree scripts plan
 a633ac1 23:56:43 Merge branch 'lesson/L04-api-test' into lesson/L04-isolation
 1727808 23:56:52 Merge branch 'lesson/L04-e2e' into lesson/L04-isolation (conflict package.json: giữ cả 2 script)
+```
+
+## Sửa sau chấm
+GRADE PASS, nêu 4 điểm an toàn của script (BACKLOG #7–#9). Sửa theo plan thứ 4 [`docs/plans/L04-wt-hardening.md`](../../../plans/L04-wt-hardening.md): approved, commit riêng `abb516c` (00:09:54) trước code `c35caf9` (00:11:49). Thực tế 3/3 = 100%, design round 2: không.
+
+| Điểm | Sửa | Bằng chứng (smoke) |
+|---|---|---|
+| 1. `wt-new` không kiểm schema đã có | Trước khi tạo worktree: `psql` (URL của checkout chính, bỏ `schema=`, stderr nuốt) `select 1 from pg_namespace where nspname='<schema>'`; có → `REFUSED … already exists (orphan or slug collision) …; nothing changed`; `psql` lỗi → từ chối | Tạo `wt/harden`, `create schema wt_wt_harden`; `WT_DIR=<scratchpad>/wtalt wt-new.sh WT/Harden` (cùng slug, khác path/branch) → exit 1, không tạo thư mục, không tạo branch `WT/Harden`. Schema mồ côi `wt_wt_orphan` → `wt-new.sh wt/orphan` exit 1 |
+| 2. `wt-prune` drop theo host bất kỳ | `db_host_of` (bỏ scheme, userinfo, `[…]` IPv6, port/path/query) cho cả 3 `.env`; chỉ `localhost`/`127.0.0.1`/`::1`; query có `host=`/`hostaddr=` → từ chối. Kiểm trước mọi hành động, kể cả `--dry-run` | Worktree bỏ đi `wt/fakehost`, sửa 3 `.env` sang `@db.example.invalid:5432` → `REFUSED: … host 'db.example.invalid' is not localhost/127.0.0.1/::1`, exit 1, không kết nối (từ chối trước `psql`). `?…&host=db.example.invalid` → `host '<query host=db.example.invalid>'` exit 1. `[::1]` và `127.0.0.1` → `--dry-run` qua kiểm, exit 0. Trả về `localhost` rồi prune thật → ok |
+| 3. Drop trước `worktree remove` | Thứ tự mới: kiểm (thêm: worktree `locked` → từ chối) → `git worktree remove` (không `--force`; lỗi → `REFUSED … schema and branch kept`) → drop schema (lỗi → exit 1, in tên schema để drop tay, giữ branch) → branch | `git worktree lock` → `REFUSED … is locked`, exit 1, schema còn. Prune thường in `removed worktree` rồi mới `dropped schema`. Mô phỏng remove lỗi (`chmod 555 .worktrees`): `error: failed to delete …: Permission denied` → `REFUSED: git worktree remove failed; schema wt_wt_rmfail and branch kept`, exit 1, schema còn |
+| 4. File tạm `.wt-tmp` trong cây | `mktemp "${TMPDIR:-/tmp}/wt-env.XXXXXX"` (mode 600), danh sách xoá trong `trap … EXIT`; ghi lại bằng `cp` + `rm` | Sau `wt-new`: `find .worktrees -name '*.wt-tmp'` → 0; số file `wt-env.*` trong `$TMPDIR` trước/sau bằng nhau |
+
+Phát hiện khi verify điểm 3: `git worktree remove` lỗi giữa chừng đã xoá file và gỡ đăng ký worktree, chỉ còn thư mục rỗng (không xoá được vì cha read-only). Script vẫn giữ schema + branch đúng thiết kế; phần còn lại dọn tay (`rmdir`, `drop schema wt_wt_rmfail`, `git branch -D wt/rmfail`). Tức là "remove lỗi" không đảm bảo worktree còn nguyên, chỉ đảm bảo schema chưa bị drop.
+
+Kiểm khác: `bash -n` 0, `shellcheck scripts/wt-*.sh` 0, grep AC-2 không dòng nào. Chuỗi qua `rtk proxy` ở checkout chính: `lint --force` 0 (0 errors, 37 warnings), `typecheck --force` 0 (4 task), `test` 0 (137 + 17), `build --force` 0, 31 s; `git diff main -- typing-adventure/packages/game-engine` rỗng. Cuối: `git worktree list` 1 dòng, `.worktrees/` rỗng, 0 schema `wt_%`, `public."User"` 12, 13 bảng, `lsof -iTCP:3000-3010 -sTCP:LISTEN` rỗng. BACKLOG #7–#9 chuyển `đã xong` (chỉ sửa cột trạng thái, được orchestrator cho phép).
+
+Chưa verify runtime (sửa sau chấm): `wt-new --no-install` giờ cần Postgres để kiểm schema (không còn chạy được khi DB tắt); nhánh `psql` lỗi khi drop sau khi đã remove chỉ kiểm bằng đọc code.
+
+Commit sửa sau chấm:
+```
+abb516c 00:09:54 docs(plans): L04 wt-hardening plan (approved)
+c35caf9 00:11:49 fix(scripts): harden wt-new/wt-prune after L04 review
 ```

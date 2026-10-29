@@ -44,3 +44,14 @@ ls .worktrees/*/typing-adventure/**/*.wt-tmp   # không có
 - v1 2026-10-30 00:09: bản đầu, approved.
 
 ## Thực tế
+Điền 2026-10-30 00:13, sau khi code xong. Không có v2; mục dự đoán giữ nguyên từ commit `abb516c` (00:09:54), code `c35caf9` (00:11:49).
+
+Lệnh: `git diff --name-only 4dd3ba1...lesson/L04-isolation -- . ':!docs/ai-levelup/'` ra 3 file.
+
+- Khớp (3): `docs/plans/L04-wt-hardening.md`, `scripts/wt-new.sh`, `scripts/wt-prune.sh`.
+- Dự đoán mà không đổi (0): không.
+- Đổi mà không dự đoán (0): không.
+- Tỉ lệ khớp: 3 / 3 = 100%.
+- Lệch nhỏ: `wt-new` thêm hàm `libpq_url` (cùng phép bỏ tham số như `wt-prune`); file tạm ghi đè bằng `cp` + `rm` thay vì `mv` để giữ quyền/inode file `.env`. `wt-new --no-install` giờ cần DB (đã nêu ở Tự review).
+- Phát hiện khi verify: `git worktree remove` lỗi giữa chừng (thư mục cha read-only) đã xoá file và gỡ đăng ký worktree nhưng không xoá được thư mục; script vẫn giữ schema + branch như thiết kế, phần còn lại (thư mục rỗng) dọn tay.
+- Design round 2: không.
