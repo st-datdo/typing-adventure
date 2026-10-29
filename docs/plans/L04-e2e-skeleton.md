@@ -44,3 +44,13 @@ pnpm --filter @typing-adventure/web exec vitest list | grep -c e2e/             
 - v1 2026-10-29 23:52: bản đầu, approved.
 
 ## Thực tế
+Điền 2026-10-29 23:57, sau khi code xong. Không có v2; mục dự đoán giữ nguyên từ commit `5145a7e` (giờ commit thật 23:51:58; giờ ở Lịch sử là ước lượng lúc viết).
+
+Lệnh: `git diff --name-only lesson/L04-isolation...lesson/L04-e2e -- . ':!docs/ai-levelup/'` (merge-base `c25d065`) ra 6 file.
+
+- Khớp (6): `docs/plans/L04-e2e-skeleton.md`, `apps/web/package.json` (devDep + script `test:e2e`), `pnpm-lock.yaml` (+38/−8: importer `apps/web`, `@playwright/test`/`playwright`/`playwright-core` 1.64.1, chuỗi peer của `next`/`next-auth`/`@sentry/nextjs` thêm `(@playwright/test@1.64.1)`), `apps/web/playwright.config.ts`, `apps/web/e2e/smoke.spec.ts`, `typing-adventure/.gitignore`.
+- Dự đoán mà không đổi (0): không. (`fsevents` đoán trong lockfile nhưng đã có sẵn, không thêm dòng; vẫn cùng file.)
+- Đổi mà không dự đoán (0): không.
+- Tỉ lệ khớp: 6 / 6 = 100%.
+- Lệch nhỏ: `webServer.stdout: 'pipe'` để log có dòng `Ready on http://localhost:<PORT>` làm bằng chứng port.
+- Design round 2: không.
