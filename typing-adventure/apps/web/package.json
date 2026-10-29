@@ -11,7 +11,8 @@
     "lint": "eslint .",
     "voice:clips": "tsx scripts/voice-clips.ts",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run"
+    "test": "vitest run",
+    "test:integration": "vitest run --config vitest.integration.config.ts"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.7.0",
