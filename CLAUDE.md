@@ -20,6 +20,7 @@ pnpm build
 pnpm test                                             # Vitest: packages/game-engine + apps/web
 pnpm --filter @typing-adventure/game-engine exec vitest run scoring        # single file
 pnpm --filter @typing-adventure/game-engine exec vitest run -t "combo"   # single test by name
+../scripts/wt-new.sh <branch> [--base <ref>]          # isolated worktree .worktrees/<slug>, PORT 3000+n in ../.wt-env, DB schema wt_<slug>; clean up: ../scripts/wt-prune.sh <branch> --into <ref>
 ```
 
 `pnpm lint` runs `eslint .` in `apps/web` only (flat config `apps/web/eslint.config.mjs`, next/core-web-vitals + next/typescript; existing warnings, 0 errors). `pnpm format` applies the root `.prettierrc`. `pnpm typecheck` runs `tsc --noEmit` in all 4 packages via turbo.
