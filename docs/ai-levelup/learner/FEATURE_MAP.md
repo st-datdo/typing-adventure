@@ -121,17 +121,19 @@ Mỗi lesson một section. Mỗi file thay đổi xuất hiện đúng 1 lần 
 | Feature | File | Loại | Verify bằng |
 |---|---|---|---|
 | Bài học L05 (teacher) | `docs/ai-levelup/lessons/L05-enforcement/LESSON.md` | thêm | đọc tay |
-| Backlog: #5, #10–#13 `đã nhận` L05 (teacher) | `docs/ai-levelup/lessons/BACKLOG.md` | sửa | đọc tay |
-| Mục lục: L04 PR #7, L05 đang học (teacher) | `docs/ai-levelup/lessons/README.md` | sửa | đọc tay |
+| Backlog: #5, #10–#13 `đã nhận` L05; #14–#17 từ GRADE (teacher) | `docs/ai-levelup/lessons/BACKLOG.md` | sửa | đọc tay |
+| Mục lục: L04 PR #7, L05 trạng thái + link GRADE (teacher) | `docs/ai-levelup/lessons/README.md` | sửa | đọc tay |
+| Chấm điểm L05 (teacher; lần 1 FAIL AC-8) | `docs/ai-levelup/lessons/L05-enforcement/GRADE.md` | thêm | kết luận chấm |
+| `mcp_ro`: `REVOKE CREATE ON SCHEMA public FROM PUBLIC` (sửa sau chấm) | `.devcontainer/init-db/01-mcp-readonly.sql` | sửa | container PG14 + PG16 dùng xong bỏ: `permission denied for schema public`; đối chứng script cũ tạo được |
 | Plan agent hooks (approved, `bafa8d0`) | `docs/plans/L05-agent-hooks.md` | thêm | commit trước code `961284d`; Thực tế 5/5 |
 | Plan Lefthook + CI + ruleset (approved `bafa8d0`, v2 `9e49fb6`) | `docs/plans/L05-git-hooks-ci.md` | thêm | commit trước code `372f7f4`/`913e101`/`71bceaa`; Thực tế 8/9 |
 | Plan nợ script PR #7 (approved, `bafa8d0`) | `docs/plans/L05-script-fixes.md` | thêm | commit trước code `b6a7760`; Thực tế 5/5 |
 | Plan thay MCP postgres (approved, `bafa8d0`) | `docs/plans/L05-mcp-postgres.md` | thêm | commit trước code `2a4a3aa`; Thực tế 1/1 |
 | Lịch sử plan lấy giờ từ `date '+%F %H:%M'` | `docs/plans/_template.md` | sửa | AC-1: giờ Lịch sử ≤ giờ commit plan |
 | Hook PostToolUse: prettier + eslint file vừa sửa | `.claude/hooks/format-lint.sh` | thêm | `test-hooks.sh` 6 ca; 0.86–0.95 s/file `.tsx`; EX-5 (1)(2)(5) |
-| Hook PreToolUse Bash: chặn `rm -rf`, force push, prisma ghi DB lạ | `.claude/hooks/guard-bash.sh` | thêm | `test-hooks.sh` 25 ca (7 cho qua), output không có URL/password |
+| Hook PreToolUse Bash: chặn `rm -rf`, force push, prisma ghi DB lạ | `.claude/hooks/guard-bash.sh` | thêm | `test-hooks.sh` 30 ca (7 cho qua, gồm `\rm`/`command rm`/`/bin/rm` sau chấm), output không có URL/password |
 | Hook PreToolUse Read: chặn `.env*` trừ `.env.example` | `.claude/hooks/guard-read.sh` | thêm | `test-hooks.sh` 5 ca |
-| Test hooks bằng pipe JSON (36 ca) | `.claude/hooks/test-hooks.sh` | thêm | `bash .claude/hooks/test-hooks.sh` exit 0 |
+| Test hooks bằng pipe JSON (36 ca) | `.claude/hooks/test-hooks.sh` | thêm | `bash .claude/hooks/test-hooks.sh` 41/41 exit 0 |
 | Đề xuất khối `hooks` cho user gộp | `.claude/hooks/settings.hooks.json` | thêm | `jq empty`; 3 matcher; activation chưa verify runtime |
 | Git hooks pre-commit / pre-push | `lefthook.yml` | thêm | `lefthook run pre-commit` 3.25 s; `pre-push` 1.37/4.20 s; EX-5 (3)(4) |
 | Allowlist gitleaks hẹp (path + regex) | `.gitleaks.toml` | thêm | lịch sử 4 → 0 finding; token giả EX-5 vẫn bị bắt |

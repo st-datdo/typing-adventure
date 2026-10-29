@@ -30,3 +30,5 @@
 | L5 | Plan khớp diff: agent-hooks / git-hooks-ci / script-fixes / mcp-postgres | ≥80% | 8 | 5/5, 8/9 (89%, v2 thêm `.gitignore`), 5/5, 1/1 | 30/10/2026 |
 | L5 | Task multi-file có plan approved trước code | 4/4 | 8 | 4/4 (`bafa8d0` trước mọi commit code; v2 `9e49fb6` trước `71bceaa`) | 30/10/2026 |
 | L5 | Comment cơ học (format/lint/type) của reviewer trên PR L05 | 0 | 8 | chưa đo (PR draft, chưa review) | 30/10/2026 |
+| L5 | Plan khớp diff: v2 sau chấm `L05-mcp-postgres.md` / `L05-agent-hooks.md` | ≥80% | 8 | 1/1, 2/2; plan `7f0c1f5` trước code `32753b3`, `f9d1652` | 30/10/2026 |
+| L5 | `mcp_ro` tạo được bảng trong `public` sau `SET … off` | 0 | — | PG14 script cũ: tạo được; PG14 + PG16 script mới: `permission denied for schema public` (container dùng xong bỏ) | 30/10/2026 |

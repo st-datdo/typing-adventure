@@ -1,6 +1,6 @@
 # L05 · Enforcement — Báo cáo
 
-Branch: `lesson/L05-enforcement` (từ `main` = `origin/main` = `e193261`) · Draft PR [#8](https://github.com/st-datdo/typing-adventure/pull/8) · Chấm: chưa có `GRADE.md` (PR để draft, chờ teacher + label của user)
+Branch: `lesson/L05-enforcement` (từ `main` = `origin/main` = `e193261`) · Draft PR [#8](https://github.com/st-datdo/typing-adventure/pull/8) · Chấm: [GRADE.md](../../lessons/L05-enforcement/GRADE.md) lần 1 FAIL ở AC-8 → đã sửa (xem "Sửa sau chấm"), chờ chấm lại
 
 Phiên bắt đầu ~00:28, plan commit 00:32:46, xong code + verify 00:52. Mọi giờ là giờ máy (`date`, `git log --format=%ci`, `/usr/bin/time -p`, timestamp GitHub).
 
@@ -33,7 +33,7 @@ Phiên bắt đầu ~00:28, plan commit 00:32:46, xong code + verify 00:52. Mọ
 | AC-5 | Đạt | `gh api repos/st-datdo/typing-adventure/rules/branches/main` → `deletion`, `non_fast_forward`, `pull_request` (`required_approving_review_count: 0`), `required_status_checks` = `["checks","gitleaks","guard"]`, cả 4 `ruleset_id 26147711`. JSON ở `.github/rulesets/main.json`. Lệnh outward-facing ghi ở mục dưới. Không thử force push |
 | AC-6 | Đạt | Bảng EX-5: (1)–(4) chặn trước CI, (5)–(6) bị `guard-diff.sh` chặn. Sau dọn: `git worktree list` 1 dòng, `wt/l05-matrix` đã xoá, schema `wt_%` = 0, `git status` của checkout chính sạch (ngoài file đang làm). `git log -p --all \| grep -cF <token giả>` → **0** |
 | AC-7 | Đạt | `scripts/lib/pg.sh` có 3 hàm; `grep -nE '^(urldecode\|pg_exec\|pg_fields)\(\)' scripts/wt-*.sh` → rỗng; `grep -rn WT_PRUNE_TEST scripts/` → rỗng. `bash -n` + `shellcheck scripts/lib/*.sh scripts/wt-*.sh` exit 0. `test-pg.sh` 9/9: stub `psql` (argv, `ps -o args=` của chính nó và process cha) không chứa password; `od -c`: `S 3 c r \ n T \ z @ q` cho `S3cr\nT%5Cz%40q`; `t a b \t a n d \ t s l a s h /` cho `tab%09and\tslash%2F`. Bản cũ cho `S 3 c r \n T % 5 C z …` (hỏng). Smoke `wt-new.sh wt/l05-smoke --no-install` (0.59 s) → tạo `wt_wt_l05_smoke` → commit 1 file → `PATH=<stub gh trả tip>:$PATH wt-prune.sh wt/l05-smoke` → `force-delete (… squash merge)`, `dropped schema`, exit 0; `count(*) … like 'wt\_%'` → 0 |
-| AC-8 | Đạt một phần: config + role, runtime MCP `chưa verify` | `jq empty .mcp.json` exit 0; `grep -c 'server-postgres@0.6.2' .mcp.json` → 0; pin `@toolbox-sdk/server@1.15.0`; `POSTGRES_USER=${MCP_PG_USER:-mcp_ro}`. `claude mcp list` → `postgres-ro: npx -y @toolbox-sdk/server@1.15.0 --prebuilt postgres --stdio - ⏸ Pending approval`. Chạy server qua `npx` bị auto-mode chặn. Kiểm role bằng `psql -U mcp_ro`: `mcp_ro\|on\|5s`; `select count(*) from "User"` → 12; `create table` → `cannot execute CREATE TABLE in a read-only transaction`; `update` → `cannot execute UPDATE in a read-only transaction`. Đề xuất BACKLOG #5 → `đã xong` (kèm lỗ hổng `CREATE` trên `public`, xem Vấn đề) |
+| AC-8 | Đạt sau sửa (lần 1 chưa đạt): config + role; runtime MCP `chưa verify` | `jq empty .mcp.json` exit 0; `grep -c 'server-postgres@0.6.2' .mcp.json` → 0; pin `@toolbox-sdk/server@1.15.0`; `POSTGRES_USER=${MCP_PG_USER:-mcp_ro}`. `claude mcp list` → `postgres-ro: npx -y @toolbox-sdk/server@1.15.0 --prebuilt postgres --stdio - ⏸ Pending approval`. Chạy server qua `npx` bị auto-mode chặn. Kiểm role bằng `psql -U mcp_ro`: `mcp_ro\|on\|5s`; `select count(*) from "User"` → 12; `create table` → `cannot execute CREATE TABLE in a read-only transaction`; `update` → `cannot execute UPDATE in a read-only transaction`. Đề xuất BACKLOG #5 → `đã xong` (kèm lỗ hổng `CREATE` trên `public`, xem Vấn đề) | **Sau chấm:** `01-mcp-readonly.sql` thêm `REVOKE CREATE ON SCHEMA public FROM PUBLIC;`; verify trên container dùng xong bỏ `postgres:14-alpine` + `postgres:16-alpine`: `mcp_ro` `SET default_transaction_read_only = off; CREATE TABLE public.x(i int)` → `permission denied for schema public`, `SELECT` bảng mẫu → 2 (xem "Sửa sau chấm") |
 | AC-9 | Đạt | Ở `typing-adventure/` của checkout chính: `rtk proxy pnpm lint && … typecheck && … test && … build` → exit 0 (4 s, cache). Chạy lại với `--force` cho lint/typecheck/build: exit 0, 33 s, `0 errors, 37 warnings` (= baseline), typecheck 4/4, test 137 + 17, build ok. `git diff --quiet main -- typing-adventure/packages/game-engine/src` → exit 0; branch không đổi file nào trong `typing-adventure/` |
 
 ## EX-2: agent hooks
@@ -170,6 +170,29 @@ Toolbox không có cờ read-only. Lớp chặn ghi: role `mcp_ro` (chỉ `SELEC
 - `lefthook run pre-push` bỏ qua (`no matching push files`) khi push không có file nào dưới `typing-adventure/`. Đúng ý (docs/scripts không cần typecheck), nhưng push chỉ **xoá** file TS cũng bị bỏ qua, vì lefthook lọc file không còn tồn tại. CI vẫn bắt trường hợp này.
 - Turbo 2 trong worktree ghi cache vào `.turbo/cache` ở gốc checkout chính, nên `.turbo/` hiện thành untracked. Plan v2 → `.gitignore`.
 
+## Sửa sau chấm (GRADE L05 lần 1: FAIL ở AC-8)
+Điền 2026-10-30 01:07. Thứ tự commit: plan v2 `7f0c1f5` (01:05:44) → SQL `32753b3` (01:06:57) → hook `f9d1652` (01:06:58).
+
+**1. Lớp chặn ghi của `mcp_ro` (AC-8).** `.devcontainer/init-db/01-mcp-readonly.sql` thêm `REVOKE CREATE ON SCHEMA public FROM PUBLIC;` (trước các `GRANT`). Lệnh idempotent, không cấp lại `CREATE` cho `mcp_ro`.
+
+Verify chỉ trên container dùng xong bỏ, không đụng DB host. Script `verify-revoke.sh` trong scratchpad làm các bước:
+- `docker run --rm -d -e POSTGRES_PASSWORD=<24 ký tự ngẫu nhiên, không in> -e POSTGRES_DB=typing_adventure <image>`, không publish port, mọi lệnh qua `docker exec`.
+- Tạo bảng mẫu `public.sample` (2 dòng), `docker cp` script rồi `psql -f` **2 lần** để kiểm idempotent.
+- Đăng nhập `mcp_ro` qua `127.0.0.1` trong container và thử ghi.
+- `docker stop <ID>`. Cuối cùng `docker ps` rỗng.
+
+| Container | Script | `has_schema_privilege` CREATE (`mcp_ro`, `public`) | `SELECT count(*) FROM public.sample` | `CREATE TABLE` (read-only bật) | `SET … off` + `CREATE TABLE public.x(i int)` | `SET … off` + `INSERT` |
+|---|---|---|---|---|---|---|
+| `50b6a631a2d1` postgres:14-alpine (14.24) | mới | `f\|f` | 2 | `cannot execute CREATE TABLE in a read-only transaction` | **`ERROR: permission denied for schema public`**, exit 1 | `permission denied for table sample` |
+| `4500697e18e7` postgres:14-alpine (đối chứng) | cũ (`HEAD` trước sửa) | `t\|t` | 2 | read-only transaction | **exit 0 (tạo được)**: tái hiện lỗi | `permission denied for table sample` |
+| `4bd76ae6dbd1` postgres:16-alpine (16.10) | mới | `f\|f` | 2 | read-only transaction | **`ERROR: permission denied for schema public`**, exit 1 | `permission denied for table sample` |
+
+Cả 2 lần `psql -f` đều exit 0 trên mọi container. Lớp chặn ghi bây giờ có 3 tầng: chỉ có `SELECT` grant, `public` không còn `CREATE`, và `default_transaction_read_only`. Phiên tự `SET … off` thì vẫn bị 2 tầng đầu chặn.
+
+**2. BACKLOG #14 (`\rm -rf`).** `guard-bash.sh` `unquote` bỏ cả `\` trước khi so tên lệnh. `test-hooks.sh` thêm 5 ca: `\rm -rf x`, `command rm -rf x`, `/bin/rm -rf x`, `"rm" -rf x`, `r''m -rf x`. Kết quả 41/41, leaks 0, `shellcheck` sạch. Đối chứng với bản hook trước sửa (`git show HEAD:…`): `\rm -rf x` → old exit **0** (lọt), new exit **2**. Hai ca dùng dấu nháy vốn đã bị chặn.
+
+**3. Không đụng DB host.** `public.mcp_probe` vẫn chờ user xoá, và quyền `public` trên host vẫn chờ user chạy lại script (mục "Cần user làm").
+
 ## Chưa verify runtime
 - Agent hooks chạy thật trong phiên Claude Code: `chưa verify runtime — cần user bật` (gộp `.claude/hooks/settings.hooks.json` vào `.claude/settings.json`).
 - MCP Toolbox `postgres-ro`: chưa chạy server (auto-mode chặn `npx` code ngoài; server `Pending approval`). Chưa kiểm `execute_sql` SELECT/ghi qua MCP.
@@ -179,6 +202,7 @@ Toolbox không có cờ read-only. Lớp chặn ghi: role `mcp_ro` (chỉ `SELEC
 - Lefthook/gitleaks trong devcontainer: chưa cài trong image (brew trên host).
 
 ## Cần user làm
+0. Trên DB host (Postgres 14): chạy lại `psql "$DATABASE_URL" -f .devcontainer/init-db/01-mcp-readonly.sql` bằng user `dev` để áp `REVOKE CREATE ON SCHEMA public FROM PUBLIC` (learner không đụng DB host).
 1. Review rồi gắn label `config-change-approved` cho PR #8 (để `guard` xanh); mark ready khi teacher chấm PASS.
 2. `drop table public.mcp_probe;` trên DB dev local.
 3. Bật hooks: gộp `.claude/hooks/settings.hooks.json` vào `.claude/settings.json`; approve server `postgres-ro` mới.
@@ -196,4 +220,4 @@ b6a7760 00:43:56 refactor(scripts): shared pg lib, password out of argv, keep ba
 9e49fb6 00:49:25 docs(plans): L05 git-hooks-ci v2, ignore root .turbo
 71bceaa 00:49:30 chore: ignore root .turbo cache shared by worktrees
 ```
-Sau đó: 1 commit `docs(learner)` (Thực tế 4 plan, REPORT, FEATURE_MAP, metrics, mistakes).
+Sau đó: `5f83500`, `721b95d` docs(learner). Sửa sau chấm: `7f0c1f5` plan v2, `32753b3` SQL, `f9d1652` hook, rồi 1 commit docs (GRADE/README/BACKLOG của teacher + REPORT, Thực tế, FEATURE_MAP, metrics).

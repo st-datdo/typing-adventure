@@ -53,3 +53,5 @@ Lệnh: `git diff --name-only main...lesson/L05-enforcement -- . ':!docs/ai-leve
 - Tỉ lệ khớp: 1 / 1 = 100%.
 - Lệch: không thêm `POSTGRES_QUERY_PARAMS` (`queryParams` của toolbox là map, không chắc nhận chuỗi từ env); lớp read-only phiên đến từ `ALTER ROLE mcp_ro SET default_transaction_read_only = on` đã có. Chạy server bằng `npx` bị auto-mode chặn (`Code from External`) → runtime MCP `chưa verify`; kiểm role bằng `psql`. Phát hiện: trên Postgres 14 (Homebrew) `mcp_ro` có `CREATE` trên schema `public` qua `PUBLIC`, chỉ lớp `default_transaction_read_only` chặn DDL, mà lớp này tắt được bằng `SET` (xem REPORT).
 - Design round 2: không.
+
+Sửa sau chấm (v2), điền 2026-10-30 01:07: plan `7f0c1f5` (01:05:44) trước code `32753b3` (01:06:57). File thật: `.devcontainer/init-db/01-mcp-readonly.sql`, đúng như v2 dự đoán, 1/1. Verify trên container `postgres:14-alpine` và `postgres:16-alpine` dùng xong bỏ: `permission denied for schema public`, SELECT được. Đối chứng với script cũ trên PG14: tạo bảng được. Tổng plan (v1 + v2) khớp 2/2.

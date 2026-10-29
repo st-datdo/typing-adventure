@@ -61,3 +61,5 @@ Lệnh: `git diff --name-only main...lesson/L05-enforcement -- . ':!docs/ai-leve
 - Tỉ lệ khớp: 5 / 5 = 100%.
 - Lệch nhỏ: `test-hooks.sh` có 36 ca (25 Bash, 5 Read, 6 format-lint); thêm ca "out of scope in ra rỗng". Tách đoạn lệnh bằng `${cmd//[;&|()]/$'\n'}` thay vì `tr` (shellcheck SC2020). `format-lint.sh` trên 1 file `.tsx` 47 dòng: 0.86–0.95 s.
 - Design round 2: không.
+
+Sửa sau chấm (v2), điền 2026-10-30 01:07: plan `7f0c1f5` (01:05:44) trước code `f9d1652` (01:06:58). File thật: `guard-bash.sh`, `test-hooks.sh`, đúng như v2 dự đoán (2/2). `test-hooks.sh` 41/41.
