@@ -19,3 +19,6 @@ Mỗi lesson một section. Mỗi file thay đổi xuất hiện đúng 1 lần 
 | Reviewer chạy trên GitHub | `.github/workflows/claude-pr-review.yml` | thêm | cần secret `ANTHROPIC_API_KEY` |
 | Mục lục bài học | `docs/ai-levelup/lessons/README.md` | thêm | đọc tay |
 | Feature map | `docs/ai-levelup/learner/FEATURE_MAP.md` | thêm | đọc tay |
+| Bài học + chấm điểm | `docs/ai-levelup/lessons/L00-agent-team/{LESSON,GRADE}.md` | thêm | GRADE kết luận PASS |
+| Báo cáo người học | `docs/ai-levelup/learner/L00-agent-team/REPORT.md` | thêm | đọc tay |
+| Metric + lỗi lặp | `docs/ai-levelup/metrics.md`, `docs/ai-levelup/mistakes.md` | sửa | dòng L00 |

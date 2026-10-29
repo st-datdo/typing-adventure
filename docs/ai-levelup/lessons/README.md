@@ -21,7 +21,7 @@ Kết quả của người học: [learner/](../learner/) · mapping feature →
 ## Mục lục
 | Lesson | Level | Branch | PR | Trạng thái | Kết quả |
 |---|---|---|---|---|---|
-| L00 | Dựng đội agent | `lesson/L00-agent-team` | | đang học | |
+| L00 | Dựng đội agent | `lesson/L00-agent-team` | #4 | đã đạt | [GRADE](L00-agent-team/GRADE.md) |
 | L01 | Basic setup | `chore/agent-init` | #1, #3 | đã đạt (trước khoá) | [GUIDE-W0-L1](../GUIDE-W0-L1.md) |
 | L02 | Advanced setup | | | chưa học | |
 | L03 | Plan-first | | | chưa học | |
