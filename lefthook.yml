@@ -1,0 +1,26 @@
+pre-commit:
+  parallel: true
+  commands:
+    prettier:
+      root: typing-adventure/
+      glob: "*.{ts,tsx,js,jsx,mjs,cjs,css,json}"
+      run: pnpm exec prettier --write --log-level warn {staged_files}
+      stage_fixed: true
+    eslint:
+      root: typing-adventure/apps/web/
+      glob: "*.{ts,tsx,js,jsx,mjs}"
+      run: pnpm exec eslint --no-warn-ignored {staged_files}
+    gitleaks:
+      run: >-
+        command -v gitleaks >/dev/null 2>&1 || { echo "gitleaks not installed, run: brew install gitleaks"; exit 1; };
+        gitleaks git --staged --redact --no-banner .
+
+pre-push:
+  parallel: true
+  commands:
+    typecheck:
+      root: typing-adventure/
+      run: pnpm typecheck
+    engine-test:
+      root: typing-adventure/
+      run: pnpm --filter @typing-adventure/game-engine test
