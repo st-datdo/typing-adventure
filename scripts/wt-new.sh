@@ -63,6 +63,44 @@ for n in $(seq 1 99); do
 done
 [ -n "$port" ] || die "no free port in 3001-3099"
 
+libpq_url() {
+  awk '
+    /^DATABASE_URL=/ {
+      v = substr($0, 14)
+      gsub(/^"|"$/, "", v)
+      q = index(v, "?")
+      if (q == 0) { print v; exit }
+      base = substr(v, 1, q - 1)
+      n = split(substr(v, q + 1), parts, "&")
+      out = ""
+      for (i = 1; i <= n; i++) {
+        if (parts[i] == "" || parts[i] ~ /^(schema|connection_limit|pool_timeout|pgbouncer|statement_cache_size|socket_timeout)=/) continue
+        out = out (out == "" ? "" : "&") parts[i]
+      }
+      print base (out == "" ? "" : "?" out)
+      exit
+    }
+  ' "$1"
+}
+
+command -v psql >/dev/null 2>&1 || die "psql not found; needed to check that schema $schema does not exist yet"
+conn=$(libpq_url "$main_root/$app_rel/packages/db/.env")
+exists=$(psql "$conn" -v ON_ERROR_STOP=1 -qAt -c "select 1 from pg_namespace where nspname = '$schema'" 2>/dev/null) \
+  || die "cannot check schema $schema (psql failed); nothing changed"
+unset conn
+[ -z "$exists" ] || die "schema $schema already exists (orphan or slug collision); drop it or prune its worktree first; nothing changed"
+
+tmp_files=()
+cleanup_tmp() {
+  if [ "${#tmp_files[@]}" -gt 0 ]; then rm -f "${tmp_files[@]}"; fi
+}
+trap cleanup_tmp EXIT
+
+new_tmp() {
+  new_tmp_path=$(mktemp "${TMPDIR:-/tmp}/wt-env.XXXXXX")
+  tmp_files+=("$new_tmp_path")
+}
+
 mkdir -p "$wt_root"
 exclude_file="$common_dir/info/exclude"
 mkdir -p "$(dirname "$exclude_file")"
@@ -76,7 +114,8 @@ fi
 
 set_db_schema() {
   local file="$1" tmp
-  tmp="$file.wt-tmp"
+  new_tmp
+  tmp="$new_tmp_path"
   awk -v s="$schema" '
     function with_schema(url,   q, base, n, i, parts, out) {
       q = index(url, "?")
@@ -98,19 +137,22 @@ set_db_schema() {
     }
     { print }
   ' "$file" > "$tmp"
-  mv "$tmp" "$file"
+  cp "$tmp" "$file"
+  rm -f "$tmp"
   chmod 600 "$file"
 }
 
 set_var() {
   local file="$1" key="$2" value="$3" tmp
-  tmp="$file.wt-tmp"
+  new_tmp
+  tmp="$new_tmp_path"
   awk -v k="$key" -v v="$value" '
     index($0, k "=") == 1 { print k "=\"" v "\""; done = 1; next }
     { print }
     END { if (!done) print k "=\"" v "\"" }
   ' "$file" > "$tmp"
-  mv "$tmp" "$file"
+  cp "$tmp" "$file"
+  rm -f "$tmp"
   chmod 600 "$file"
 }
 

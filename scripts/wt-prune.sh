@@ -32,22 +32,27 @@ fi
 
 current_path=""
 current_branch=""
+current_locked=0
+locked=0
 found=0
 while IFS= read -r line; do
   case "$line" in
-    "worktree "*) current_path="${line#worktree }"; current_branch="" ;;
+    "worktree "*) current_path="${line#worktree }"; current_branch=""; current_locked=0 ;;
     "branch refs/heads/"*) current_branch="${line#branch refs/heads/}" ;;
+    locked|"locked "*) current_locked=1 ;;
     "")
       if [ -n "$current_path" ]; then
         resolved=$(cd "$current_path" 2>/dev/null && pwd -P || printf '%s' "$current_path")
         if { [ -n "$wt_path" ] && [ "$resolved" = "$wt_path" ]; } || { [ -z "$wt_path" ] && [ "$current_branch" = "$target" ]; }; then
           wt_path="$resolved"
           branch="$current_branch"
+          locked="$current_locked"
           found=1
         fi
       fi
       current_path=""
       current_branch=""
+      current_locked=0
       ;;
   esac
 done < <(git -C "$main_root" worktree list --porcelain; echo)
@@ -55,6 +60,7 @@ done < <(git -C "$main_root" worktree list --porcelain; echo)
 [ "$found" = "1" ] || refuse "no worktree found for '$target' (see: git worktree list)"
 [ "$wt_path" != "$main_root" ] || refuse "$wt_path is the main checkout"
 [ "$branch" != "main" ] || refuse "branch is main"
+[ "$locked" = "0" ] || refuse "worktree $wt_path is locked (git worktree unlock first)"
 git -C "$main_root" rev-parse --verify --quiet "$into^{commit}" >/dev/null || refuse "--into ref not found: $into"
 
 dirty=$(git -C "$wt_path" status --porcelain --untracked-files=all)
@@ -79,12 +85,43 @@ schema_of() {
   ' "$1"
 }
 
+db_host_of() {
+  awk '
+    /^DATABASE_URL=/ {
+      v = substr($0, 14)
+      gsub(/^"|"$/, "", v)
+      q = index(v, "?")
+      query = (q == 0) ? "" : substr(v, q + 1)
+      if (q > 0) v = substr(v, 1, q - 1)
+      n = split(query, parts, "&")
+      for (i = 1; i <= n; i++) if (parts[i] ~ /^(host|hostaddr)=/) { print "<query " parts[i] ">"; exit }
+      sub(/^[a-zA-Z][a-zA-Z0-9+.-]*:\/\//, "", v)
+      slash = index(v, "/")
+      if (slash > 0) v = substr(v, 1, slash - 1)
+      while ((at = index(v, "@")) > 0) v = substr(v, at + 1)
+      if (substr(v, 1, 1) == "[") {
+        close_b = index(v, "]")
+        print substr(v, 2, close_b - 2)
+      } else {
+        colon = index(v, ":")
+        print (colon > 0) ? substr(v, 1, colon - 1) : v
+      }
+      exit
+    }
+  ' "$1"
+}
+
 schema=""
 db_env=""
 for f in "${env_files[@]}"; do
   file="$wt_path/$app_rel/$f"
   [ -f "$file" ] || continue
   grep -q '^DATABASE_URL=' "$file" || continue
+  h=$(db_host_of "$file")
+  case "$h" in
+    localhost|127.0.0.1|::1) ;;
+    *) refuse "$app_rel/$f DATABASE_URL host '${h:-<empty>}' is not localhost/127.0.0.1/::1; will not drop schemas there" ;;
+  esac
   s=$(schema_of "$file")
   [ "$s" != "public" ] || refuse "$app_rel/$f points DATABASE_URL at schema public"
   [[ "$s" =~ ^wt_[a-z0-9_]{1,60}$ ]] || refuse "$app_rel/$f schema '${s:-<none>}' is not a wt_* schema"
@@ -133,6 +170,7 @@ if [ "$dry_run" = "1" ]; then
   exit 0
 fi
 
+conn=""
 if [ -n "$schema" ]; then
   [[ "$schema" =~ ^wt_[a-z0-9_]{1,60}$ ]] || refuse "schema check failed"
   conn=$(awk '
@@ -152,13 +190,21 @@ if [ -n "$schema" ]; then
       exit
     }
   ' "$db_env")
-  psql "$conn" -v ON_ERROR_STOP=1 -qAt -c "DROP SCHEMA IF EXISTS \"$schema\" CASCADE" >/dev/null 2>&1 \
-    || refuse "could not drop schema $schema (psql failed); worktree kept"
-  echo "wt-prune: dropped schema $schema"
 fi
 
-git -C "$main_root" worktree remove "$wt_path"
+git -C "$main_root" worktree remove "$wt_path" || refuse "git worktree remove failed; schema ${schema:-<none>} and branch kept"
 echo "wt-prune: removed worktree $wt_path"
+
+if [ -n "$schema" ]; then
+  if psql "$conn" -v ON_ERROR_STOP=1 -qAt -c "DROP SCHEMA IF EXISTS \"$schema\" CASCADE" >/dev/null 2>&1; then
+    echo "wt-prune: dropped schema $schema"
+  else
+    unset conn
+    echo "wt-prune: ERROR: worktree removed but could not drop schema $schema (psql failed); drop it by hand. Branch kept." >&2
+    exit 1
+  fi
+  unset conn
+fi
 
 case "$branch_action" in
   delete) git -C "$main_root" branch -d "$branch" ;;
