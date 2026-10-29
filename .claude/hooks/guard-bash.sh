@@ -17,6 +17,7 @@ unquote() {
   local w=$1
   w=${w//\"/}
   w=${w//\'/}
+  w=${w//\\/}
   printf '%s' "$w"
 }
 
