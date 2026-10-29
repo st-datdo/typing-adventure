@@ -8,7 +8,7 @@
       "command": "npx",
       "args": [
         "-y",
-        "@modelcontextprotocol/server-postgres",
+        "@modelcontextprotocol/server-postgres@0.6.2",
         "${MCP_PG_URL:-postgresql://mcp_ro:mcp_ro@localhost:5432/typing_adventure}"
       ]
     }
