@@ -1,0 +1,36 @@
+services:
+  app:
+    build:
+      context: ../.devcontainer
+      dockerfile: Dockerfile
+    command: sleep infinity
+    network_mode: service:postgres
+    depends_on:
+      - postgres
+    environment:
+      DATABASE_URL: postgresql://dev:dev@localhost:5432/typing_adventure
+      CLAUDE_CONFIG_DIR: /home/node/.claude
+    volumes:
+      - ..:/workspaces/keyboad_with_sound:cached
+      - nm-root:/workspaces/keyboad_with_sound/typing-adventure/node_modules
+      - nm-web:/workspaces/keyboad_with_sound/typing-adventure/apps/web/node_modules
+      - nm-db:/workspaces/keyboad_with_sound/typing-adventure/packages/db/node_modules
+      - nm-engine:/workspaces/keyboad_with_sound/typing-adventure/packages/game-engine/node_modules
+      - nm-i18n:/workspaces/keyboad_with_sound/typing-adventure/packages/i18n/node_modules
+      - claude-config:/home/node/.claude
+
+  postgres:
+    ports: !reset []
+    volumes:
+      - ../.devcontainer/init-db:/docker-entrypoint-initdb.d:ro
+
+  redis:
+    ports: !reset []
+
+volumes:
+  nm-root:
+  nm-web:
+  nm-db:
+  nm-engine:
+  nm-i18n:
+  claude-config:

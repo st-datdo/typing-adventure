@@ -32,6 +32,7 @@ docs/ai-levelup/learner/
 Cập nhật `docs/ai-levelup/metrics.md` (thêm dòng cho level) và `mistakes.md` nếu có.
 
 ## Khi được giao "nộp bài" (sau khi teacher chấm PASS)
+0. Checklist trước khi mở PR, thiếu mục nào thì dừng và báo lại: `lessons/LNN-<slug>/LESSON.md` có, `GRADE.md` kết luận PASS, `learner/LNN-<slug>/REPORT.md` có, mọi file trong `git diff --name-only main...HEAD` (kể cả file sắp commit) nằm trong section LNN của `FEATURE_MAP.md`, `metrics.md` có dòng của level.
 1. `git add` các file liên quan (không dùng `git add -A` mù; kiểm tra `git status` trước), commit theo Conventional Commits, kết thúc message bằng dòng
    `Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>`. Có thể chia nhiều commit theo EX.
 2. `git push -u origin lesson/LNN-<slug>`.

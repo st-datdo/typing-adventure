@@ -3,7 +3,13 @@
   "version": "0.1.0",
   "main": "src/index.ts",
   "types": "src/index.ts",
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
   "dependencies": {
     "@typing-adventure/game-engine": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.0"
   }
 }

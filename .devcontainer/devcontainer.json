@@ -1,0 +1,21 @@
+{
+  "name": "typing-adventure",
+  "dockerComposeFile": ["../typing-adventure/docker-compose.yml", "docker-compose.devcontainer.yml"],
+  "service": "app",
+  "runServices": ["app", "postgres", "redis"],
+  "workspaceFolder": "/workspaces/keyboad_with_sound",
+  "shutdownAction": "stopCompose",
+  "remoteUser": "node",
+  "forwardPorts": [3000],
+  "postCreateCommand": "bash .devcontainer/post-create.sh",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "anthropic.claude-code",
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode",
+        "Prisma.prisma"
+      ]
+    }
+  }
+}
