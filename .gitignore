@@ -3,3 +3,7 @@
 *.tsbuildinfo
 .superpowers/
 .pnpm-store/
+
+# Worktrees (scripts/wt-new.sh)
+.worktrees/
+.wt-env
