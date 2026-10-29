@@ -45,3 +45,13 @@ psql … "select count(*) from pg_namespace where nspname like 'wt\_%'"   # 0
 - v1 2026-10-30 00:32: bản đầu, approved.
 
 ## Thực tế
+Điền 2026-10-30 00:51. Plan `bafa8d0` (00:32:46) trước code `b6a7760` (00:43:56). Không có v2.
+
+Lệnh: `git diff --name-only main...lesson/L05-enforcement -- . ':!docs/ai-levelup/'`, lọc `scripts/` + `.shellcheckrc`.
+
+- Khớp (5): `scripts/lib/pg.sh`, `scripts/lib/test-pg.sh`, `scripts/wt-new.sh`, `scripts/wt-prune.sh`, `.shellcheckrc`.
+- Dự đoán mà không đổi (0): không.
+- Đổi mà không dự đoán (0): không.
+- Tỉ lệ khớp: 5 / 5 = 100%.
+- Lệch nhỏ: `test-pg.sh` 9 ca (stub `psql` ghi argv, `ps -o args=` của chính nó và process cha, `PGPASSWORD` theo `od -c`). Smoke `wt/l05-smoke` dùng stub `gh` trả đúng tip → nhánh `force-delete` chạy thật lần đầu (L04 chỉ chạy được nhánh "0 PR").
+- Design round 2: không.

@@ -5,7 +5,7 @@
 | 2026-10-29 | Quy ước "không comment/Javadoc" chỉ nằm ở `~/.claude/CLAUDE.md` cá nhân → mất hiệu lực trong devcontainer | 1 (phòng ngừa) | `CLAUDE.md` mục `## Conventions` |
 | 2026-10-29 | `pnpm install` trong container tạo `.pnpm-store/` (954 MB) ngay trong workspace bind mount, suýt lọt vào git | 1 | `.gitignore` thêm `.pnpm-store/` |
 | 2026-10-29 | `init-db/01-mcp-readonly.sql` không chạy vì volume `postgres_data` đã có từ 04/2026 → `mcp_ro` không tồn tại trong container | 1 | `CLAUDE.md` mục Gotchas (chạy tay bằng `psql -f`) |
-| 2026-10-29 | Sửa `turbo.json` bằng `JSON.stringify` làm vỡ format mảng 1 dòng | 1 | chờ L5 hook (`prettier --check`) |
+| 2026-10-29 | Sửa `turbo.json` bằng `JSON.stringify` làm vỡ format mảng 1 dòng | 1 | Đã thành hook (L05): `.claude/hooks/format-lint.sh` (PostToolUse, `prettier --write` file `*.json` trong `typing-adventure/`) + Lefthook pre-commit `prettier --write` + `stage_fixed` |
 | 2026-10-29 | Đo green build trong container bị turbo replay cache từ host (lint `cache hit`) → số đo ảo | 1 | ghi trong REPORT L02 (đo bằng `--force`); chưa thành rule vì mới lần 1 |
 | 2026-10-29 | `pgrep -fl` (macOS) in cả env của process `next-server` → lộ 1 biến token phiên vào transcript | 1 | ghi REPORT L03; dùng `ps -o pid,ppid,comm` / `pgrep -f >/dev/null` |
 | 2026-10-29 | Tắt server bằng `kill $(lsof -ti tcp:3000)` + `pkill` → bị auto-mode chặn vì có thể trúng process lạ | 1 | ghi REPORT L03; xác định PID bằng `lsof -sTCP:LISTEN` + `ps` rồi mới `kill` |
@@ -17,3 +17,5 @@
 | 2026-10-30 | Lại ghi giờ ước lượng vào Lịch sử plan (`L04-review-fixes.md` ghi 00:20, commit thật 00:16:56) | 2 | Đã thành rule: `docs/plans/_template.md` mục `## Lịch sử` ghi lệnh `date '+%F %H:%M'` chạy ngay trước khi commit plan (L05 EX-1) |
 | 2026-10-30 | Kiểm "password không có trong argv" bằng `grep -cF $PW` khi DB dev có user = password → dương tính giả (khớp `-U`) | 1 | ghi REPORT L04; test bằng `.env` giả có password riêng + stub `psql` |
 | 2026-10-30 | Xoá branch squash-merge chỉ theo tên branch của PR merged (review PR #7, blocking) | 1 | `wt-prune.sh` so `headRefOid` với tip, xoá bằng `update-ref` có old value |
+| 2026-10-30 | Thử "role `mcp_ro` chặn ghi" bằng `SET default_transaction_read_only = off` + `CREATE TABLE` → tạo thật `public.mcp_probe` (vi phạm "chỉ ghi `wt_*`"); `DROP` sau đó bị auto-mode chặn, chờ user xoá | 1 | ghi REPORT L05; probe ghi chỉ trong `BEGIN … ROLLBACK` hoặc schema `wt_*`; phát hiện `PUBLIC` có `CREATE` trên `public` (PG14) |
+| 2026-10-30 | Vi phạm thử "sửa `eslint.config.mjs`" chỉ thêm dòng trống → prettier `stage_fixed` gỡ, commit rỗng, guard báo OK | 1 | ghi REPORT L05; vi phạm thử phải là thay đổi có nghĩa |

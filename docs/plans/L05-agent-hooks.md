@@ -50,3 +50,13 @@ Ca DB lạ dùng `.env` giả trong `mktemp -d` (repo git giả có `typing-adve
 - v1 2026-10-30 00:32: bản đầu, approved.
 
 ## Thực tế
+Điền 2026-10-30 00:51. Plan `bafa8d0` (00:32:46) trước code `961284d` (00:35:22). Không có v2.
+
+Lệnh: `git diff --name-only main...lesson/L05-enforcement -- . ':!docs/ai-levelup/'`, lọc `.claude/hooks/`.
+
+- Khớp (5): `format-lint.sh`, `guard-bash.sh`, `guard-read.sh`, `test-hooks.sh`, `settings.hooks.json`.
+- Dự đoán mà không đổi (0): không.
+- Đổi mà không dự đoán (0): không.
+- Tỉ lệ khớp: 5 / 5 = 100%.
+- Lệch nhỏ: `test-hooks.sh` có 36 ca (25 Bash, 5 Read, 6 format-lint); thêm ca "out of scope in ra rỗng". Tách đoạn lệnh bằng `${cmd//[;&|()]/$'\n'}` thay vì `tr` (shellcheck SC2020). `format-lint.sh` trên 1 file `.tsx` 47 dòng: 0.86–0.95 s.
+- Design round 2: không.

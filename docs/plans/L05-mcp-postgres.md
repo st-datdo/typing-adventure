@@ -43,3 +43,12 @@ psql (mcp_ro) -c "select current_user, rolsuper ..."; psql (mcp_ro) -c "create t
 - v1 2026-10-30 00:32: bản đầu, approved.
 
 ## Thực tế
+Điền 2026-10-30 00:51. Plan `bafa8d0` (00:32:46) trước code `2a4a3aa` (00:46:09). Không có v2.
+
+Lệnh: `git diff --name-only main...lesson/L05-enforcement -- . ':!docs/ai-levelup/'`, lọc `.mcp.json`.
+
+- Khớp (1): `.mcp.json`.
+- Dự đoán mà không đổi (0) / đổi mà không dự đoán (0): không.
+- Tỉ lệ khớp: 1 / 1 = 100%.
+- Lệch: không thêm `POSTGRES_QUERY_PARAMS` (`queryParams` của toolbox là map, không chắc nhận chuỗi từ env); lớp read-only phiên đến từ `ALTER ROLE mcp_ro SET default_transaction_read_only = on` đã có. Chạy server bằng `npx` bị auto-mode chặn (`Code from External`) → runtime MCP `chưa verify`; kiểm role bằng `psql`. Phát hiện: trên Postgres 14 (Homebrew) `mcp_ro` có `CREATE` trên schema `public` qua `PUBLIC`, chỉ lớp `default_transaction_read_only` chặn DDL, mà lớp này tắt được bằng `SET` (xem REPORT).
+- Design round 2: không.

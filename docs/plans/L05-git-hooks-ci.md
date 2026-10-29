@@ -61,3 +61,13 @@ wc -l CLAUDE.md                                                  # ≤ 64
 - v2 2026-10-30 00:49: thêm `.gitignore` (sửa) dòng `.turbo/`: `lefthook run pre-push` trong worktree `.worktrees/wt_l05_matrix` (EX-5) làm turbo 2 ghi cache vào `.turbo/cache` ở gốc checkout chính (00:47:54), không bị ignore.
 
 ## Thực tế
+Điền 2026-10-30 00:51. Plan `bafa8d0` (00:32:46) trước code `372f7f4` (00:39:30, lefthook + gitleaks + CLAUDE.md) và `913e101` (00:41:22, CI + guard + ruleset JSON + pr-reviewer). v2 `9e49fb6` (00:49:25) trước `71bceaa` (00:49:30, `.gitignore`).
+
+Lệnh: `git diff --name-only main...lesson/L05-enforcement -- . ':!docs/ai-levelup/'`.
+
+- Khớp (8): `lefthook.yml`, `.gitleaks.toml`, `.github/workflows/ci.yml`, `scripts/ci/guard-diff.sh`, `scripts/ci/test-guard-diff.sh`, `.github/rulesets/main.json`, `.claude/agents/pr-reviewer.md`, `CLAUDE.md`.
+- Dự đoán mà không đổi (0): không. `.gitleaks.toml` (dự đoán có điều kiện) có thật: lịch sử local ra 4 finding `generic-api-key` dương tính giả.
+- Đổi mà không dự đoán (1): `.gitignore` (`.turbo/`), thêm qua v2 trước khi sửa.
+- Tỉ lệ khớp: 8 / 9 = 89% so với v1 (9 / 9 sau v2).
+- Lệch nhỏ: YAML `run:` của gitleaks phải dùng block scalar (`: ` trong chuỗi echo). `guard` lấy `guard-diff.sh` từ base nếu base đã có (chống PR tự sửa script để qua), PR này dùng bản của chính nó vì `main` chưa có. GitHub tự thêm `require_extra_approval_for_unattributed_changes: true` và `allowed_merge_methods` vào rule `pull_request`. `next build` trong CI không cần DB thật (job `checks` xanh với `DATABASE_URL` giả), nên không thêm `services: postgres`.
+- Design round 2: không.

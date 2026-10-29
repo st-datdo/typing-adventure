@@ -21,3 +21,12 @@
 | L4 | `public` không đổi sau lesson | 0 thay đổi | — | `User` 12/12, 13 bảng/13 bảng | 29/10/2026 |
 | L4 | Plan khớp diff: `L04-wt-hardening.md` (sửa sau chấm) | ≥80% | — | 3/3 = 100%; plan `abb516c` trước code `c35caf9` (4/4 plan trước code tính cả fix) | 30/10/2026 |
 | L4 | Plan khớp diff: `L04-review-fixes.md` (sửa theo review PR #7) | ≥80% | 7 | 4/4 = 100%; plan `ce7424b` trước code `16b0697` (5/5 plan trước code) | 30/10/2026 |
+| L5 | `lefthook run pre-commit` (1 file `.tsx` staged trong `apps/web`) | <30s | 8 | 3.25 s (gitleaks 0.03, prettier 0.72, eslint 3.19) | 30/10/2026 |
+| L5 | `lefthook run pre-push --force` (typecheck + engine test) | — | 8 | 1.37 s turbo ấm; 4.20 s `TURBO_FORCE=true`; 6.95 s trong worktree EX-5 (đỏ đúng) | 30/10/2026 |
+| L5 | PostToolUse `format-lint.sh` / 1 file `.tsx` | — | 8 | 0.86–0.95 s (3 lần) | 30/10/2026 |
+| L5 | Thời lượng CI (`gh run view`, createdAt→updatedAt) | — | 8 | 1m58s (run 40923821932), 1m56s (run 40924598948); `checks` 1m54s | 30/10/2026 |
+| L5 | Ma trận lọt lớp (EX-5) | 6/6 đúng lớp | — | 6/6: (1)(2) agent hook, (3) pre-push, (4) pre-commit gitleaks, (5)(6) `guard-diff.sh`; (5) còn bị agent hook + pre-commit eslint chặn sớm hơn | 30/10/2026 |
+| L5 | Gitleaks toàn lịch sử (49 commit) | 0 secret thật | — | 4 dương tính giả `generic-api-key` → 0 sau allowlist path+regex | 30/10/2026 |
+| L5 | Plan khớp diff: agent-hooks / git-hooks-ci / script-fixes / mcp-postgres | ≥80% | 8 | 5/5, 8/9 (89%, v2 thêm `.gitignore`), 5/5, 1/1 | 30/10/2026 |
+| L5 | Task multi-file có plan approved trước code | 4/4 | 8 | 4/4 (`bafa8d0` trước mọi commit code; v2 `9e49fb6` trước `71bceaa`) | 30/10/2026 |
+| L5 | Comment cơ học (format/lint/type) của reviewer trên PR L05 | 0 | 8 | chưa đo (PR draft, chưa review) | 30/10/2026 |
