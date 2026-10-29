@@ -227,4 +227,6 @@ export const vi = {
   gamePictureResult: 'Con gõ đúng ngay {0}/{1} từ!',
   gameListen: 'Nghe lại',
   gameNewBest: 'Kỷ lục mới!',
+  authRateLimited: 'Con thử hơi nhiều lần rồi, nghỉ một chút rồi thử lại nhé!',
+  authConnectionError: 'Lỗi kết nối, con thử lại nhé!',
 } as const

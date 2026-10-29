@@ -227,4 +227,6 @@ export const en = {
   gamePictureResult: 'You got {0} of {1} words on the first try!',
   gameListen: 'Listen again',
   gameNewBest: 'New best!',
+  authRateLimited: 'Too many tries. Take a short break and try again!',
+  authConnectionError: 'Connection error, please try again!',
 } as const

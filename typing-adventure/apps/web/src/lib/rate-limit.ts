@@ -61,8 +61,9 @@ export function createRateLimiter({
 }
 
 export function getClientIp(headers: Headers): string {
-  const forwarded = headers.get('x-forwarded-for')
-  const first = forwarded?.split(',')[0]?.trim()
-  if (first) return first
-  return headers.get('x-real-ip')?.trim() || 'unknown'
+  const realIp = headers.get('x-real-ip')?.trim()
+  if (realIp) return realIp
+  const forwarded = headers.get('x-forwarded-for')?.split(',')
+  const last = forwarded?.[forwarded.length - 1]?.trim()
+  return last || 'unknown'
 }

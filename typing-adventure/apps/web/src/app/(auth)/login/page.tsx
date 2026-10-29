@@ -20,19 +20,25 @@ export default function LoginPage() {
     setError('')
     setLoading(true)
 
-    const result = await signIn('credentials', {
-      email,
-      password,
-      redirect: false,
-    })
+    try {
+      const result = await signIn('credentials', {
+        email,
+        password,
+        redirect: false,
+      })
 
-    setLoading(false)
-
-    if (result?.error) {
-      setError('Email hoặc mật khẩu không đúng')
-    } else {
-      router.push('/')
-      router.refresh()
+      if (result?.error === 'RateLimited' || result?.status === 429) {
+        setError(t(lang, 'authRateLimited'))
+      } else if (result?.error) {
+        setError('Email hoặc mật khẩu không đúng')
+      } else {
+        router.push('/')
+        router.refresh()
+      }
+    } catch {
+      setError(t(lang, 'authConnectionError'))
+    } finally {
+      setLoading(false)
     }
   }
 

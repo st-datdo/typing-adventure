@@ -10,7 +10,9 @@ export const { GET } = handlers
 export async function POST(req: NextRequest) {
   if (req.nextUrl.pathname === '/api/auth/callback/credentials') {
     const rl = credentialsLimiter.check(getClientIp(req.headers))
-    if (!rl.allowed) return tooManyRequests(rl.retryAfterMs)
+    if (!rl.allowed) {
+      return tooManyRequests(rl.retryAfterMs, `${req.nextUrl.origin}/login?error=RateLimited`)
+    }
   }
   return handlers.POST(req)
 }

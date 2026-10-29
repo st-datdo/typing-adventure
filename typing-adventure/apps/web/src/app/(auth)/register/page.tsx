@@ -31,11 +31,15 @@ export default function RegisterPage() {
         body: JSON.stringify({ name, email, password, avatar }),
       })
 
+      if (res.status === 429) {
+        setError(t(lang, 'authRateLimited'))
+        return
+      }
+
       const data = await res.json()
 
       if (!data.success) {
         setError(data.error ?? 'Đăng ký thất bại')
-        setLoading(false)
         return
       }
 
@@ -46,16 +50,17 @@ export default function RegisterPage() {
         redirect: false,
       })
 
-      setLoading(false)
-
-      if (result?.error) {
+      if (result?.error === 'RateLimited' || result?.status === 429) {
+        setError(t(lang, 'authRateLimited'))
+      } else if (result?.error) {
         setError('Đăng ký thành công nhưng không thể đăng nhập tự động')
       } else {
         router.push('/')
         router.refresh()
       }
     } catch {
-      setError('Lỗi kết nối')
+      setError(t(lang, 'authConnectionError'))
+    } finally {
       setLoading(false)
     }
   }
