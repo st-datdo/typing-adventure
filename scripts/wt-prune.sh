@@ -111,6 +111,72 @@ db_host_of() {
   ' "$1"
 }
 
+urldecode() {
+  printf '%b' "${1//%/\\x}"
+}
+
+pg_fields() {
+  awk '
+    /^DATABASE_URL=/ {
+      v = substr($0, 14)
+      gsub(/^"|"$/, "", v)
+      sub(/^[a-zA-Z][a-zA-Z0-9+.-]*:\/\//, "", v)
+      q = index(v, "?")
+      query = (q == 0) ? "" : substr(v, q + 1)
+      if (q > 0) v = substr(v, 1, q - 1)
+      slash = index(v, "/")
+      db = (slash > 0) ? substr(v, slash + 1) : ""
+      auth = (slash > 0) ? substr(v, 1, slash - 1) : v
+      userinfo = ""
+      at = 0
+      for (i = length(auth); i > 0; i--) if (substr(auth, i, 1) == "@") { at = i; break }
+      if (at > 0) { userinfo = substr(auth, 1, at - 1); auth = substr(auth, at + 1) }
+      c = index(userinfo, ":")
+      user = (c > 0) ? substr(userinfo, 1, c - 1) : userinfo
+      pw = (c > 0) ? substr(userinfo, c + 1) : ""
+      if (substr(auth, 1, 1) == "[") {
+        cb = index(auth, "]")
+        host = substr(auth, 2, cb - 2)
+        rest = substr(auth, cb + 1)
+        port = (substr(rest, 1, 1) == ":") ? substr(rest, 2) : ""
+      } else {
+        c = index(auth, ":")
+        host = (c > 0) ? substr(auth, 1, c - 1) : auth
+        port = (c > 0) ? substr(auth, c + 1) : ""
+      }
+      sslmode = ""
+      ctimeout = ""
+      n = split(query, parts, "&")
+      for (i = 1; i <= n; i++) {
+        if (parts[i] ~ /^sslmode=/) sslmode = substr(parts[i], 9)
+        if (parts[i] ~ /^connect_timeout=/) ctimeout = substr(parts[i], 17)
+      }
+      print user; print pw; print host; print port; print db; print sslmode; print ctimeout
+      exit
+    }
+  ' "$1"
+}
+
+pg_exec() {
+  local env_file="$1" sql="$2" fields u pw h p d sm ct
+  fields=$(pg_fields "$env_file")
+  {
+    IFS= read -r u
+    IFS= read -r pw
+    IFS= read -r h
+    IFS= read -r p
+    IFS= read -r d
+    IFS= read -r sm
+    IFS= read -r ct
+  } <<< "$fields"
+  [ -n "$h" ] && [ -n "$d" ] || return 1
+  env -u PGHOSTADDR -u PGSERVICE -u PGSERVICEFILE -u PGOPTIONS -u PGPASSFILE \
+    PGPASSWORD="$(urldecode "$pw")" \
+    ${sm:+"PGSSLMODE=$sm"} ${ct:+"PGCONNECT_TIMEOUT=$ct"} \
+    psql -X -h "$h" -p "${p:-5432}" -U "$(urldecode "$u")" -d "$(urldecode "$d")" \
+    -v ON_ERROR_STOP=1 -qAt -c "$sql"
+}
+
 schema=""
 db_env=""
 for f in "${env_files[@]}"; do
@@ -143,18 +209,27 @@ if [ -z "$branch" ]; then
 elif git -C "$main_root" merge-base --is-ancestor "$branch" "$into"; then
   branch_action="delete"
   branch_reason="$branch is an ancestor of $into"
-elif command -v gh >/dev/null 2>&1; then
-  merged=$(cd "$main_root" && gh pr list --head "$branch" --state merged --json number --jq 'length' 2>/dev/null || true)
-  if [ -n "$merged" ] && [ "$merged" != "0" ]; then
-    branch_action="force-delete"
-    branch_reason="$branch has a merged PR (squash merge)"
-  elif [ -z "$merged" ]; then
-    branch_reason="$branch is not merged into $into (gh pr list failed, squash merge not checked)"
-  else
-    branch_reason="$branch is not merged into $into and has no merged PR"
-  fi
 else
-  branch_reason="$branch is not merged into $into (gh not installed, squash merge not checked)"
+  tip=$(git -C "$main_root" rev-parse --verify --quiet "refs/heads/$branch")
+  merged_oids=""
+  gh_ok=1
+  if [ -n "${WT_PRUNE_TEST_MERGED_OIDS+x}" ]; then
+    merged_oids="$WT_PRUNE_TEST_MERGED_OIDS"
+  elif command -v gh >/dev/null 2>&1; then
+    merged_oids=$(cd "$main_root" && gh pr list --head "$branch" --base "${into#origin/}" --state merged --json headRefOid --jq '.[].headRefOid' 2>/dev/null) || gh_ok=0
+  else
+    gh_ok=0
+  fi
+  if [ "$gh_ok" = "0" ]; then
+    branch_reason="$branch is not merged into $into (gh unavailable, squash merge not checked)"
+  elif [ -z "$merged_oids" ]; then
+    branch_reason="$branch is not merged into $into and has no merged PR"
+  elif printf '%s\n' "$merged_oids" | grep -qxF "$tip"; then
+    branch_action="force-delete"
+    branch_reason="$branch tip ${tip:0:7} is the head of a PR merged into ${into#origin/} (squash merge)"
+  else
+    branch_reason="$branch has a merged PR into ${into#origin/} but its tip ${tip:0:7} differs from the merged head (commits after merge)"
+  fi
 fi
 
 echo "wt-prune plan:"
@@ -170,44 +245,30 @@ if [ "$dry_run" = "1" ]; then
   exit 0
 fi
 
-conn=""
 if [ -n "$schema" ]; then
   [[ "$schema" =~ ^wt_[a-z0-9_]{1,60}$ ]] || refuse "schema check failed"
-  conn=$(awk '
-    /^DATABASE_URL=/ {
-      v = substr($0, 14)
-      gsub(/^"|"$/, "", v)
-      q = index(v, "?")
-      if (q == 0) { print v; exit }
-      base = substr(v, 1, q - 1)
-      n = split(substr(v, q + 1), parts, "&")
-      out = ""
-      for (i = 1; i <= n; i++) {
-        if (parts[i] == "" || parts[i] ~ /^(schema|connection_limit|pool_timeout|pgbouncer|statement_cache_size|socket_timeout)=/) continue
-        out = out (out == "" ? "" : "&") parts[i]
-      }
-      print base (out == "" ? "" : "?" out)
-      exit
-    }
-  ' "$db_env")
+  db_copy=$(mktemp "${TMPDIR:-/tmp}/wt-env.XXXXXX")
+  trap 'rm -f "$db_copy"' EXIT
+  grep '^DATABASE_URL=' "$db_env" > "$db_copy"
 fi
 
 git -C "$main_root" worktree remove "$wt_path" || refuse "git worktree remove failed; schema ${schema:-<none>} and branch kept"
 echo "wt-prune: removed worktree $wt_path"
 
 if [ -n "$schema" ]; then
-  if psql "$conn" -v ON_ERROR_STOP=1 -qAt -c "DROP SCHEMA IF EXISTS \"$schema\" CASCADE" >/dev/null 2>&1; then
+  if pg_exec "$db_copy" "DROP SCHEMA IF EXISTS \"$schema\" CASCADE" >/dev/null 2>&1; then
     echo "wt-prune: dropped schema $schema"
   else
-    unset conn
     echo "wt-prune: ERROR: worktree removed but could not drop schema $schema (psql failed); drop it by hand. Branch kept." >&2
     exit 1
   fi
-  unset conn
 fi
 
 case "$branch_action" in
   delete) git -C "$main_root" branch -d "$branch" ;;
-  force-delete) git -C "$main_root" branch -D "$branch" ;;
+  force-delete)
+    git -C "$main_root" update-ref -d "refs/heads/$branch" "$tip" || refuse "branch $branch moved since the check; kept"
+    echo "Deleted branch $branch (was ${tip:0:7}, squash-merged head)."
+    ;;
   keep) echo "wt-prune: kept branch ${branch:-<none>}: $branch_reason" ;;
 esac
