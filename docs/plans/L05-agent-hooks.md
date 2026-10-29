@@ -48,6 +48,7 @@ Ca DB lạ dùng `.env` giả trong `mktemp -d` (repo git giả có `typing-adve
 
 ## Lịch sử
 - v1 2026-10-30 00:32: bản đầu, approved.
+- v2 2026-10-30 01:05: sửa sau chấm (BACKLOG #14). `guard-bash.sh` chuẩn hoá tên lệnh trước khi so: bỏ `\` đầu và dấu nháy (`\rm`, `"rm"`, `r''m`), `command rm`/`/bin/rm` đã chặn qua basename. `test-hooks.sh` thêm ca `\rm -rf`, `command rm -rf`, `/bin/rm -rf`, `"rm" -rf`, `r''m -rf`.
 
 ## Thực tế
 Điền 2026-10-30 00:51. Plan `bafa8d0` (00:32:46) trước code `961284d` (00:35:22). Không có v2.

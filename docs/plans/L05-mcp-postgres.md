@@ -41,6 +41,7 @@ psql (mcp_ro) -c "select current_user, rolsuper ..."; psql (mcp_ro) -c "create t
 
 ## Lịch sử
 - v1 2026-10-30 00:32: bản đầu, approved.
+- v2 2026-10-30 01:05: sửa sau chấm (GRADE L05 AC-8). Thêm `.devcontainer/init-db/01-mcp-readonly.sql` (sửa): `REVOKE CREATE ON SCHEMA public FROM PUBLIC;` (idempotent, Postgres 15+ đã mặc định), không cấp lại `CREATE` cho `mcp_ro`. Verify chỉ trên container dùng xong bỏ `postgres:14-alpine` và `postgres:16-alpine` (`docker run --rm -d`, password ngẫu nhiên, không publish port, nạp script qua `docker exec … psql -f`, bảng mẫu `public.sample`). Kỳ vọng: `mcp_ro` `SET default_transaction_read_only = off; CREATE TABLE public.x(i int)` → `permission denied for schema public`; `SELECT` bảng mẫu vẫn được. Dừng container bằng ID. Không đụng DB host.
 
 ## Thực tế
 Điền 2026-10-30 00:51. Plan `bafa8d0` (00:32:46) trước code `2a4a3aa` (00:46:09). Không có v2.
