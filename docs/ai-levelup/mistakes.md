@@ -10,3 +10,7 @@
 | 2026-10-29 | `pgrep -fl` (macOS) in cả env của process `next-server` → lộ 1 biến token phiên vào transcript | 1 | ghi REPORT L03; dùng `ps -o pid,ppid,comm` / `pgrep -f >/dev/null` |
 | 2026-10-29 | Tắt server bằng `kill $(lsof -ti tcp:3000)` + `pkill` → bị auto-mode chặn vì có thể trúng process lạ | 1 | ghi REPORT L03; xác định PID bằng `lsof -sTCP:LISTEN` + `ps` rồi mới `kill` |
 | 2026-10-29 | Ref `main` local cũ (`48535e5`) sau khi PR #5 merge → `git diff main` kéo cả diff L02 | 1 | dùng `BASE`/`origin/main`; chưa thành rule |
+| 2026-10-29 | `rtk git log` ẩn merge commit → sau `commit --amend` tưởng HEAD bị lùi | 1 | ghi REPORT L04; xem graph/parent bằng `rtk proxy git log --format='%h %p %s'` |
+| 2026-10-29 | Đọc bản tóm tắt của `rtk` ("All files formatted correctly") trong khi exit 1 | 1 | ghi REPORT L04; kiểm bằng `rtk proxy` + exit code |
+| 2026-10-29 | Ghi giờ ước lượng vào mục Lịch sử của plan thay vì giờ thật (`date`) | 1 | ghi REPORT L04; giờ thật trong `## Thực tế` |
+| 2026-10-29 | Smoke worktree không có commit riêng nên prune coi là đã merge, xoá branch, không chứng minh được nhánh "giữ branch" | 1 | ghi REPORT L04; dựng lại smoke có 1 commit |

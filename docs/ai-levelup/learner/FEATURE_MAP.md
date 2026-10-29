@@ -86,3 +86,30 @@ Mỗi lesson một section. Mỗi file thay đổi xuất hiện đúng 1 lần 
 | Feature map | `docs/ai-levelup/learner/FEATURE_MAP.md` | sửa | section L03 |
 | Metric L3 | `docs/ai-levelup/metrics.md` | sửa | 5 dòng L3 |
 | Lỗi lặp | `docs/ai-levelup/mistakes.md` | sửa | 3 dòng L03 |
+
+## L04 · Isolation
+| Feature | File | Loại | Verify bằng |
+|---|---|---|---|
+| Bài học L04 (teacher) | `docs/ai-levelup/lessons/L04-isolation/LESSON.md` | thêm | đọc tay |
+| Backlog follow-up từ review (teacher) | `docs/ai-levelup/lessons/BACKLOG.md` | thêm | đọc tay |
+| Mục lục: L03 PR #6, L04 đang học, link BACKLOG (teacher) | `docs/ai-levelup/lessons/README.md` | sửa | đọc tay |
+| Plan worktree scripts (approved, commit `f52ebb8`) | `docs/plans/L04-worktree-scripts.md` | thêm | commit trước code; Thực tế 5/5 |
+| Tạo worktree cô lập (worktree + port + schema + env) | `scripts/wt-new.sh` | thêm | `bash -n`, `shellcheck`, `/usr/bin/time` 15.11 s / 7.44 s, AC-3 |
+| Dọn worktree an toàn (từ chối bẩn/main/public, drop schema, xoá branch đã merge) | `scripts/wt-prune.sh` | thêm | EX-5 (a)–(d), prune 2 branch task |
+| Ignore `.worktrees/`, `.wt-env` | `.gitignore` | sửa | `git check-ignore -q .worktrees/x` |
+| Dòng lệnh worktree trong Commands | `CLAUDE.md` | sửa | `wc -l` 62, dòng 23 |
+| Plan API integration test (approved, commit `fb79f38`) | `docs/plans/L04-api-integration-test.md` | thêm | commit trước code; Thực tế 6/6 |
+| Unit Vitest loại `*.int.test.ts` | `typing-adventure/apps/web/vitest.config.ts` | sửa | `pnpm test` với DB sai → 17 pass |
+| Config integration (nạp `.env`, globalSetup) | `typing-adventure/apps/web/vitest.integration.config.ts` | thêm | `test:integration` 6 pass |
+| Guard `schema=wt_` trước khi chạm DB | `typing-adventure/apps/web/src/test/integration-global-setup.ts` | thêm | URL sai / `public` → exit 1 "refused" |
+| Integration test register + leaderboard | `typing-adventure/apps/web/src/app/api/__tests__/auth-leaderboard.int.test.ts` | thêm | 6 pass, 3 vòng song song |
+| Scripts `test:integration`, `test:e2e` + devDep `@playwright/test` | `typing-adventure/apps/web/package.json` | sửa | merge conflict giữ cả 2; `pnpm build` |
+| Plan e2e skeleton (approved, commit `5145a7e`) | `docs/plans/L04-e2e-skeleton.md` | thêm | commit trước code; Thực tế 6/6 |
+| Playwright config theo `PORT`, không reuse server | `typing-adventure/apps/web/playwright.config.ts` | thêm | thiếu PORT → exit 1; `PORT=3000` → "already used" |
+| E2E smoke: `/`, leaderboard, Socket.IO handshake | `typing-adventure/apps/web/e2e/smoke.spec.ts` | thêm | `test:e2e` 3 pass trên 3003 |
+| Ignore `test-results/`, `playwright-report/` | `typing-adventure/.gitignore` | sửa | worktree sạch sau e2e |
+| Lockfile cho `@playwright/test` 1.64.1 | `typing-adventure/pnpm-lock.yaml` | sửa | `pnpm install --frozen-lockfile` |
+| Báo cáo người học | `docs/ai-levelup/learner/L04-isolation/REPORT.md` | thêm | đọc tay |
+| Feature map | `docs/ai-levelup/learner/FEATURE_MAP.md` | sửa | section L04 |
+| Metric L4 | `docs/ai-levelup/metrics.md` | sửa | 6 dòng L4 |
+| Lỗi gặp trong L04 | `docs/ai-levelup/mistakes.md` | sửa | 4 dòng L04 |
