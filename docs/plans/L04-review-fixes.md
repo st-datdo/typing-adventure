@@ -44,3 +44,13 @@ rtk proxy pnpm lint/typecheck/test/build
 - v1 2026-10-30 00:20: bản đầu, approved.
 
 ## Thực tế
+Điền 2026-10-30 00:20, sau khi code xong. Không có v2; mục dự đoán giữ nguyên từ commit `ce7424b` (giờ commit thật 00:16:56; "00:20" ở Lịch sử là ước lượng, lỗi lặp lần 2, xem `mistakes.md`), code `16b0697` (00:19:31).
+
+Lệnh: `git diff --name-only 51c21cb...lesson/L04-isolation -- . ':!docs/ai-levelup/'` ra 4 file.
+
+- Khớp (4): `docs/plans/L04-review-fixes.md`, `scripts/wt-prune.sh`, `scripts/wt-new.sh`, `typing-adventure/apps/web/src/test/integration-global-setup.ts`.
+- Dự đoán mà không đổi (0): không.
+- Đổi mà không dự đoán (0): không.
+- Tỉ lệ khớp: 4 / 4 = 100%.
+- Lệch nhỏ: xoá branch squash-merge bằng `git update-ref -d refs/heads/<branch> <tip>` (chỉ xoá nếu tip vẫn bằng OID đã kiểm) thay vì `git branch -D`; `wt-prune` chép dòng `DATABASE_URL` sang file `mktemp` 0600 (xoá bằng `trap`) trước `worktree remove`, vì sau remove file `.env` không còn; thêm `-u PGOPTIONS -u PGPASSFILE`, `psql -X`.
+- Design round 2: không.

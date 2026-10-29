@@ -20,3 +20,4 @@
 | L4 | Task multi-file có plan approved trước code | 3/3 | — | 3/3 (`f52ebb8`, `fb79f38`, `5145a7e` trước code) | 29/10/2026 |
 | L4 | `public` không đổi sau lesson | 0 thay đổi | — | `User` 12/12, 13 bảng/13 bảng | 29/10/2026 |
 | L4 | Plan khớp diff: `L04-wt-hardening.md` (sửa sau chấm) | ≥80% | — | 3/3 = 100%; plan `abb516c` trước code `c35caf9` (4/4 plan trước code tính cả fix) | 30/10/2026 |
+| L4 | Plan khớp diff: `L04-review-fixes.md` (sửa theo review PR #7) | ≥80% | 7 | 4/4 = 100%; plan `ce7424b` trước code `16b0697` (5/5 plan trước code) | 30/10/2026 |

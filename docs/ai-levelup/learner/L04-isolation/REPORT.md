@@ -172,3 +172,28 @@ Commit sửa sau chấm:
 abb516c 00:09:54 docs(plans): L04 wt-hardening plan (approved)
 c35caf9 00:11:49 fix(scripts): harden wt-new/wt-prune after L04 review
 ```
+
+## Sửa sau review
+Review PR #7 yêu cầu sửa (1 lỗi chặn + 4 điểm không chặn). Sửa theo plan [`docs/plans/L04-review-fixes.md`](../../../plans/L04-review-fixes.md): approved, commit riêng `ce7424b` (00:16:56) trước code `16b0697` (00:19:31). Thực tế 4/4 = 100%, design round 2: không.
+
+| Điểm | Sửa | Bằng chứng |
+|---|---|---|
+| BLOCKING: `wt-prune` force-delete theo tên PR merged, mất commit thêm sau squash merge | `gh pr list --head <branch> --base <into> --state merged --json headRefOid`; chỉ xoá khi `git rev-parse refs/heads/<branch>` bằng đúng 1 `headRefOid`, xoá bằng `git update-ref -d refs/heads/<branch> <tip>` (lỗi nếu branch đã đổi); khác OID → giữ, in lý do. Hook test `WT_PRUNE_TEST_MERGED_OIDS` thay kết quả `gh` (vẫn phải khớp OID) | Worktree `wt/squash`, commit X. O1 `gh` thật → `keep (… has no merged PR)`. O2 giả head = X, tip X → `force-delete (… tip 2813729 is the head of a PR merged into main)`. Thêm commit Y, giả head = X, prune thật → `keep (… tip b17172a differs from the merged head (commits after merge))`, worktree + schema dọn, branch còn, tip vẫn Y. O4 `wt/squash2` giả heads `X\nZ`, tip Z → `Deleted branch wt/squash2 (was e1f2a9a, squash-merged head)` |
+| (a) URI có password trên argv của `psql` | `pg_fields` (awk) tách user/password/host/port/db/`sslmode`/`connect_timeout`, `urldecode`; `pg_exec`: password qua `PGPASSWORD`, `psql -X -h -p -U -d`; dùng ở cả `wt-new` (kiểm schema) và `wt-prune` (drop; dòng `DATABASE_URL` chép sang `mktemp` 0600 trước khi remove worktree, `trap` xoá) | Stub `psql` trong `PATH` ghi argv: `[-X] [-h] [localhost] [-p] [5432] [-U] [<user>] [-d] [typing_adventure] … [DROP SCHEMA IF EXISTS "wt_wt_argv" CASCADE]`. `.env` giả `postgresql://FakeUser:S3cr%40t%3AFake@…` → argv không có `S3cr` (0), `PGPASSWORD` nhận `S3cr@t:Fake` (đã decode) |
+| (b) `PGHOSTADDR`/`PGSERVICE` có thể lái `psql` sang host khác | `env -u PGHOSTADDR -u PGSERVICE -u PGSERVICEFILE -u PGOPTIONS -u PGPASSFILE` | Chạy với `PGHOSTADDR=203.0.113.9 PGSERVICE=evil PGOPTIONS=…` → stub thấy `PGHOSTADDR=unset PGSERVICE=unset PGOPTIONS=unset` |
+| (c) Guard nhận URL có 2 `schema=` | Đếm `[?&]schema=` phải = 1 và khớp `wt_[a-z0-9_]{1,60}` | `DATABASE_URL='…?schema=wt_a&schema=public' test:integration` → exit 1 `refused: … exactly one schema=wt_<slug>`. Worktree thật `wt/inttest` (`wt-new` 7.44 s) → `Tests 6 passed (6)` |
+| (d) `.env` của worktree tạo với mode mặc định rồi mới `chmod` | `install -m 600` khi copy; file tạm vẫn `mktemp` (0600). Không đặt `umask 077` cho cả script vì sẽ làm mọi file checkout thành 0600 | `ls -l` 3 file `.env` của `wt/argv` → `-rw-------` |
+
+Smoke DB thật (không stub): `wt-new wt/realdb --no-install`; `create schema wt_wt_realdb`; `WT_DIR=<scratchpad>/wtalt wt-new WT/RealDB` → `already exists`, exit 1; prune → `removed worktree`, `dropped schema wt_wt_realdb`, `Deleted branch`; còn 0 schema `wt_%`. Log `wt-new` của `wt/inttest`: `grep -cF ":<password>@"` → 0.
+
+Kiểm khác: `bash -n` 0, `shellcheck scripts/wt-*.sh` 0, grep AC-2 không dòng nào, `prettier --check` guard ok. Chuỗi qua `rtk proxy` ở checkout chính: `lint --force` 0 (0 errors, 37 warnings), `typecheck --force` 0 (4 task), `test` 0 (137 + 17), `build --force` 0, 30 s; `git diff main -- typing-adventure/packages/game-engine` rỗng. Cuối: `git worktree list` 1 dòng, `.worktrees/` rỗng, 0 schema `wt_%`, `public."User"` 12, 13 bảng, không server nào do mình bật.
+
+Ghi chú: lần đầu kiểm "password không có trong argv" bằng `grep -cF "$PW"` ra 2 vì DB dev có user = password (khớp ở `-U`, không phải URI: `grep -cF "user:pw@"` → 0). Kiểm lại bằng `.env` giả có password riêng như trên.
+
+Chưa verify runtime (sửa sau review): nhánh `gh` thật trả về PR merged (không có PR merged nào có head là branch thử; dùng hook giả OID); `sslmode`/`connect_timeout` chỉ đi qua parser, DB local không dùng.
+
+Commit sửa sau review:
+```
+ce7424b 00:16:56 docs(plans): L04 PR #7 review fixes plan (approved)
+16b0697 00:19:31 fix(scripts): verify squash-merged PR head OID before force-deleting branch
+```
