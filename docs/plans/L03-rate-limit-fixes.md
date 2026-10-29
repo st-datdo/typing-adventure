@@ -46,3 +46,13 @@ rtk proxy pnpm lint; rtk proxy pnpm typecheck --force; rtk proxy pnpm test; rtk 
 - v1 2026-10-29 23:32: bản đầu, approved.
 
 ## Thực tế
+Điền 2026-10-29 23:34, sau khi code xong. Không có v2: `next/server` (`NextResponse`) chạy được trong Vitest `environment: 'node'`. Mục dự đoán giữ nguyên từ commit `60cd241`.
+
+Lệnh: file đổi so với trạng thái ngay trước commit plan (working tree lúc đó đã có code L03 chưa commit, nên đối chiếu bằng nội dung từng file thay vì `git diff $BASE`): 9 file.
+
+- Khớp (9): `rate-limit.ts`, `__tests__/rate-limit.test.ts`, `api-response.ts`, `__tests__/api-response.test.ts`, `[...nextauth]/route.ts`, `(auth)/login/page.tsx`, `(auth)/register/page.tsx`, `packages/i18n/src/vi.ts`, `packages/i18n/src/en.ts`.
+- Dự đoán mà không đổi (0): không.
+- Đổi mà không dự đoán (0): không.
+- Tỉ lệ khớp: 9 / 9 = 100%.
+- Interface đổi mà plan không ghi: không. Ngoài plan đã ghi: chạy thẳng không proxy thì `x-forwarded-for` vẫn giả được (curl không `x-real-ip` + XFF `9.9.9.9` → 400), đúng mục Ngoài phạm vi; giả lập nginx (`x-real-ip` + XFF nối) thì XFF giả không reset được (429).
+- Design round 2: không.

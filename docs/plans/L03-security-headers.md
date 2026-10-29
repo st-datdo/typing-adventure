@@ -41,3 +41,13 @@ NEXT_PUBLIC_SENTRY_DSN=https://abc@o1.ingest.sentry.io/1 pnpm build   # không l
 - v1 2026-10-29 23:20: bản đầu, approved.
 
 ## Thực tế
+Điền 2026-10-29 23:24, sau khi code xong. Không có v2: `next.config.ts` import `./src/lib/security-headers` chạy được ở `next dev`, `dev:ws` (`server.ts`), `next build` (có và không DSN). Mục dự đoán giữ nguyên từ commit `d42800d`.
+
+Lệnh (BASE `1d16cef`): cùng lệnh ở plan rate-limit, 13 file; 3 file thuộc plan này, 10 file còn lại thuộc `L03-rate-limit.md`.
+
+- Khớp (3): `apps/web/src/lib/security-headers.ts`, `apps/web/src/lib/__tests__/security-headers.test.ts`, `apps/web/next.config.ts`.
+- Dự đoán mà không đổi (0): không.
+- Đổi mà không dự đoán (0): không.
+- Tỉ lệ khớp: 3 / 3 = 100%.
+- Interface đổi mà plan không ghi: export thêm 2 type `SecurityHeaderOptions`, `HeaderEntry`. Lúc code có export tạm `buildContentSecurityPolicy`, đã bỏ export để giữ đúng interface plan (không phải đổi hướng).
+- Design round 2: không.
