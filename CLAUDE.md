@@ -17,7 +17,7 @@ pnpm --filter @typing-adventure/db db:seed
 pnpm dev                                              # next dev, NO Socket.IO (multiplayer pages won't work)
 pnpm --filter @typing-adventure/web dev:ws            # custom server.ts: Next + Socket.IO on :3000
 pnpm build
-pnpm test                                             # only packages/game-engine has tests (Vitest)
+pnpm test                                             # Vitest: packages/game-engine + apps/web
 pnpm --filter @typing-adventure/game-engine exec vitest run scoring        # single file
 pnpm --filter @typing-adventure/game-engine exec vitest run -t "combo"   # single test by name
 ```
@@ -30,6 +30,7 @@ pnpm --filter @typing-adventure/game-engine exec vitest run -t "combo"   # singl
 
 - Do not add code comments or Javadoc/JSDoc unless explicitly asked.
 - Add dependencies with `pnpm --filter <pkg> add`, never `npm install`.
+- Multi-file task: write `docs/plans/<slug>.md` from `docs/plans/_template.md`, mark it `approved`, then edit code; change direction = update the plan's Lịch sử first.
 
 ## MCP
 

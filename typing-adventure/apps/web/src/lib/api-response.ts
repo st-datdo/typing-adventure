@@ -27,3 +27,11 @@ export function err(message: string, status = 400) {
 export function unauthorized() {
   return err('Unauthorized', 401)
 }
+
+export function tooManyRequests(retryAfterMs: number, url?: string) {
+  const body: ApiResponseErr & { url?: string } = { success: false, error: 'Too many requests' }
+  if (url) body.url = url
+  const res = NextResponse.json(body, { status: 429 })
+  res.headers.set('Retry-After', String(Math.max(1, Math.ceil(retryAfterMs / 1000))))
+  return res
+}

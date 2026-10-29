@@ -1,6 +1,6 @@
 # L02 · Advanced setup — Chấm điểm
 
-Ngày chấm: 2026-10-29 · Branch: `lesson/L02-advanced-setup` · PR: chưa mở
+Ngày chấm: 2026-10-29 · Branch: `lesson/L02-advanced-setup` · PR: #5 (đã merge)
 Nguồn: [LESSON.md](LESSON.md), [REPORT.md](../../learner/L02-advanced-setup/REPORT.md), `git diff main` + `git status -uall` (chưa có commit nào, mọi thay đổi nằm ở working tree).
 
 Phạm vi chạy lại: toàn bộ kiểm tra tĩnh, kiểm tra DB và chain build trên **host** do người chấm tự chạy. **Không** chạy lại `devcontainers/cli up` (stack đã dừng); phần runtime container dựa trên log trong REPORT cùng bằng chứng gián tiếp: 3 container `typing-adventure-{app,postgres,redis}-1` (Exited) và 5 volume `typing-adventure_nm-*` + `claude-config` có trên máy. Như vậy là đủ vì LESSON chỉ bắt buộc phần tĩnh + host cho AC-1/2/3/8.

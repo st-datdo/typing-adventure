@@ -23,8 +23,8 @@ Kết quả của người học: [learner/](../learner/) · mapping feature →
 |---|---|---|---|---|---|
 | L00 | Dựng đội agent | `lesson/L00-agent-team` | #4 | đã đạt | [GRADE](L00-agent-team/GRADE.md) |
 | L01 | Basic setup | `chore/agent-init` | #1, #3 | đã đạt (trước khoá) | [GUIDE-W0-L1](../GUIDE-W0-L1.md) |
-| L02 | Advanced setup | `lesson/L02-advanced-setup` | | đã đạt | [GRADE](L02-advanced-setup/GRADE.md) |
-| L03 | Plan-first | | | chưa học | |
+| L02 | Advanced setup | `lesson/L02-advanced-setup` | #5 | đã đạt | [GRADE](L02-advanced-setup/GRADE.md) |
+| L03 | Plan-first | `lesson/L03-plan-first` | | đã đạt | [GRADE](L03-plan-first/GRADE.md) |
 | L04 | Isolation | | | chưa học | |
 | L05 | Enforcement | | | chưa học | |
 | L06 | Spec + TDD | | | chưa học | |

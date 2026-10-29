@@ -2,7 +2,10 @@ import { NextRequest } from 'next/server'
 import { z } from 'zod'
 import bcrypt from 'bcryptjs'
 import { prisma } from '@typing-adventure/db'
-import { ok, err } from '@/lib/api-response'
+import { ok, err, tooManyRequests } from '@/lib/api-response'
+import { createRateLimiter, getClientIp } from '@/lib/rate-limit'
+
+const registerLimiter = createRateLimiter({ limit: 5, windowMs: 15 * 60 * 1000 })
 
 const registerSchema = z.object({
   name: z.string().min(1).max(50),
@@ -12,6 +15,9 @@ const registerSchema = z.object({
 })
 
 export async function POST(req: NextRequest) {
+  const rl = registerLimiter.check(getClientIp(req.headers))
+  if (!rl.allowed) return tooManyRequests(rl.retryAfterMs)
+
   try {
     const body = await req.json()
     const parsed = registerSchema.safeParse(body)
