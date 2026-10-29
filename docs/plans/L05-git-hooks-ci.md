@@ -58,5 +58,6 @@ wc -l CLAUDE.md                                                  # ≤ 64
 
 ## Lịch sử
 - v1 2026-10-30 00:32: bản đầu, approved.
+- v2 2026-10-30 00:49: thêm `.gitignore` (sửa) dòng `.turbo/`: `lefthook run pre-push` trong worktree `.worktrees/wt_l05_matrix` (EX-5) làm turbo 2 ghi cache vào `.turbo/cache` ở gốc checkout chính (00:47:54), không bị ignore.
 
 ## Thực tế
