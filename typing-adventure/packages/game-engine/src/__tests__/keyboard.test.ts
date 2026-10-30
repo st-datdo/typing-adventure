@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
-import { KEYBOARD_ROWS, KEY_FINGER_MAP, getFingerForKey } from '../keyboard'
+
+const load = () => import('../keyboard')
 
 const LP = 'left-pinky'
 const LR = 'left-ring'
@@ -76,11 +77,13 @@ const EXPECTED_ROWS = [
 ]
 
 describe('KEYBOARD_ROWS', () => {
-  it('follows the standard touch-typing finger layout, row by row', () => {
+  it('follows the standard touch-typing finger layout, row by row', async () => {
+    const { KEYBOARD_ROWS } = await load()
     expect(KEYBOARD_ROWS.map((row) => row.map((k) => [k.key, k.finger]))).toEqual(EXPECTED_ROWS)
   })
 
-  it('labels and styles the wide keys', () => {
+  it('labels and styles the wide keys', async () => {
+    const { KEYBOARD_ROWS } = await load()
     const wide = KEYBOARD_ROWS.flat()
       .filter((k) => k.label !== undefined || k.cls !== undefined)
       .map((k) => [k.key, k.label, k.cls])
@@ -95,7 +98,8 @@ describe('KEYBOARD_ROWS', () => {
     ])
   })
 
-  it('maps every key by its lowercase name', () => {
+  it('maps every key by its lowercase name', async () => {
+    const { KEYBOARD_ROWS, KEY_FINGER_MAP } = await load()
     expect(KEY_FINGER_MAP['backspace']).toBe(RP)
     expect(KEY_FINGER_MAP['capslock']).toBe(LP)
     expect(KEY_FINGER_MAP['shiftright']).toBe(RP)
@@ -104,21 +108,25 @@ describe('KEYBOARD_ROWS', () => {
 })
 
 describe('getFingerForKey', () => {
-  it('returns the finger for home row keys', () => {
+  it('returns the finger for home row keys', async () => {
+    const { getFingerForKey } = await load()
     expect(getFingerForKey('f')).toBe(LI)
     expect(getFingerForKey('j')).toBe(RI)
   })
 
-  it('is case-insensitive', () => {
+  it('is case-insensitive', async () => {
+    const { getFingerForKey } = await load()
     expect(getFingerForKey('A')).toBe(LP)
     expect(getFingerForKey('Enter')).toBe(RP)
   })
 
-  it('maps space to the thumb', () => {
+  it('maps space to the thumb', async () => {
+    const { getFingerForKey } = await load()
     expect(getFingerForKey(' ')).toBe('thumb')
   })
 
-  it('returns null for keys outside the layout', () => {
+  it('returns null for keys outside the layout', async () => {
+    const { getFingerForKey } = await load()
     expect(getFingerForKey('é')).toBeNull()
     expect(getFingerForKey('F1')).toBeNull()
   })
