@@ -201,3 +201,35 @@ Diff: `git diff --name-only main...HEAD` (`main` = `b5377bc`, sau khi PR #8 merg
 | Dòng L6 | `docs/ai-levelup/metrics.md` | sửa | đọc tay |
 | 2 dòng lỗi (rtk diff lần 3 → rule; gitignore toàn cục) | `docs/ai-levelup/mistakes.md` | sửa | đọc tay |
 | Tổng kết đợt 1 L00–L06 | `docs/ai-levelup/lessons/SUMMARY-L00-L06.md` | thêm | đọc tay |
+
+## L07 · Parallel
+Diff của 3 PR: #10 (`gh pr diff 10 --name-only`, merge `4df98c8`), #11 (`gh pr diff 11 --name-only`, merge `5590f0f`), branch lesson (`rtk proxy git diff --name-only origin/main...HEAD`, `origin/main` = `5590f0f`) + file commit lead. `GRADE.md` của teacher do người điều phối thêm khi có.
+
+| Feature | File | Loại | Verify bằng |
+|---|---|---|---|
+| Bài học L07 (teacher) | `docs/ai-levelup/lessons/L07-parallel/LESSON.md` | thêm | đọc tay |
+| Mục lục: L07 đang học (teacher) | `docs/ai-levelup/lessons/README.md` | sửa | đọc tay |
+| Plan EX-2..EX-5, EX-8 (approved `5d98eb1`, trước rebase `9ad6519`; v2 `--` cho osascript) | `docs/plans/L07-parallel-tooling.md` | thêm | commit trước code; plan khớp diff 15/15 |
+| EX-2 hook chặn Edit/Write ngoài scope spec/plan (`.wt-scope`, `CLAUDE_SCOPE_FILE`) | `.claude/hooks/guard-scope.sh` | thêm | `test-hooks.sh` 23 ca guard-scope; AC-2 offline A, B rỗng, ca âm rc=2 |
+| EX-3 hook thông báo Notification/Stop (osascript argv, log, luôn exit 0) | `.claude/hooks/notify.sh` | thêm | 12 ca stub osascript; `PATH=/usr/bin:/bin` rc=0 stdout rỗng |
+| EX-4 chặn `find -delete`/`-exec rm`, `eval`, `sh -c` lồng, pager đọc `.env*` (BACKLOG #20) | `.claude/hooks/guard-bash.sh` | sửa | +17 ca (13 chặn, 4 cho qua) |
+| EX-4 đề xuất bật guard-scope + notify (không sửa `.claude/settings*.json`) | `.claude/hooks/settings.hooks.json` | sửa | `jq .` hợp lệ; `git diff main -- .claude/settings*.json` rỗng |
+| EX-5 self-test 40 → 93 ca | `.claude/hooks/test-hooks.sh` | sửa | `bash .claude/hooks/test-hooks.sh` 93/93, leaks 0 |
+| Ignore `.wt-scope` | `.gitignore` | sửa | `git status --ignored` trong worktree: `.wt-scope` không lọt |
+| EX-8 lead time + wait time từ `gh api` | `scripts/metrics/lead-time.sh` | thêm | PR #9 `lead=54m03s wait=16m22s`; #10 `10m41s/4m40s`; #11 `10m46s/2m08s` |
+| EX-8 self-test lead-time (stub gh) | `scripts/metrics/test-lead-time.sh` | thêm | `bash scripts/metrics/test-lead-time.sh` 8/8 |
+| EX-6 spec RG (5 ID, IP `unknown` bỏ limit IP, warn 1 lần) | `specs/RG/spec.md` | thêm | AC-5; `approved` `d445572` trước `test:` `8f55285` |
+| RG-01..04 register dùng `getTrustedClientIp` + `parseTrustProxyHeader`, warn production | `typing-adventure/apps/web/src/app/api/auth/register/route.ts` | sửa | `register-limit.test.ts`; web 49/49 |
+| RG-04/05 bỏ `getClientIp`, thêm `warnIfProxyUntrusted` (BACKLOG #21, #24 phần cảnh báo) | `typing-adventure/apps/web/src/lib/rate-limit.ts` | sửa | `grep getClientIp` chỉ còn trong test RG-05 |
+| Test RG-01..04 (đỏ trước `feat:`) | `typing-adventure/apps/web/src/app/api/auth/register/__tests__/register-limit.test.ts` | thêm | đỏ 7 ca → xanh; `check-tdd-commits.sh` OK |
+| Test RG-05, xoá 4 test `getClientIp` trong commit `test:` | `typing-adventure/apps/web/src/lib/__tests__/rate-limit.test.ts` | sửa | 5 ca `createRateLimiter` không đổi, xanh |
+| Báo cáo task A | `docs/ai-levelup/learner/L07-parallel/task-A.md` | thêm | đọc tay |
+| EX-7 spec WM (6 ID, v2 WM-04 chỉ xét `\p{L}`) | `specs/WM/spec.md` | thêm | AC-6; `approved` `556d2e6` trước `test:` `c88d94e` |
+| Lịch sử WP: WP-03 thay bởi WM | `specs/WP/spec.md` | sửa | đọc tay |
+| WM-01..05 tách `[\s'-]+`, cụm liên tiếp, bỏ `\p{M}`, `mixed_script` (BACKLOG #23) | `typing-adventure/packages/game-engine/src/moderation.ts` | sửa | engine 193/193; mutation 78.02% (file 97.12%); 0 `import` |
+| Test WM-01..06, 11 ca GRADE L06 | `typing-adventure/packages/game-engine/src/__tests__/moderation-v3.test.ts` | thêm | đỏ 10 ca → xanh; `moderation.test.ts` 0 dòng đổi |
+| Báo cáo task B | `docs/ai-levelup/learner/L07-parallel/task-B.md` | thêm | đọc tay |
+| Báo cáo L07 | `docs/ai-levelup/learner/L07-parallel/REPORT.md` | thêm | đọc tay |
+| Section L07 | `docs/ai-levelup/learner/FEATURE_MAP.md` | sửa | mọi file trong diff 3 PR có đúng 1 dòng |
+| 13 dòng L7 | `docs/ai-levelup/metrics.md` | sửa | output `lead-time.sh`, `gh api …/commits`, timeline |
+| Lỗi rtk `git diff` trong vòng lặp scope (lần 4) | `docs/ai-levelup/mistakes.md` | sửa | đọc tay |
