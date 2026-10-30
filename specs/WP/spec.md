@@ -35,3 +35,4 @@ File dự kiến: `typing-adventure/packages/game-engine/src/moderation.ts` (th�
 ## Lịch sử
 - v1 2026-10-30 09:42: bản đầu, approved.
 - v2 2026-10-30 09:43: ghim `DEFAULT_BLOCKLIST` (test integration dùng `Stupid`, `IDIOT`). Gấp bỏ dấu làm từ tiếng Việt 1 âm tiết va nhau: `ngu` chặn cả `ngủ` (ngủ), `ngũ` (năm); `đần` chặn `đàn`, `dân`. Vì vậy danh sách mặc định không có mục tiếng Việt 1 âm tiết; blocklist tiếng Việt thật cần cụm từ hoặc so có dấu (ngoài phạm vi).
+- v3 2026-10-30 20:25: phần khớp blocklist của WP-03 (tách token theo dấu cách, bỏ dấu U+0300–U+036F) được thay bởi WM-01..WM-05 (`specs/WM/spec.md`, BACKLOG #23): token theo `[\s'-]+`, cụm theo dãy token liên tiếp, bỏ mọi `\p{M}`, lý do mới `mixed_script`. Phần còn lại của WP-03 giữ nguyên.
