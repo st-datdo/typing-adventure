@@ -30,13 +30,13 @@ jobs:
         run: echo "::notice::ANTHROPIC_API_KEY not set, skipping Claude review"
 
       - if: env.HAS_KEY == 'true'
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
         with:
           ref: ${{ github.event.pull_request.base.sha }}
           fetch-depth: 0
 
       - if: env.HAS_KEY == 'true'
-        uses: anthropics/claude-code-action@v1
+        uses: anthropics/claude-code-action@6d5ae526d25ce88daa2200be073e1a373167f064 # v1.0.265
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
