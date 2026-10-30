@@ -30,6 +30,16 @@
             "timeout": 5
           }
         ]
+      },
+      {
+        "matcher": "Agent|Task",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR\"/tools/agent-board/hook-adapter.mjs",
+            "timeout": 5
+          }
+        ]
       }
     ],
     "PostToolUse": [
@@ -51,6 +61,11 @@
             "type": "command",
             "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/notify.sh",
             "timeout": 10
+          },
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR\"/tools/agent-board/hook-adapter.mjs",
+            "timeout": 5
           }
         ]
       }
@@ -62,6 +77,22 @@
             "type": "command",
             "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/notify.sh",
             "timeout": 10
+          },
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR\"/tools/agent-board/hook-adapter.mjs",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "SubagentStop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR\"/tools/agent-board/hook-adapter.mjs",
+            "timeout": 5
           }
         ]
       }
