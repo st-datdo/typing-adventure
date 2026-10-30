@@ -31,4 +31,4 @@ File dự kiến: `typing-adventure/packages/game-engine/src/moderation.ts` (s�
 
 ## Lịch sử
 - v1 2026-10-30 20:25: bản đầu, approved. Thay phần khớp blocklist của WP-03 (xem Lịch sử `specs/WP/spec.md`).
-- v2 2026-10-30 20:30: WM-04 chỉ xét chữ cái `\p{L}`. Lý do: U+0483, U+0489 là `\p{M}` nhưng có Script=Cyrillic, xét mọi ký tự thì `stupid҉` thành `mixed_script`, trái WM-06.
+- v2 2026-10-30 20:28: WM-04 chỉ xét chữ cái `\p{L}`. Lý do: U+0483, U+0489 là `\p{M}` nhưng có Script=Cyrillic, xét mọi ký tự thì `stupid҉` thành `mixed_script`, trái WM-06.
