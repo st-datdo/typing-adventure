@@ -88,6 +88,7 @@ docker run --rm -v "$PWD":/repo -w /repo rhysd/actionlint:1.7.7
 
 ## Lịch sử
 - v1 2026-10-30 20:57: bản đầu, approved.
+- v2 2026-10-30 21:15: làm rõ interface EX-2, EX-3 trước khi code, không thêm file. `ready-gate.sh` luôn xét đủ 3 điều kiện và in `gate[k] ... PASS|FAIL` cho từng điều kiện rồi mới exit 0/1 (2 = sai tham số), không có biến môi trường/cờ nào bỏ qua điều kiện; owner lấy từ `gh repo view --json owner`; danh sách mục bắt buộc viết cứng trong script, `test-ready-gate.sh` kiểm khớp với `label:` của template; mục có giá trị `_No response_` hoặc rỗng tính là thiếu; body chỉ đi qua `jq`/`awk` từ stdin, không `eval`. `feature-map.sh <pr>` chọn spec `specs/*/spec.md` có status `added` trong PR (không có thì spec đầu tiên trong diff), ID = hàng `| XX-NN |` của spec, "có test cite" = ID xuất hiện ở dòng thêm của file test trong diff; deviation = file ngoài `File dự kiến`/`Test:` của spec, trừ `specs/**`, `docs/plans/**`, `docs/ai-levelup/learner/**` (tài liệu task, PR #11 có `task-B.md`, `specs/WP`). `test-risk.sh` có thêm ca stub `gh` cho `feature-map.sh`.
 
 ## Thực tế
 - EX-1 (2026-10-30 21:13): 16/16 file dự đoán của EX-1 khớp (14 file `tools/agent-board/**`, `settings.hooks.json`, `.gitignore`), 0 file ngoài dự đoán, thêm `docs/ai-levelup/learner/L08-autonomous/board.png`. Không có design round 2. 38 test `node --test`. Sửa sau screenshot đầu: id task không bị cắt (badge xuống dòng), làn trống ẩn trên màn hẹp.
