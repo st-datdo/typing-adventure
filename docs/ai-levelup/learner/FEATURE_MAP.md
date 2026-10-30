@@ -299,5 +299,6 @@ Diff của 3 PR issue: #16 (`gh pr diff 16 --name-only`, merge `333f7d6`), #17 (
 | Section L08 | `docs/ai-levelup/learner/FEATURE_MAP.md` | sửa | mọi file trong diff 3 PR + lesson có đúng 1 dòng |
 | Dòng L8 | `docs/ai-levelup/metrics.md` | sửa | `summary.mjs`, `lead-time.sh`, timeline PR |
 | Lỗi lặp L08 (rtk lần 5, canary trong log, emit từ /tmp, `main` cũ) | `docs/ai-levelup/mistakes.md` | sửa | đọc tay |
+| Sửa theo review PR #20: `spec_at` đọc vào biến thay vì pipe `grep -q` (pipefail + SIGPIPE) | `scripts/metrics/lead-time.sh` | sửa | `test-lead-time.sh` 8/8 macOS + Linux `trap '' PIPE` |
 | Chấm điểm L08 (teacher, PASS 9/9 AC; thử phá board/gate/risk/guard/agent.yml) | `docs/ai-levelup/lessons/L08-autonomous/GRADE.md` | thêm | kết luận chấm |
 | Backlog: #19, #22, #30 xong; #24, #25, #29 một phần; mới #31–#37 (teacher) | `docs/ai-levelup/lessons/BACKLOG.md` | sửa | đọc tay |

@@ -132,3 +132,12 @@ Trung vị 23m08s (L07 10m43.5s, +116%: thêm 3 lần handoff + 1 lần session 
 - Cổng owner thật: user vắng lúc chạy, cả 3 issue đi qua cổng mô phỏng.
 - `hook-adapter.mjs` trong hook thật (`settings.hooks.json` chưa gộp) → board hiện được nạp bằng `emit.mjs` do người điều phối/agent gọi.
 - Integration test DB của RC.
+
+## Sửa theo review PR #20 (22:13 → 22:22, commit `fc56e19`, `dc0af3a`; plan v5 22:13 trước code)
+- **Nguyên nhân:** CI run 41078090185 (Linux) `checks` fail 27/30 ở "Self-test risk and feature-map": `feature-map.sh:124` `risk.sh | head -n 1` → `head` đóng pipe sớm; runner GitHub ignore SIGPIPE nên `printf` in `risk.sh: line 61: printf: write error: Broken pipe` ra stderr, `test-risk.sh` gộp `2>&1` → 3 ca feature-map fail. macOS SIGPIPE mặc định → `risk.sh` bị kill lặng lẽ, test pass. Cùng kiểu lỗi ở `awk '{ print; exit }'` (`feature-map.sh` dòng 70, 71, 74, 84) và `spec_at | grep -q` trong `lead-time.sh`.
+- **Sửa:** đọc hết output rồi lấy dòng đầu (`${risk%%$'\n'*}`), awk dùng cờ thay `exit`, `lead-time.sh` đọc spec vào biến rồi `grep -q <<<`; test bỏ `| head`.
+- **Test mới:** `feature-map with SIGPIPE ignored and 3003 files` (`(trap '' PIPE; …)`, output vượt pipe buffer, kiểm rc=0 + stderr rỗng). Code cũ macOS 30/31 (`Broken pipe`), mutant chỉ khôi phục `| head -n 1` tái hiện đúng lỗi CI; code mới 31/31 trên macOS và Linux (`typescript-node:1-20-bookworm`).
+- **`agent.yml` (giảm rủi ro BACKLOG #31):** bước pnpm/node/install/`claude-code-action` cần `vars.AGENT_ENABLED == 'true'` **và** có secret → thêm `ANTHROPIC_API_KEY` không tự bật agent khi #31 chưa sửa. actionlint rc=0.
+- **CI run 41079494499:** `checks` pass (31/31), `gitleaks` pass, `review` pass, `guard` fail chỉ vì thiếu label.
+- Còn ngoài phạm vi: `scripts/wt-new.sh:40`, `scripts/wt-prune.sh:70` cùng kiểu pipe đóng sớm → BACKLOG.
+- QA round trip: 1 (lỗi chặn của reviewer, bắt được nhờ CI Linux khác macOS).
