@@ -42,3 +42,16 @@
 | L6 | Self-test chạy local + CI PR #9 (run 40996093424) | 4/4 xanh | 9 | `test-hooks` 41/41, `test-guard-diff` 28/28, `test-check-tdd-commits` 10/10, `test-pg` 9/9 | 30/10/2026 |
 | L6 | Sửa sau review PR #9 (RL-08/09, lỗ email trùng) | — | 9 | spec `1c2779a` 10:21:49 → `test:` `6feddfd` 10:22:20 → `fix:` `c56ee59` 10:22:48 (`test:`→`fix:` 28 s); web 42/42; criteria có test RL 9/9, tổng 16/16 = 100% | 30/10/2026 |
 | L6 | QA round trip sau review | ≤1 | 9 | RL 1 (`fix(web)` `c56ee59`, lỗi chặn của reviewer), WP 0 | 30/10/2026 |
+| L7 | Lead time (commit spec `approved` → `mergedAt`, `scripts/metrics/lead-time.sh`) | trung vị ≤ 37m (L06 52m55s, −30%) | 10, 11 | A RG `d445572` 13:26:03Z → 13:36:44Z = **10m41s**; B WM `556d2e6` 13:26:32Z → 13:37:18Z = **10m46s**; trung vị **10m43.5s** = −79.7% so với 52m55s | 30/10/2026 |
+| L7 | PR wait time (`ready_for_review` cuối → `merged`) | chỉ ghi (L06 16m22s) | 10, 11 | A 13:32:04Z → 13:36:44Z = 4m40s; B 13:35:10Z → 13:37:18Z = 2m08s | 30/10/2026 |
+| L7 | Change failure rate (task có ≥ 1 lần sửa sau ready / số task) | ≤ 1/2 (L06 1/2) | 10, 11 | **0/2**: không commit nào sau `ready_for_review` (A: commit cuối `04c23c6` 13:29:04Z < ready 13:32:04Z; B: `cc7ce10` 13:32:31Z < 13:35:10Z); reviewer 0 blocking; CI sau ready xanh (`checks`/`gitleaks`/`guard`/`review`); 0 commit `fix:` trên `main` sau merge. CI đỏ duy nhất ở commit `test:` khi còn draft (A `8f55285`, B `c88d94e`), dự kiến | 30/10/2026 |
+| L7 | Setup worktree (`wt-new.sh`, `/usr/bin/time -p` real) / prune (`wt-prune.sh`) | <120s | — | A 21.08 s / 5.84 s; B 8.65 s / 5.07 s; schema `wt_l07_*` đã drop (0 schema còn lại) | 30/10/2026 |
+| L7 | WIP tối đa | ≤ 3 | — | 3 (lead + A + B, 20:25–20:35) | 30/10/2026 |
+| L7 | Draft PR sau commit spec | ≤ 10 phút | 10, 11 | A `createdAt` 13:26:26Z (24 s); B 13:26:58Z (26 s) | 30/10/2026 |
+| L7 | Xung đột merge / update-branch | 0 | 10, 11 | 0 / 0 (`comm -12` diff A, B rỗng; merge `4df98c8`, `5590f0f`) | 30/10/2026 |
+| L7 | Đợt review (1 lần `pr-reviewer` cho cả #10, #11) | 1 đợt | 10, 11 | 20:35:49 → 20:37:22 = 1m33s, 0 blocking; review event #10 13:36:40Z, #11 13:37:15Z | 30/10/2026 |
+| L7 | Số lần session chờ người | — | — | 0 (A, B không chạm file bảo vệ, không cần label) | 30/10/2026 |
+| L7 | Self-test hook / lead-time | ≥ 60 ca, leaks 0 | — | `test-hooks.sh` 93/93, leaks 0; `test-lead-time.sh` 8/8; PR #9 RL `lead=54m03s wait=16m22s`, WP `lead=51m47s` | 30/10/2026 |
+| L7 | Criteria có test / mutation | 100% / ≥ 75 | 10, 11 | RG 5/5, WM 6/6 = 11/11 = 100%; mutation engine 78.02% (`moderation.ts` 97.12%) | 30/10/2026 |
+| L7 | Plan khớp diff `L07-parallel-tooling.md` | ≥ 80% | — | 15/15 = 100% (8 file code/script + plan + REPORT/task-A/task-B + FEATURE_MAP/metrics/mistakes; LESSON.md, lessons/README.md của teacher không tính) | 30/10/2026 |
+| L7 | AC-9 trên checkout lesson (rebase lên `5590f0f`) | exit 0 | — | lint 0 error / 37 warning; typecheck 4/4; test engine 193/193, web 49/49; build exit 0; `git worktree list` 1 dòng; `public` 14 bảng (13 + `mcp_probe` còn từ L05), `User` 12, `_prisma_migrations` 2 | 30/10/2026 |

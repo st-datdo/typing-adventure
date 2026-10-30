@@ -29,7 +29,7 @@ Follow-up không chặn từ review: [BACKLOG.md](BACKLOG.md).
 | L04 | Isolation | `lesson/L04-isolation` | #7 | đã đạt | [GRADE](L04-isolation/GRADE.md) |
 | L05 | Enforcement | `lesson/L05-enforcement` | #8 | đã đạt, đã merge | [GRADE](L05-enforcement/GRADE.md) |
 | L06 | Spec + TDD | `lesson/L06-spec-tdd` | #9 | đã đạt | [GRADE](L06-spec-tdd/GRADE.md) |
-| L07 | Parallel | | | chưa học | |
+| L07 | Parallel | `lesson/L07-parallel` (task: `l07/rg-register-limit`, `l07/wm-moderation-v3`) | #10, #11 (task, đã merge); lesson: chưa mở | đã đạt | [GRADE](L07-parallel/GRADE.md) |
 | L08 | Autonomous | | | chưa học | |
 
 Tổng kết đợt 1 (L00 → L06): [SUMMARY-L00-L06.md](SUMMARY-L00-L06.md). L07, L08 học ở đợt sau.

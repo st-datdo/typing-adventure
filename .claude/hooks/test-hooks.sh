@@ -97,6 +97,23 @@ run_case "allow: db:migrate with localhost .env" $G 0 "$(bash_json 'pnpm --filte
 run_case "allow: inline 127.0.0.1 prisma migrate dev" $G 0 "$(bash_json 'DATABASE_URL="postgresql://u:fakepw@127.0.0.1:5432/x?schema=wt_a&connect_timeout=5" npx prisma migrate dev' "$local_repo")"
 run_case "allow: inline [::1] db push" $G 0 "$(bash_json 'DATABASE_URL=postgresql://u:fakepw@[::1]:5432/x npx prisma db push' "$local_repo")"
 run_case "allow: git status" $G 0 "$(bash_json 'git status --short')"
+run_case "find -delete" $G 2 "$(bash_json "find . -name '*.tmp' -delete")"
+run_case "find -exec rm" $G 2 "$(bash_json 'find /tmp/x -type f -exec rm {} \;')"
+run_case "find -execdir /bin/rm" $G 2 "$(bash_json 'cd build && find . -execdir /bin/rm {} +')"
+run_case "eval" $G 2 "$(bash_json "eval \"\$CMD\"")"
+run_case "eval after assignment" $G 2 "$(bash_json 'X=1 eval ls')"
+run_case "eval in \$( )" $G 2 "$(bash_json "out=\$(eval ls)")"
+run_case "bash -c nested eval" $G 2 "$(bash_json "bash -c 'eval ls'")"
+run_case "zsh -lc nested eval with escaped quotes" $G 2 "$(bash_json 'zsh -lc "echo \"a\"; eval x"')"
+run_case "sh -c nested git push --force" $G 2 "$(bash_json '/bin/sh -c "git push --force origin main"')"
+run_case "cat .env" $G 2 "$(bash_json 'cat typing-adventure/.env')"
+run_case "head .env.local" $G 2 "$(bash_json 'head -n 3 apps/web/.env.local')"
+run_case "less < .env.production" $G 2 "$(bash_json 'less < .env.production')"
+run_case "bash -c cat .env" $G 2 "$(bash_json "bash -c 'bat ../.env'")"
+run_case "allow: cat .env.example" $G 0 "$(bash_json 'cat typing-adventure/.env.example')"
+run_case "allow: find -name" $G 0 "$(bash_json "find . -name '*.ts'")"
+run_case "allow: eval inside commit message" $G 0 "$(bash_json 'git commit -m "docs: explain eval rule"')"
+run_case "allow: bash -c harmless" $G 0 "$(bash_json "bash -c 'ls -la'")"
 
 R=guard-read.sh
 run_case "read .env" $R 2 "$(read_json "$repo_root/typing-adventure/.env")"
@@ -129,6 +146,122 @@ else
 fi
 printf 'export function hookProbe() {\n  let a = 1\n  return a\n}\n' > "$probe_lint"
 run_case "eslint error blocks (exit 2)" $F 2 "$(edit_json "$probe_lint")"
+
+check() {
+  local name=$1
+  shift
+  if "$@"; then
+    echo "PASS $name"
+    pass=$((pass + 1))
+  else
+    echo "FAIL $name"
+    fail=$((fail + 1))
+  fi
+}
+
+scope_repo="$tmp/scope"
+noscope_repo="$tmp/noscope"
+mkdir -p "$scope_repo/specs/S" "$scope_repo/tasks" "$scope_repo/src/lib" "$scope_repo/src/sub" "$noscope_repo"
+git -C "$scope_repo" init -q
+git -C "$noscope_repo" init -q
+cat > "$scope_repo/specs/S/spec.md" <<'EOF'
+# Spec: S
+Trạng thái: approved
+File dự kiến: `src/app/api/auth/[...nextauth]/route.ts` (sửa), `src/lib/*.ts`, `deep/**/x.ts`, `src/gen/`. Test: `src/__tests__/s.test.ts`.
+Không liên quan: `src/outside.ts`
+EOF
+cat > "$scope_repo/tasks/plan.md" <<'EOF'
+# Plan
+## File thay đổi (dự đoán)
+- `src/only-plan.ts` (thêm)
+## Verify
+- `src/not-in-section.ts`
+EOF
+printf 'specs/S/spec.md\n' > "$scope_repo/.wt-scope"
+
+scope_json() {
+  jq -cn --arg p "$1" --arg d "${2:-$scope_repo}" '{tool_name:"Edit", tool_input:{file_path:$p}, cwd:$d}'
+}
+
+S=guard-scope.sh
+run_case "no scope allows any file" $S 0 "$(scope_json "$noscope_repo/src/any.ts" "$noscope_repo")" CLAUDE_SCOPE_FILE=
+run_case "file listed in spec" $S 0 "$(scope_json "$scope_repo/src/app/api/auth/[...nextauth]/route.ts")" CLAUDE_SCOPE_FILE=
+run_case "file listed on Test:" $S 0 "$(scope_json "$scope_repo/src/__tests__/s.test.ts")" CLAUDE_SCOPE_FILE=
+run_case "glob * matches one level" $S 0 "$(scope_json "$scope_repo/src/lib/rate.ts")" CLAUDE_SCOPE_FILE=
+run_case "glob * does not cross /" $S 2 "$(scope_json "$scope_repo/src/lib/a/rate.ts")" CLAUDE_SCOPE_FILE=
+run_case "glob ** matches deep path" $S 0 "$(scope_json "$scope_repo/deep/a/b/x.ts")" CLAUDE_SCOPE_FILE=
+run_case "directory entry ending in /" $S 0 "$(scope_json "$scope_repo/src/gen/a/b.ts")" CLAUDE_SCOPE_FILE=
+run_case "brackets are literal, not a class" $S 2 "$(scope_json "$scope_repo/src/app/api/auth/n/route.ts")" CLAUDE_SCOPE_FILE=
+run_case "file not listed" $S 2 "$(scope_json "$scope_repo/src/other.ts")" CLAUDE_SCOPE_FILE=
+run_case "backtick outside File dự kiến line" $S 2 "$(scope_json "$scope_repo/src/outside.ts")" CLAUDE_SCOPE_FILE=
+run_case "relative path from cwd subdir" $S 2 "$(scope_json "other.ts" "$scope_repo/src/sub")" CLAUDE_SCOPE_FILE=
+run_case "always allowed: specs/**" $S 0 "$(scope_json "$scope_repo/specs/x/spec.md")" CLAUDE_SCOPE_FILE=
+run_case "always allowed: docs/ai-levelup/**" $S 0 "$(scope_json "$scope_repo/docs/ai-levelup/learner/L07/task-A.md")" CLAUDE_SCOPE_FILE=
+run_case "always allowed: docs/plans/**" $S 0 "$(scope_json "$scope_repo/docs/plans/x.md")" CLAUDE_SCOPE_FILE=
+run_case "always allowed: path outside repo" $S 0 "$(scope_json "$tmp/scratch/x.ts")" CLAUDE_SCOPE_FILE=
+run_case "../ escapes the repo and comes back to an unlisted file" $S 2 "$(scope_json "$scope_repo/src/../../${scope_repo##*/}/src/other.ts")" CLAUDE_SCOPE_FILE=
+run_case "../ inside the repo to an unlisted file" $S 2 "$(scope_json "$scope_repo/src/lib/../other.ts")" CLAUDE_SCOPE_FILE=
+run_case "scope points to a missing file" $S 2 "$(scope_json "$scope_repo/src/lib/rate.ts")" CLAUDE_SCOPE_FILE=specs/NOPE/spec.md
+run_case "CLAUDE_SCOPE_FILE wins over .wt-scope (plan allows)" $S 0 "$(scope_json "$scope_repo/src/only-plan.ts")" CLAUDE_SCOPE_FILE=tasks/plan.md
+run_case "CLAUDE_SCOPE_FILE wins over .wt-scope (spec file blocked)" $S 2 "$(scope_json "$scope_repo/src/lib/rate.ts")" CLAUDE_SCOPE_FILE=tasks/plan.md
+run_case "plan: backtick outside File thay đổi section" $S 2 "$(scope_json "$scope_repo/src/not-in-section.ts")" CLAUDE_SCOPE_FILE=tasks/plan.md
+run_case "scope file itself is editable" $S 0 "$(scope_json "$scope_repo/tasks/plan.md")" CLAUDE_SCOPE_FILE="$scope_repo/tasks/plan.md"
+scope_msg=$(scope_json "$scope_repo/src/other.ts" | env CLAUDE_SCOPE_FILE= "$hooks_dir/$S" 2>&1 >/dev/null)
+check "[$S] block message names scope file and fix" grep -q 'specs/S/spec.md.*File dự kiến.*Lịch sử' <<< "$scope_msg"
+
+stub_bin="$tmp/stub-bin"
+no_osa_bin="$tmp/no-osa-bin"
+mkdir -p "$stub_bin" "$no_osa_bin"
+cat > "$stub_bin/osascript" <<EOF
+#!/bin/sh
+for a in "\$@"; do printf '%s\n' "\$a"; done > "$tmp/osa-argv"
+EOF
+chmod +x "$stub_bin/osascript"
+for b in jq git dirname; do ln -s "$(command -v "$b")" "$no_osa_bin/$b"; done
+jq_dir=$(dirname "$(command -v jq)")
+notify_log="$tmp/notify.log"
+N=notify.sh
+evil='He said "hi" \ then; do shell script "touch /tmp/pwn"'
+
+run_notify() {
+  local json=$1 path=$2
+  printf '%s' "$json" | env CLAUDE_NOTIFY_LOG="$notify_log" PATH="$path" "$hooks_dir/$N" 2>/dev/null
+}
+log_lines() { if [ -f "$notify_log" ]; then wc -l < "$notify_log" | tr -d ' '; else echo 0; fi; }
+argv_has_line() { grep -qxF -- "$1" "$tmp/osa-argv"; }
+no_payload_in_e() { ! awk 'p=="-e" && /touch \/tmp\/pwn/ {f=1} {p=$0} END {exit !f}' "$tmp/osa-argv"; }
+
+evil_json=$(jq -cn --arg m "$evil" --arg d "$scope_repo" '{hook_event_name:"Notification", message:$m, cwd:$d}')
+scope_branch=$(git -C "$scope_repo" symbolic-ref --short HEAD)
+out=$(run_notify "$evil_json" "$stub_bin:$jq_dir:/usr/bin:/bin"); rc=$?
+check "[$N] Notification exit 0" test "$rc" = 0
+check "[$N] Notification stdout empty" test -z "$out"
+check "[$N] message with quote, backslash, do shell script is one argv item" argv_has_line "$evil"
+check "[$N] title has branch and event" argv_has_line "Claude · $scope_branch · Notification"
+check "[$N] payload is not inside an -e script" no_payload_in_e
+check "[$N] log line has event and message" grep -qF "Notification	$scope_branch	He said" "$notify_log"
+
+before=$(log_lines)
+out=$(run_notify "{\"hook_event_name\":\"Stop\",\"cwd\":\"$scope_repo\"}" "$no_osa_bin:/bin"); rc=$?
+after=$(log_lines)
+check "[$N] no osascript on PATH: exit 0, stdout empty" test "$rc:$out" = "0:"
+check "[$N] no osascript on PATH: log gets a new line" test "$after" = "$((before + 1))"
+
+before=$(log_lines)
+out=$(run_notify '{"hook_event_name": "Stop", broken' "$stub_bin:$jq_dir:/usr/bin:/bin"); rc=$?
+after=$(log_lines)
+check "[$N] broken JSON: exit 0, stdout empty" test "$rc:$out" = "0:"
+check "[$N] broken JSON: log gets a new line" test "$after" = "$((before + 1))"
+
+long=$(printf 'x%.0s' $(seq 1 500))
+long_json=$(jq -cn --arg m "line1
+$long" '{hook_event_name:"Notification", message:$m, cwd:"/"}')
+run_notify "$long_json" "$stub_bin:$jq_dir:/usr/bin:/bin" >/dev/null
+last=$(tail -n 1 "$notify_log")
+check "[$N] log message cut to 200 chars, one line" test "${#last}" -lt 260 -a "$(log_lines)" = "$((after + 1))"
+
+out=$(printf '{"hook_event_name":"Stop"}' | env CLAUDE_NOTIFY_LOG=/dev/null/nope/notify.log PATH="$stub_bin:$jq_dir:/usr/bin:/bin" "$hooks_dir/$N" 2>/dev/null); rc=$?
+check "[$N] unwritable log: exit 0, stdout empty" test "$rc:$out" = "0:"
 
 total=$((pass + fail))
 echo "---"
