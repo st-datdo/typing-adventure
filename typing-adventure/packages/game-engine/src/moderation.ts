@@ -28,8 +28,44 @@ function normalizeWord(word: string): string {
 const LATIN_LETTER = /(?=\p{L})\p{Script=Latin}/u
 const OTHER_SCRIPT_LETTER = /(?=\p{L})[\p{Script=Cyrillic}\p{Script=Greek}]/u
 
+const SKELETON: Readonly<Record<string, string>> = {
+  а: 'a',
+  в: 'b',
+  с: 'c',
+  ԁ: 'd',
+  е: 'e',
+  һ: 'h',
+  н: 'h',
+  і: 'i',
+  ј: 'j',
+  к: 'k',
+  м: 'm',
+  о: 'o',
+  р: 'p',
+  ѕ: 's',
+  т: 't',
+  у: 'y',
+  х: 'x',
+  α: 'a',
+  β: 'b',
+  γ: 'y',
+  ι: 'i',
+  κ: 'k',
+  ν: 'v',
+  ο: 'o',
+  ρ: 'p',
+  τ: 't',
+  υ: 'u',
+  χ: 'x',
+  ı: 'i',
+}
+
+function skeleton(word: string): string {
+  return Array.from(word, (char) => SKELETON[char] ?? char).join('')
+}
+
 function fold(word: string): string {
-  return word.replace(/[đĐ]/g, 'd').normalize('NFD').replace(/\p{M}/gu, '').toLowerCase()
+  return skeleton(word.replace(/[đĐ]/g, 'd').normalize('NFD').replace(/\p{M}/gu, '').toLowerCase())
 }
 
 function tokenize(word: string): string[] {
