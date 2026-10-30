@@ -33,10 +33,10 @@
 | L5 | Plan khớp diff: v2 sau chấm `L05-mcp-postgres.md` / `L05-agent-hooks.md` | ≥80% | 8 | 1/1, 2/2; plan `7f0c1f5` trước code `32753b3`, `f9d1652` | 30/10/2026 |
 | L5 | `mcp_ro` tạo được bảng trong `public` sau `SET … off` | 0 | — | PG14 script cũ: tạo được; PG14 + PG16 script mới: `permission denied for schema public` (container dùng xong bỏ) | 30/10/2026 |
 | L6 | Criteria có test (ID EARS có ≥ 1 test cite ID / tổng ID) | 100% | — | RL 7/7, WP 7/7 = 14/14 = 100% (`grep -oE '^\| (RL\|WP)-[0-9]+'` spec vs `grep -rhoE` file test) | 30/10/2026 |
-| L6 | Mutation score `packages/game-engine` (15 file, 2204 mutant, cùng phạm vi) | >70% | — | baseline 65.47% (96.80 s) → 75.14% (97.20 s) → **77.59%** (94.71 s; lặp lại 99.15 s cùng 77.59%); `thresholds.break` 77 | 30/10/2026 |
+| L6 | Mutation score `packages/game-engine` (15 file, 2204 mutant, cùng phạm vi) | >70% | — | baseline 65.47% (96.80 s) → 75.14% (97.20 s) → **77.59%** (94.71 s; lặp lại 99.15 s cùng 77.59%); `thresholds.break` 77 → 75 sau chấm (người chấm đo 77.54, lệch 1 mutant) | 30/10/2026 |
 | L6 | QA round trip mỗi spec (commit `fix:` cùng ID sau `feat:` + FAIL ở GRADE) | ≤1 | — | RL 0, WP 0 (chưa chấm) | 30/10/2026 |
-| L6 | Giờ `test:` → `feat:` | — | — | RL `8b4df00` 09:41:08 → `041605d` 09:41:59 = 51 s; WP `adcf9cb` 09:43:36 → `d29020c` 09:45:19 = 1m43s | 30/10/2026 |
+| L6 | Giờ `test:` → `feat:` | — | — | RL `9ea8dc3` 09:41:08 → `4710f0e` 09:41:59 = 51 s; WP `28897ba` 09:43:36 → `f1e0acd` 09:45:19 = 1m43s | 30/10/2026 |
 | L6 | Plan khớp diff: `L06-tdd-tooling.md` / `L06-mutation.md` | ≥80% | — | 9/9, 5/5 = 100% | 30/10/2026 |
-| L6 | Task multi-file có plan/spec approved trước code | 4/4 | — | 4/4: plan `5d9777b` trước `1da9728`…`1e34cbb`; spec RL `6fba041` trước `8b4df00`; spec WP `fbc6a60` (v2 `c5e38c5`) trước `adcf9cb` | 30/10/2026 |
-| L6 | `check-tdd-commits.sh` trên branch L06 | exit 0 | — | `OK (18 commits in lesson/L05-enforcement..HEAD)` trước commit docs | 30/10/2026 |
+| L6 | Task multi-file có plan/spec approved trước code | 4/4 | — | 4/4: plan `f77e424` trước `0260e0c`…`9da1145`; spec RL `f45b286` trước `9ea8dc3`; spec WP `1c2dad2` (v2 `49b58f4`) trước `28897ba` | 30/10/2026 |
+| L6 | `check-tdd-commits.sh` trên branch L06 | exit 0 | — | `OK (18 commits in main..HEAD)` trước commit docs | 30/10/2026 |
 | L6 | Self-test chạy được local (CI chưa chạy, chưa push) | 4/4 xanh | — | `test-hooks` 41/41, `test-guard-diff` 28/28, `test-check-tdd-commits` 10/10, `test-pg` 9/9 | 30/10/2026 |

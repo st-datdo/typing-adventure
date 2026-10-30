@@ -1,6 +1,6 @@
 # L06 · Spec + TDD — Báo cáo
 
-Branch: `lesson/L06-spec-tdd`, stack trên `lesson/L05-enforcement` (PR #8). `BASE=lesson/L05-enforcement` cho mọi diff/log. Chưa push, chưa mở PR (chờ #8 merge + rebase của người điều phối). Giờ là giờ máy (`date`, `git log --format=%ci`, `/usr/bin/time -p`). Phiên bắt đầu 09:35:02, commit code cuối 09:55:09.
+Branch: `lesson/L06-spec-tdd`, rebase lên `main` = `b5377bc` (PR #8 đã merge, người điều phối rebase). `BASE=main` (`b5377bc`) cho mọi diff/log; hash trong báo cáo là hash sau rebase. Rebase đặt lại committer date mọi commit thành 10:01:42, nên giờ commit dưới đây là **author date** (`git log --format='%h %ai'`), giữ giờ gốc. Chấm: [GRADE.md](../../lessons/L06-spec-tdd/GRADE.md) PASS. Giờ là giờ máy (`date`, `%ai`, `/usr/bin/time -p`). Phiên bắt đầu 09:35:02, commit code cuối 09:55:09.
 
 ## Điều đã học
 - Spec có ID biến "xong chưa" thành phép đếm: 14 ID, 14 ID có test cite, `grep` hai phía ra cùng tập. Viết spec trước cũng lộ ra lỗ trong yêu cầu trước khi có code: blocklist mặc định chưa ghim (test integration phải đoán nội dung), và gấp bỏ dấu làm `ngu` chặn luôn `ngủ`/`ngũ`. Cả hai sửa ở spec v2 trước commit `test:`.
@@ -12,7 +12,7 @@ Branch: `lesson/L06-spec-tdd`, stack trên `lesson/L05-enforcement` (PR #8). `BA
 ## Bài tập
 | EX | Việc đã làm | File |
 |---|---|---|
-| EX-1 | Template spec 6 mục (25 dòng). 2 plan `approved` commit riêng `5d9777b` (09:37:30), Lịch sử `v1 2026-10-30 09:37` lấy từ `date`. Quyết định ghi trong plan tooling: spec RL/WP có "File dự kiến", không viết plan feature riêng. 1 dòng `CLAUDE.md` (64 dòng) | `specs/_template.md`, `docs/plans/L06-*.md`, `CLAUDE.md` |
+| EX-1 | Template spec 6 mục (25 dòng). 2 plan `approved` commit riêng `f77e424` (09:37:30), Lịch sử `v1 2026-10-30 09:37` lấy từ `date`. Quyết định ghi trong plan tooling: spec RL/WP có "File dự kiến", không viết plan feature riêng. 1 dòng `CLAUDE.md` (64 dòng) | `specs/_template.md`, `docs/plans/L06-*.md`, `CLAUDE.md` |
 | EX-2 | `test-writer.md` (chỉ ghi `**/__tests__/**`, `*.test.ts(x)`, `*.int.test.ts`, `e2e/*.spec.ts`, mỗi `it` bắt đầu bằng ID, phân loại dòng đỏ) và `implementer.md` (cấm ghi file test, test sai thì dừng và báo). `tools: Read, Grep, Glob, Bash, Write, Edit` (cần Write/Edit để ghi test/code, Bash để chạy test + commit) | `.claude/agents/test-writer.md`, `.claude/agents/implementer.md` |
 | EX-3 | `check-tdd-commits.sh` + test 10 ca; job `guard` lấy script từ base (base chưa có thì bản trong PR), bước TDD `if: ${{ !cancelled() }}` | `scripts/ci/check-tdd-commits.sh`, `scripts/ci/test-check-tdd-commits.sh`, `.github/workflows/ci.yml` |
 | EX-4 | Spec RL (7 ID) → test đỏ → feat; `.env.example` + `DEPLOY_AWS.md` trong commit `feat:` | `specs/RL/spec.md`, `apps/web/src/lib/rate-limit.ts`, `apps/web/src/app/api/auth/[...nextauth]/route.ts`, 2 file test, `.env.example`, `docs/DEPLOY_AWS.md` |
@@ -24,13 +24,13 @@ Branch: `lesson/L06-spec-tdd`, stack trên `lesson/L05-enforcement` (PR #8). `BA
 ## Tiêu chí
 | AC | Kết quả | Bằng chứng |
 |---|---|---|
-| AC-1 | Đạt | `specs/_template.md`: `# <ID> · <tên>`, `Trạng thái`, `## Bối cảnh`, `## Requirements` (bảng `ID \| EARS \| Test`), `## Ngoài phạm vi`, `## Hành vi không đổi`, `## Lịch sử`. `git log --reverse $BASE..HEAD`: `5d9777b 09:37:30 docs(plans)` trước mọi commit code (`1da9728` 09:37:35 … `1e34cbb` 09:53:16). Lịch sử plan `09:37` ≤ `09:37:30`; spec RL v1 `09:40` ≤ `6fba041` 09:40:18, v2 `09:41` ≤ `800783d` 09:41:18; WP v1 `09:42` ≤ `fbc6a60` 09:42:34, v2 `09:43` ≤ `c5e38c5` 09:43:28. Cả 2 plan có `## Thực tế` (9/9, 5/5). `wc -l CLAUDE.md` → **64** |
+| AC-1 | Đạt | `specs/_template.md`: `# <ID> · <tên>`, `Trạng thái`, `## Bối cảnh`, `## Requirements` (bảng `ID \| EARS \| Test`), `## Ngoài phạm vi`, `## Hành vi không đổi`, `## Lịch sử`. `git log --reverse $BASE..HEAD`: `f77e424 09:37:30 docs(plans)` trước mọi commit code (`0260e0c` 09:37:35 … `9da1145` 09:53:16). Lịch sử plan `09:37` ≤ `09:37:30`; spec RL v1 `09:40` ≤ `f45b286` 09:40:18, v2 `09:41` ≤ `d716e9c` 09:41:18; WP v1 `09:42` ≤ `1c2dad2` 09:42:34, v2 `09:43` ≤ `49b58f4` 09:43:28. Cả 2 plan có `## Thực tế` (9/9, 5/5). `wc -l CLAUDE.md` → **64** |
 | AC-2 | Đạt (gọi qua Agent tool: `chưa verify runtime`) | 2 file có `name`/`description`/`tools`. `test-writer.md`: "Chỉ được ghi file test", "Mỗi `it`/`test` bắt đầu bằng ID". `implementer.md`: "Không được ghi file test", "Test sai … → dừng, báo lại". Bảng `commit \| agent \| ID` ở dưới |
-| AC-3 | Đạt (CI: `chưa verify runtime`) | `bash scripts/ci/test-check-tdd-commits.sh` → `cases: 10, passed: 10, failed: 0`, exit 0. `bash scripts/ci/check-tdd-commits.sh lesson/L05-enforcement HEAD` → `check-tdd-commits: OK (18 commits in lesson/L05-enforcement..HEAD)` (trước commit docs cuối). `ci.yml` job `guard`: vòng `for s in guard-diff.sh check-tdd-commits.sh` lấy từ `$BASE` nếu `git cat-file -e`, bước `Check TDD commit order` |
-| AC-4 | Đạt | Spec `approved`, 7 ID, có Ngoài phạm vi, Hành vi không đổi, bảng triển khai 4 dòng. `test:` `8b4df00` (09:41:08) trước `feat:` `041605d` (09:41:59) cho RL-01..07. Dòng đỏ ở bảng dưới (chạy lại tại `8b4df00` bằng `git checkout --detach` trong worktree). HEAD: `pnpm --filter @typing-adventure/web test` → `Test Files 5 passed, Tests 35 passed`. `git diff --quiet $BASE -- …/rate-limit.test.ts` → exit 0 (không đổi dòng nào). `grep -c TRUST_PROXY_HEADER .env.example` → 1; `DEPLOY_AWS.md` có biến ở EC2 `.env`, ECS task def, App Runner, checklist và mục "Rate limit và IP client" |
-| AC-5 | Đạt | Spec WP `approved`, 7 ID. `moderation.ts`: `grep -c '^import'` → 0 (không React/DOM/Node). `test:` `adcf9cb` (09:43:36) trước `feat:` `d29020c` (09:45:19). Engine: `Test Files 15 passed, Tests 177 passed`. Integration trong worktree: `Tests 12 passed (12)` (6 WP + 6 cũ), test isolation `✓ … runs against the worktree schema, not public`; truy vấn Prisma với `.env` của worktree: `current_schema = wt_wt_l06_wp`. Prune: `wt-prune: removed worktree …`, `dropped schema wt_wt_l06_wp`, `Deleted branch wt/l06-wp`; sau đó `git worktree list` 1 dòng, `count(*) … like 'wt\_%'` → 0 |
+| AC-3 | Đạt (CI: `chưa verify runtime`) | `bash scripts/ci/test-check-tdd-commits.sh` → `cases: 10, passed: 10, failed: 0`, exit 0. `bash scripts/ci/check-tdd-commits.sh main HEAD` → `check-tdd-commits: OK (18 commits in main..HEAD)` (trước commit docs cuối). `ci.yml` job `guard`: vòng `for s in guard-diff.sh check-tdd-commits.sh` lấy từ `$BASE` nếu `git cat-file -e`, bước `Check TDD commit order` |
+| AC-4 | Đạt | Spec `approved`, 7 ID, có Ngoài phạm vi, Hành vi không đổi, bảng triển khai 4 dòng. `test:` `9ea8dc3` (09:41:08) trước `feat:` `4710f0e` (09:41:59) cho RL-01..07. Dòng đỏ ở bảng dưới (chạy lại tại `9ea8dc3` bằng `git checkout --detach` trong worktree). HEAD: `pnpm --filter @typing-adventure/web test` → `Test Files 5 passed, Tests 35 passed`. `git diff --quiet $BASE -- …/rate-limit.test.ts` → exit 0 (không đổi dòng nào). `grep -c TRUST_PROXY_HEADER .env.example` → 1; `DEPLOY_AWS.md` có biến ở EC2 `.env`, ECS task def, App Runner, checklist và mục "Rate limit và IP client" |
+| AC-5 | Đạt | Spec WP `approved`, 7 ID. `moderation.ts`: `grep -c '^import'` → 0 (không React/DOM/Node). `test:` `28897ba` (09:43:36) trước `feat:` `f1e0acd` (09:45:19). Engine: `Test Files 15 passed, Tests 177 passed`. Integration trong worktree: `Tests 12 passed (12)` (6 WP + 6 cũ), test isolation `✓ … runs against the worktree schema, not public`; truy vấn Prisma với `.env` của worktree: `current_schema = wt_wt_l06_wp`. Prune: `wt-prune: removed worktree …`, `dropped schema wt_wt_l06_wp`, `Deleted branch wt/l06-wp`; sau đó `git worktree list` 1 dòng, `count(*) … like 'wt\_%'` → 0 |
 | AC-6 | Đạt, 100% | Xem mục "Criteria có test" |
-| AC-7 | Đạt | `stryker.config.json` trong repo; baseline 65.47% / 2204 mutant / 96.80 s; cuối **77.59%** / 2204 / 94.71 s; `thresholds.break: 77`; `grep -rn "Stryker disable" typing-adventure/packages` → rỗng (exit 1); `pnpm mutation` → `Final mutation score of 77.59 is greater than or equal to break threshold 77` |
+| AC-7 | Đạt | `stryker.config.json` trong repo; baseline 65.47% / 2204 mutant / 96.80 s; cuối **77.59%** / 2204 / 94.71 s; `thresholds.break: 77`, hạ còn **75** sau chấm (`b81c747`, người chấm đo 77.54, lệch 1 mutant do test dùng random); `grep -rn "Stryker disable" typing-adventure/packages` → rỗng (exit 1); `pnpm mutation` → `Final mutation score of 77.59 is greater than or equal to break threshold 77` |
 | AC-8 | Phần local đạt; phần CI `chưa verify runtime` | `bash scripts/ci/test-guard-diff.sh` → `cases: 28, passed: 28, failed: 0` (13 ca mới). `ci.yml` job `checks` có 4 bước `Self-test agent hooks / guard-diff / check-tdd-commits / pg lib` sau `pnpm install`. Chạy local cả 4: 41/41, 28/28, 10/10, 9/9. Không có URL run: lệnh chưa cho push/mở PR. Guard local trên branch: `guard-diff.sh $BASE HEAD` → `FAIL: protected config changed without label` + `ci.yml`, 4 file `scripts/ci/*`, `game-engine/package.json (scripts changed)` |
 | AC-9 | Đạt | `typing-adventure/`, `rtk proxy pnpm <x> --force`: lint exit 0 `0 errors, 37 warnings` (= baseline 37), 3.96 s; typecheck exit 0 `4 successful`, 5.29 s; build exit 0, 27.40 s. `pnpm test` (task `cache: false`; `pnpm test --force` bị pnpm từ chối cờ) exit 0: engine 177, web 35. `test-hooks.sh` → `cases: 41, passed: 41, … leaks: 0`. `git diff --quiet $BASE -- typing-adventure/packages/db` → exit 0; integration chỉ ghi `wt_wt_l06_wp`, schema đã drop |
 
@@ -39,28 +39,30 @@ Agent tool trong phiên này không có type `test-writer`/`implementer` (file m
 
 | Commit | Giờ | Vai | ID | File |
 |---|---|---|---|---|
-| `a3ecc7c` docs(lessons) | 09:35:21 | (teacher, người học commit hộ) | — | LESSON, BACKLOG, README |
-| `5d9777b` docs(plans) | 09:37:30 | learner | — | 2 plan |
-| `1da9728` docs(spec) template | 09:37:35 | learner | — | `specs/_template.md`, `CLAUDE.md` |
-| `552eab4` chore(agents) | 09:37:57 | learner | — | 2 agent |
-| `cc10e40` ci(guard) TDD check | 09:38:46 | learner | — | `check-tdd-commits.sh` + test, `ci.yml` |
-| `403ccd9` ci(guard) protect + self-test | 09:39:50 | learner | — | `guard-diff.sh` + test, `ci.yml`, test TDD (`core.excludesFile`) |
-| `6fba041` docs(spec) RL | 09:40:18 | learner | RL-01..07 | `specs/RL/spec.md` |
-| `8b4df00` test(web) | 09:41:08 | **test-writer** | RL-01..07 | `trusted-proxy.test.ts`, `credentials-limit.test.ts` |
-| `800783d` docs(spec) RL v2 | 09:41:18 | learner | RL-07 | ghi chú test bảo toàn |
-| `041605d` feat(web) | 09:41:59 | **implementer** | RL-01..07 | `rate-limit.ts`, route nextauth, `.env.example`, `DEPLOY_AWS.md` |
-| `fbc6a60` docs(spec) WP | 09:42:34 | learner | WP-01..07 | `specs/WP/spec.md` |
-| `c5e38c5` docs(spec) WP v2 | 09:43:28 | learner | WP-03 | ghim blocklist |
-| `adcf9cb` test(engine,web) | 09:43:36 | **test-writer** | WP-01..07 | `moderation.test.ts`, `wordpacks-moderation.int.test.ts` |
-| `d29020c` feat(engine,web) | 09:45:19 | **implementer** | WP-01..07 | `moderation.ts`, `index.ts`, 2 route wordpacks |
-| `cec0da5` test(engine) | 09:49:15 | **test-writer** (không ID, đặc tả hành vi có sẵn) | — | `keyboard.test.ts`, `engine-setup.test.ts` |
-| `904bfdf` test(engine) | 09:51:28 | **test-writer** (không ID) | — | `keyboard.test.ts` import trong test |
-| `1e34cbb` build(engine) | 09:53:16 | learner | — | Stryker deps, config, script, lockfile, `.gitignore` |
-| `222f438` chore(engine) | 09:55:09 | learner | — | `thresholds.break` 77, sửa `$schema` |
-| (commit docs cuối) | | learner | — | REPORT, FEATURE_MAP, metrics, mistakes, `learner.md`, Thực tế 2 plan |
+| `22df9cc` docs(lessons) | 09:35:21 | (teacher, người học commit hộ) | — | LESSON, BACKLOG, README |
+| `f77e424` docs(plans) | 09:37:30 | learner | — | 2 plan |
+| `0260e0c` docs(spec) template | 09:37:35 | learner | — | `specs/_template.md`, `CLAUDE.md` |
+| `9a4a927` chore(agents) | 09:37:57 | learner | — | 2 agent |
+| `2aa86f9` ci(guard) TDD check | 09:38:46 | learner | — | `check-tdd-commits.sh` + test, `ci.yml` |
+| `3fa4438` ci(guard) protect + self-test | 09:39:50 | learner | — | `guard-diff.sh` + test, `ci.yml`, test TDD (`core.excludesFile`) |
+| `f45b286` docs(spec) RL | 09:40:18 | learner | RL-01..07 | `specs/RL/spec.md` |
+| `9ea8dc3` test(web) | 09:41:08 | **test-writer** | RL-01..07 | `trusted-proxy.test.ts`, `credentials-limit.test.ts` |
+| `d716e9c` docs(spec) RL v2 | 09:41:18 | learner | RL-07 | ghi chú test bảo toàn |
+| `4710f0e` feat(web) | 09:41:59 | **implementer** | RL-01..07 | `rate-limit.ts`, route nextauth, `.env.example`, `DEPLOY_AWS.md` |
+| `1c2dad2` docs(spec) WP | 09:42:34 | learner | WP-01..07 | `specs/WP/spec.md` |
+| `49b58f4` docs(spec) WP v2 | 09:43:28 | learner | WP-03 | ghim blocklist |
+| `28897ba` test(engine,web) | 09:43:36 | **test-writer** | WP-01..07 | `moderation.test.ts`, `wordpacks-moderation.int.test.ts` |
+| `f1e0acd` feat(engine,web) | 09:45:19 | **implementer** | WP-01..07 | `moderation.ts`, `index.ts`, 2 route wordpacks |
+| `f4221ce` test(engine) | 09:49:15 | **test-writer** (không ID, đặc tả hành vi có sẵn) | — | `keyboard.test.ts`, `engine-setup.test.ts` |
+| `24543ea` test(engine) | 09:51:28 | **test-writer** (không ID) | — | `keyboard.test.ts` import trong test |
+| `9da1145` build(engine) | 09:53:16 | learner | — | Stryker deps, config, script, lockfile, `.gitignore` |
+| `9fa7fb4` chore(engine) | 09:55:09 | learner | — | `thresholds.break` 77, sửa `$schema` |
+| `33aae60` docs(learner) | 10:00:58 | learner | — | REPORT, FEATURE_MAP, metrics, mistakes, `learner.md`, Thực tế 2 plan |
+| `b81c747` chore(engine) | sau chấm | learner | — | `thresholds.break` 77 → 75 (BACKLOG #26) |
+| (commit docs sau chấm) | sau chấm | learner | — | GRADE/README/BACKLOG của teacher, hash sau rebase, URL run CI |
 
 ## Dòng đỏ đầu tiên từng ID
-RL chạy lại tại `8b4df00` (`git -C .worktrees/wt_l06_wp checkout --detach 8b4df00`, `vitest run trusted-proxy credentials-limit` → `Tests 11 failed | 7 passed (18)`). WP chạy tại `adcf9cb` (engine `Tests 18 failed (18)`; integration `Tests 4 failed | 2 passed (6)` trên `wt_wt_l06_wp`).
+RL chạy lại tại `9ea8dc3` (`git -C .worktrees/wt_l06_wp checkout --detach 9ea8dc3`, `vitest run trusted-proxy credentials-limit` → `Tests 11 failed | 7 passed (18)`). WP chạy tại `28897ba` (engine `Tests 18 failed (18)`; integration `Tests 4 failed | 2 passed (6)` trên `wt_wt_l06_wp`).
 
 | ID | Dòng đỏ đầu tiên | Vì sao đúng lý do |
 |---|---|---|
@@ -111,8 +113,8 @@ RL 7/7, WP 7/7 → **14/14 = 100%**.
 | Lần | Mutant | Killed + timeout | Survived | No cov | Score | `real` |
 |---|---|---|---|---|---|---|
 | Baseline (toàn `src/**/*.ts` trừ `index.ts`, `types.ts`, `__tests__`) | 2204 | 1411 + 32 | 702 | 59 | **65.47%** | 96.80 s |
-| Sau `cec0da5` | 2204 | 1620 + 36 | 533 | 15 | 75.14% | 97.20 s |
-| Sau `904bfdf` | 2204 | 1674 + 36 | 479 | 15 | **77.59%** | 94.71 s |
+| Sau `f4221ce` | 2204 | 1620 + 36 | 533 | 15 | 75.14% | 97.20 s |
+| Sau `24543ea` | 2204 | 1674 + 36 | 479 | 15 | **77.59%** | 94.71 s |
 | `pnpm mutation`, `break: 77` | 2204 | 1674 + 36 | 479 | 15 | 77.59% | 99.15 s |
 
 - Baseline 96.80 s < 15 phút nên giữ toàn phạm vi. Theo file: `keyboard.ts` 0% → 98.96%, `engine.ts` 45.45% → 73.33%, `words.ts` 71.98% → 86.47%, `moderation.ts` 93.33% (4 mutant sống: regex/biên tương đương).
@@ -149,10 +151,10 @@ RL 7/7, WP 7/7 → **14/14 = 100%**.
 | — | push, `gh pr create`, label | **không chạy** (chờ #8 merge + rebase) |
 
 ## Đề xuất trạng thái BACKLOG
-- #1 → `đã xong` (L06 `041605d`): trusted proxy theo `TRUST_PROXY_HEADER`, mặc định không tin header. Còn lại: limiter `register` vẫn dùng `getClientIp` cũ.
-- #3 → `đã xong` (L06 `041605d`): key IP + email, trần IP 30.
-- #15 → `đã xong sau khi merge` (L06 `403ccd9`): có hiệu lực khi `main` có `guard-diff.sh` mới.
-- #18 → `đã xong, chờ CI chạy thật` (L06 `403ccd9`).
+- #1 → `đã xong` (L06 `4710f0e`): trusted proxy theo `TRUST_PROXY_HEADER`, mặc định không tin header. Còn lại: limiter `register` vẫn dùng `getClientIp` cũ.
+- #3 → `đã xong` (L06 `4710f0e`): key IP + email, trần IP 30.
+- #15 → `đã xong sau khi merge` (L06 `3fa4438`): có hiệu lực khi `main` có `guard-diff.sh` mới.
+- #18 → `đã xong, chờ CI chạy thật` (L06 `3fa4438`).
 - Mục mới đề xuất: `POST /api/auth/register` chuyển sang `getTrustedClientIp` (cùng biến), làm khi spec hoá limiter register.
 - Mục mới đề xuất: vitest runner của Stryker báo Survived cho mutant làm module crash lúc import; module có bảng dữ liệu + vòng lặp cấp module nên được test bằng import động.
 

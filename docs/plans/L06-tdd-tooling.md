@@ -34,7 +34,7 @@ Lesson/PR: L06 · EX-1, EX-2, EX-3, EX-7
 ```bash
 bash -n scripts/ci/*.sh && shellcheck scripts/ci/*.sh
 bash scripts/ci/test-check-tdd-commits.sh            # ≥ 6 ca, exit 0
-bash scripts/ci/check-tdd-commits.sh lesson/L05-enforcement HEAD   # exit 0
+bash scripts/ci/check-tdd-commits.sh main HEAD   # exit 0
 bash scripts/ci/test-guard-diff.sh                   # ≥ 20 ca, exit 0
 bash .claude/hooks/test-hooks.sh && bash scripts/lib/test-pg.sh
 wc -l CLAUDE.md                                      # ≤ 64
@@ -49,9 +49,9 @@ wc -l CLAUDE.md                                      # ≤ 64
 - v1 2026-10-30 09:37: bản đầu, approved.
 
 ## Thực tế
-Điền 2026-10-30 09:56. Plan `5d9777b` (09:37:30) trước code `1da9728` (09:37:35, template + CLAUDE.md), `552eab4` (09:37:57, agents), `cc10e40` (09:38:46, check-tdd + guard step), `403ccd9` (09:39:50, guard-diff + 4 self-test).
+Điền 2026-10-30 09:56. Plan `f77e424` (09:37:30) trước code `0260e0c` (09:37:35, template + CLAUDE.md), `9a4a927` (09:37:57, agents), `2aa86f9` (09:38:46, check-tdd + guard step), `3fa4438` (09:39:50, guard-diff + 4 self-test).
 
-Lệnh: `git diff --name-only lesson/L05-enforcement...HEAD -- specs/_template.md CLAUDE.md .claude scripts .github`.
+Lệnh: `git diff --name-only main...HEAD -- specs/_template.md CLAUDE.md .claude scripts .github`.
 
 - Khớp (9): `specs/_template.md`, `CLAUDE.md`, `.claude/agents/test-writer.md`, `.claude/agents/implementer.md`, `scripts/ci/check-tdd-commits.sh`, `scripts/ci/test-check-tdd-commits.sh`, `scripts/ci/guard-diff.sh`, `scripts/ci/test-guard-diff.sh`, `.github/workflows/ci.yml`.
 - Dự đoán mà không đổi (0). Đổi mà không dự đoán (0). Tỉ lệ khớp 9/9 = 100%.

@@ -156,21 +156,22 @@ Mỗi lesson một section. Mỗi file thay đổi xuất hiện đúng 1 lần 
 | Lỗi lặp / rule mới | `docs/ai-levelup/mistakes.md` | sửa | dòng lần 2 → rule; `turbo.json` → hook; 2 dòng L05 |
 
 ## L06 · Spec + TDD
-Diff: `git diff --name-only lesson/L05-enforcement...HEAD` (stack trên PR #8).
+Diff: `git diff --name-only main...HEAD` (`main` = `b5377bc`, sau khi PR #8 merge và rebase).
 
 | Feature | File | Loại | Verify bằng |
 |---|---|---|---|
 | Bài học L06 (teacher) | `docs/ai-levelup/lessons/L06-spec-tdd/LESSON.md` | thêm | đọc tay |
-| Backlog: #1, #3, #15, #18 `đã nhận` L06; #18–#20 từ review PR #8 (teacher) | `docs/ai-levelup/lessons/BACKLOG.md` | sửa | đọc tay |
-| Mục lục: L05 chờ label, L06 đang học (teacher) | `docs/ai-levelup/lessons/README.md` | sửa | đọc tay |
-| Plan EX-1/2/3/7 (approved `5d9777b`, Thực tế 9/9) | `docs/plans/L06-tdd-tooling.md` | thêm | commit trước code; `git log --reverse` |
-| Plan EX-6 Stryker (approved `5d9777b`, Thực tế 5/5) | `docs/plans/L06-mutation.md` | thêm | commit trước `pnpm add`/`1e34cbb` |
+| Chấm điểm L06 (teacher, PASS; việc khi nộp: hash sau rebase, CI, break 75) | `docs/ai-levelup/lessons/L06-spec-tdd/GRADE.md` | thêm | kết luận chấm |
+| Backlog: #1, #3, #15, #18 `đã nhận` L06; #18–#20 từ review PR #8; #23–#26 từ GRADE L06 (teacher) | `docs/ai-levelup/lessons/BACKLOG.md` | sửa | đọc tay |
+| Mục lục: L05 đã merge, L06 đã đạt + link GRADE (teacher) | `docs/ai-levelup/lessons/README.md` | sửa | đọc tay |
+| Plan EX-1/2/3/7 (approved `f77e424`, Thực tế 9/9) | `docs/plans/L06-tdd-tooling.md` | thêm | commit trước code; `git log --reverse` |
+| Plan EX-6 Stryker (approved `f77e424`, Thực tế 5/5) | `docs/plans/L06-mutation.md` | thêm | commit trước `pnpm add`/`9da1145` |
 | Template spec EARS (6 mục, 25 dòng) | `specs/_template.md` | thêm | đọc tay, AC-1 |
 | Dòng spec-first + `test:` trước `feat:` (64 dòng) | `CLAUDE.md` | sửa | `wc -l CLAUDE.md` = 64 |
 | Subagent chỉ ghi file test, cite ID | `.claude/agents/test-writer.md` | thêm | frontmatter `name/description/tools`; vai trò làm tay (Agent tool không có type này trong phiên) |
 | Subagent không ghi file test | `.claude/agents/implementer.md` | thêm | như trên; `check-tdd-commits.sh` exit 0 |
 | Rule learner: output làm dữ liệu chạy qua `rtk proxy` (lỗi lặp lần 3) | `.claude/agents/learner.md` | sửa | `mistakes.md` |
-| CI chặn `feat:` chạm file test | `scripts/ci/check-tdd-commits.sh` | thêm | `bash scripts/ci/check-tdd-commits.sh lesson/L05-enforcement HEAD` → OK |
+| CI chặn `feat:` chạm file test | `scripts/ci/check-tdd-commits.sh` | thêm | `bash scripts/ci/check-tdd-commits.sh main HEAD` → OK |
 | Self-test check TDD (10 ca, repo tạm) | `scripts/ci/test-check-tdd-commits.sh` | thêm | `bash scripts/ci/test-check-tdd-commits.sh` → 10/10 |
 | Guard bảo vệ workflows/actions/turbo/settings/pr-reviewer + `package.json` `.scripts` | `scripts/ci/guard-diff.sh` | sửa | `test-guard-diff.sh` 28/28; local trên L06 → FAIL đúng (6 file) |
 | +13 ca guard (workflow mới/sửa, action, turbo, settings, settings.local, pr-reviewer, scripts.test, devDep, script mới, package mới) | `scripts/ci/test-guard-diff.sh` | sửa | 28/28, exit 0 |
@@ -179,19 +180,19 @@ Diff: `git diff --name-only lesson/L05-enforcement...HEAD` (stack trên PR #8).
 | Spec WP (7 ID, đ/Đ, v2 blocklist + va chạm dấu) | `specs/WP/spec.md` | thêm | AC-5/AC-6 |
 | RL-01..03: `parseTrustProxyHeader`, `getTrustedClientIp`, `normalizeEmail` | `typing-adventure/apps/web/src/lib/rate-limit.ts` | sửa | `trusted-proxy.test.ts` 8/8; `rate-limit.test.ts` không đổi 9/9 |
 | RL-04..07: limit IP + email 10/15', trần IP 30/15', body qua `req.clone()` | `typing-adventure/apps/web/src/app/api/auth/[...nextauth]/route.ts` | sửa | `credentials-limit.test.ts` 10/10 |
-| Test RL-01..03 (test-writer, `8b4df00`) | `typing-adventure/apps/web/src/lib/__tests__/trusted-proxy.test.ts` | thêm | đỏ `parseTrustProxyHeader is not a function` → xanh |
-| Test RL-04..07 (test-writer, `8b4df00`) | `typing-adventure/apps/web/src/app/api/auth/[...nextauth]/__tests__/credentials-limit.test.ts` | thêm | đỏ assertion (RL-04/05/06), RL-07 xanh ngay (bảo toàn) |
+| Test RL-01..03 (test-writer, `9ea8dc3`) | `typing-adventure/apps/web/src/lib/__tests__/trusted-proxy.test.ts` | thêm | đỏ `parseTrustProxyHeader is not a function` → xanh |
+| Test RL-04..07 (test-writer, `9ea8dc3`) | `typing-adventure/apps/web/src/app/api/auth/[...nextauth]/__tests__/credentials-limit.test.ts` | thêm | đỏ assertion (RL-04/05/06), RL-07 xanh ngay (bảo toàn) |
 | Biến `TRUST_PROXY_HEADER` | `typing-adventure/.env.example` | sửa | `grep -c TRUST_PROXY_HEADER` = 1 |
 | Bảng triển khai → `TRUST_PROXY_HEADER`, env EC2/ECS/App Runner, checklist | `typing-adventure/docs/DEPLOY_AWS.md` | sửa | đọc tay, khớp bảng trong spec RL |
 | WP-01..04: `moderateWords`, `DEFAULT_BLOCKLIST`, `MAX_WORD_LENGTH` (pure, 0 import) | `typing-adventure/packages/game-engine/src/moderation.ts` | thêm | `moderation.test.ts` 18/18; Stryker 93.33% |
 | Export moderation | `typing-adventure/packages/game-engine/src/index.ts` | sửa | test import qua `../index` |
-| Test WP-01..04 (test-writer, `adcf9cb`) | `typing-adventure/packages/game-engine/src/__tests__/moderation.test.ts` | thêm | đỏ `moderateWords is not a function` → xanh |
+| Test WP-01..04 (test-writer, `28897ba`) | `typing-adventure/packages/game-engine/src/__tests__/moderation.test.ts` | thêm | đỏ `moderateWords is not a function` → xanh |
 | WP-05/06: POST kiểm duyệt, 400 + đếm, lưu `accepted` | `typing-adventure/apps/web/src/app/api/wordpacks/route.ts` | sửa | `wordpacks-moderation.int.test.ts` trên `wt_wt_l06_wp` |
 | WP-07: PUT cùng luật | `typing-adventure/apps/web/src/app/api/wordpacks/[id]/route.ts` | sửa | như trên |
-| Test integration WP-05..07 (test-writer, `adcf9cb`) | `typing-adventure/apps/web/src/app/api/__tests__/wordpacks-moderation.int.test.ts` | thêm | đỏ assertion → 12/12 xanh, `current_schema = wt_wt_l06_wp` |
+| Test integration WP-05..07 (test-writer, `28897ba`) | `typing-adventure/apps/web/src/app/api/__tests__/wordpacks-moderation.int.test.ts` | thêm | đỏ assertion → 12/12 xanh, `current_schema = wt_wt_l06_wp` |
 | Stryker devDeps 9.6.1 + script `mutation` | `typing-adventure/packages/game-engine/package.json` | sửa | `pnpm mutation` → 77.59% ≥ break 77 |
 | Lockfile Stryker | `typing-adventure/pnpm-lock.yaml` | sửa | `pnpm install --frozen-lockfile` (CI) `chưa verify runtime` |
-| Config Stryker (mutate, perTest, break 77) | `typing-adventure/packages/game-engine/stryker.config.json` | thêm | `pnpm --filter @typing-adventure/game-engine exec stryker run` |
+| Config Stryker (mutate, perTest, break 77 → 75 sau chấm) | `typing-adventure/packages/game-engine/stryker.config.json` | thêm | `pnpm --filter @typing-adventure/game-engine exec stryker run` |
 | Ignore `.stryker-tmp/`, `reports/` | `typing-adventure/.gitignore` | sửa | `git status` sạch sau 4 lần chạy |
 | Test đặc tả layout ngón tay (diệt mutant, import trong test) | `typing-adventure/packages/game-engine/src/__tests__/keyboard.test.ts` | thêm | keyboard.ts 0% → 98.96% |
 | Test đặc tả nguồn từ của `createInitialState`/custom text | `typing-adventure/packages/game-engine/src/__tests__/engine-setup.test.ts` | thêm | engine.ts 45.45% → 73.33%; 5 lần chạy liên tiếp xanh |
