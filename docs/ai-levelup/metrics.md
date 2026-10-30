@@ -39,4 +39,4 @@
 | L6 | Plan khớp diff: `L06-tdd-tooling.md` / `L06-mutation.md` | ≥80% | — | 9/9, 5/5 = 100% | 30/10/2026 |
 | L6 | Task multi-file có plan/spec approved trước code | 4/4 | — | 4/4: plan `f77e424` trước `0260e0c`…`9da1145`; spec RL `f45b286` trước `9ea8dc3`; spec WP `1c2dad2` (v2 `49b58f4`) trước `28897ba` | 30/10/2026 |
 | L6 | `check-tdd-commits.sh` trên branch L06 | exit 0 | — | `OK (18 commits in main..HEAD)` trước commit docs | 30/10/2026 |
-| L6 | Self-test chạy được local (CI chưa chạy, chưa push) | 4/4 xanh | — | `test-hooks` 41/41, `test-guard-diff` 28/28, `test-check-tdd-commits` 10/10, `test-pg` 9/9 | 30/10/2026 |
+| L6 | Self-test chạy local + CI PR #9 (run 40996093424) | 4/4 xanh | 9 | `test-hooks` 41/41, `test-guard-diff` 28/28, `test-check-tdd-commits` 10/10, `test-pg` 9/9 | 30/10/2026 |
