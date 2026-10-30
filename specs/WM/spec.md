@@ -14,7 +14,7 @@ Thay phần khớp blocklist của WP-03. `ModerationReason` thêm `mixed_script
 | WM-01 | WHEN xét blocklist THE SYSTEM SHALL tách từ đã gấp thành token theo `[\s'-]+`, bỏ token rỗng; IF một token bằng một mục blocklist một token THEN loại với `blocked` (`dumb-dumb`, `idiot's`, `-stupid-` bị chặn) | `typing-adventure/packages/game-engine/src/__tests__/moderation-v3.test.ts` |
 | WM-02 | IF dãy token của một mục blocklist (≥ 2 token) xuất hiện liên tiếp ở bất kỳ vị trí nào trong dãy token của từ THEN THE SYSTEM SHALL loại với `blocked` (`thằng đồ ngốc`, `đồ-ngốc`, `you're đồ ngốc nhé` bị chặn; `ngốc đồ`, `đồ chơi ngốc` không bị chặn bởi `đồ ngốc`) | `moderation-v3.test.ts` |
 | WM-03 | WHEN gấp THE SYSTEM SHALL bỏ mọi ký tự `\p{M}` sau NFD, không chỉ U+0300–U+036F (`stup⃝id` U+20DD, `stupid҉` U+0489 bị chặn bởi `stupid`) | `moderation-v3.test.ts` |
-| WM-04 | IF một từ có cả chữ `\p{Script=Latin}` và chữ `\p{Script=Cyrillic}` hoặc `\p{Script=Greek}` THEN THE SYSTEM SHALL loại với `mixed_script` (`stυpid`, `cаt` có `а` Cyrillic); từ chỉ một script (`привет`, `αβγ`, `Việt`) không bị loại vì lý do này | `moderation-v3.test.ts` |
+| WM-04 | IF một từ có cả chữ cái (`\p{L}`) `\p{Script=Latin}` và chữ cái `\p{Script=Cyrillic}` hoặc `\p{Script=Greek}` THEN THE SYSTEM SHALL loại với `mixed_script` (`stυpid`, `cаt` có `а` Cyrillic); từ chỉ một script (`привет`, `αβγ`, `Việt`) không bị loại vì lý do này; dấu kết hợp không tính, kể cả U+0483/U+0489 có Script=Cyrillic (`stupid҉` là `blocked`, không phải `mixed_script`) | `moderation-v3.test.ts` |
 | WM-05 | IF mục blocklist không còn token nào sau khi gấp (`''`, `' - '`) THEN THE SYSTEM SHALL bỏ qua mục đó (không chặn mọi từ) | `moderation-v3.test.ts` |
 | WM-06 | WHEN dùng `DEFAULT_BLOCKLIST` THE SYSTEM SHALL chặn đủ 11 ca người chấm L06: `STUPID`, `stüpid`, `you stupid`, `Đồ Ngốc`, `đồ  ngốc`, `thằng đồ ngốc`, `dumb-dumb`, `idiot's`, `stup⃝id`, `stupid҉` (`blocked`) và `stυpid` (`mixed_script`) | `moderation-v3.test.ts` |
 
@@ -31,3 +31,4 @@ File dự kiến: `typing-adventure/packages/game-engine/src/moderation.ts` (s�
 
 ## Lịch sử
 - v1 2026-10-30 20:25: bản đầu, approved. Thay phần khớp blocklist của WP-03 (xem Lịch sử `specs/WP/spec.md`).
+- v2 2026-10-30 20:30: WM-04 chỉ xét chữ cái `\p{L}`. Lý do: U+0483, U+0489 là `\p{M}` nhưng có Script=Cyrillic, xét mọi ký tự thì `stupid҉` thành `mixed_script`, trái WM-06.
