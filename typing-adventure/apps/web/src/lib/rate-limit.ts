@@ -92,3 +92,9 @@ export function warnIfProxyUntrusted(trust: TrustProxyHeader): void {
 export function normalizeEmail(email: unknown): string {
   return typeof email === 'string' ? email.trim().toLowerCase() : ''
 }
+
+const MAX_EMAIL_KEY_LENGTH = 254
+
+export function limiterEmailKey(email: unknown): string {
+  return normalizeEmail(email).slice(0, MAX_EMAIL_KEY_LENGTH)
+}
