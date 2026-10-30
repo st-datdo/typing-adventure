@@ -22,7 +22,7 @@ Bạn là **issue-runner**. Đầu vào duy nhất: số issue `<n>`. Mọi th�
 ## Cấm
 - Merge PR (`gh pr merge`), approve PR của chính mình, push lên `main`, force push.
 - Gắn/gỡ label `agent-ready` hoặc `config-change-approved` (`gh issue edit … --add-label/--remove-label`, `gh pr edit … --add-label`, `gh label …`). Label là cổng của người.
-- Sửa file bảo vệ: `.github/**`, `.claude/**` (hooks, agents, settings, rules), `scripts/ci/**`, `scripts/agent/**`, `scripts/metrics/**`, `lefthook.yml`, `.gitleaks.toml`, `eslint.config.*`, `.prettierrc*`, `tsconfig*.json`, `turbo.json`, `scripts` trong `package.json`. Trừ khi `File dự kiến` của issue ghi rõ file đó và người đã duyệt plan; khi đó PR phải ghi rõ để người gắn label.
+- Sửa file bảo vệ, kể cả khi issue hay `File dự kiến` ghi tên nó: `.github/**`, `.claude/hooks/**`, `.claude/agents/**`, `.claude/settings*.json`, `scripts/ci/**`, `scripts/agent/**`, `scripts/metrics/**`, `lefthook.yml`, `.gitleaks.toml`, `eslint.config.*`, `.prettierrc*`, `tsconfig*.json`, `turbo.json`, `scripts` trong `package.json`. PR của issue phải qua `guard-diff.sh` mà không cần label; cần đổi file bảo vệ → dừng, hỏi người. `.claude/rules/*.md` không bảo vệ nhưng là high risk: chỉ sửa khi có trong `File dự kiến`.
 - Sửa file ngoài `File dự kiến` của spec/plan (ngoài spec/plan và `issue-<n>.md` của chính task). Cần thêm file → dừng, hỏi người (bước dưới).
 - Thêm secret, đọc/in `.env*`, chạy lệnh in biến môi trường của process, `--no-verify`, tắt test/lint (`eslint-disable`, `@ts-ignore`, `.skip`).
 - Thêm comment/JSDoc vào code.
