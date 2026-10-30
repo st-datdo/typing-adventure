@@ -3,7 +3,12 @@ import { z } from 'zod'
 import bcrypt from 'bcryptjs'
 import { prisma } from '@typing-adventure/db'
 import { ok, err, tooManyRequests } from '@/lib/api-response'
-import { createRateLimiter, getClientIp } from '@/lib/rate-limit'
+import {
+  createRateLimiter,
+  getTrustedClientIp,
+  parseTrustProxyHeader,
+  warnIfProxyUntrusted,
+} from '@/lib/rate-limit'
 
 const registerLimiter = createRateLimiter({ limit: 5, windowMs: 15 * 60 * 1000 })
 
@@ -15,8 +20,13 @@ const registerSchema = z.object({
 })
 
 export async function POST(req: NextRequest) {
-  const rl = registerLimiter.check(getClientIp(req.headers))
-  if (!rl.allowed) return tooManyRequests(rl.retryAfterMs)
+  const trust = parseTrustProxyHeader(process.env.TRUST_PROXY_HEADER)
+  warnIfProxyUntrusted(trust)
+  const ip = getTrustedClientIp(req.headers, trust)
+  if (ip !== 'unknown') {
+    const rl = registerLimiter.check(ip)
+    if (!rl.allowed) return tooManyRequests(rl.retryAfterMs)
+  }
 
   try {
     const body = await req.json()
