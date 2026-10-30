@@ -24,6 +24,7 @@ jobs:
       issues: write
     env:
       HAS_KEY: ${{ secrets.ANTHROPIC_API_KEY != '' }}
+      AGENT_ENABLED: ${{ vars.AGENT_ENABLED == 'true' }}
       ISSUE_NUMBER: ${{ github.event.issue.number }}
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       NEXT_TELEMETRY_DISABLED: '1'
@@ -41,29 +42,29 @@ jobs:
         if: always()
         run: gh issue edit "$ISSUE_NUMBER" --remove-label agent-ready
 
-      - name: Skip without ANTHROPIC_API_KEY
-        if: env.HAS_KEY != 'true'
-        run: echo "::notice::ANTHROPIC_API_KEY not set, skipping agent run for issue $ISSUE_NUMBER"
+      - name: Skip unless AGENT_ENABLED and ANTHROPIC_API_KEY
+        if: env.AGENT_ENABLED != 'true' || env.HAS_KEY != 'true'
+        run: echo "::notice::agent disabled (vars.AGENT_ENABLED=$AGENT_ENABLED, key set=$HAS_KEY), skipping agent run for issue $ISSUE_NUMBER"
 
-      - if: env.HAS_KEY == 'true'
+      - if: env.AGENT_ENABLED == 'true' && env.HAS_KEY == 'true'
         uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4.3.0
         with:
           package_json_file: typing-adventure/package.json
 
-      - if: env.HAS_KEY == 'true'
+      - if: env.AGENT_ENABLED == 'true' && env.HAS_KEY == 'true'
         uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
           node-version: 20
           cache: pnpm
           cache-dependency-path: typing-adventure/pnpm-lock.yaml
 
-      - if: env.HAS_KEY == 'true'
+      - if: env.AGENT_ENABLED == 'true' && env.HAS_KEY == 'true'
         working-directory: typing-adventure
         run: |
           pnpm install --frozen-lockfile
           pnpm --filter @typing-adventure/db db:generate
 
-      - if: env.HAS_KEY == 'true'
+      - if: env.AGENT_ENABLED == 'true' && env.HAS_KEY == 'true'
         id: claude
         uses: anthropics/claude-code-action@6d5ae526d25ce88daa2200be073e1a373167f064 # v1.0.265
         with:
