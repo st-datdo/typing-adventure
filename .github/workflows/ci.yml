@@ -49,6 +49,18 @@ jobs:
       - name: Self-test pg lib
         working-directory: .
         run: bash scripts/lib/test-pg.sh
+      - name: Self-test lead-time
+        working-directory: .
+        run: bash scripts/metrics/test-lead-time.sh
+      - name: Self-test ready-gate
+        working-directory: .
+        run: bash scripts/agent/test-ready-gate.sh
+      - name: Self-test risk and feature-map
+        working-directory: .
+        run: bash scripts/agent/test-risk.sh
+      - name: Self-test agent board
+        working-directory: .
+        run: node --test tools/agent-board/test/*.test.mjs
       - run: pnpm --filter @typing-adventure/db db:generate
       - run: pnpm lint
       - run: pnpm typecheck

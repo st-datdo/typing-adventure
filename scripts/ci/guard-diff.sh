@@ -51,8 +51,9 @@ while IFS= read -r f; do
   [ -n "$f" ] || continue
   case "$f" in
     eslint.config.*|*/eslint.config.*|.prettierrc*|*/.prettierrc*|tsconfig*.json|*/tsconfig*.json|\
-    lefthook.yml|.gitleaks.toml|.github/workflows/*|.github/actions/*|.github/rulesets/*|scripts/ci/*|.claude/hooks/*|\
-    turbo.json|*/turbo.json|.claude/settings*.json|.claude/agents/pr-reviewer.md)
+    lefthook.yml|.gitleaks.toml|.github/workflows/*|.github/actions/*|.github/rulesets/*|.github/ISSUE_TEMPLATE/*|\
+    .github/*.yml|.github/*.yaml|scripts/ci/*|scripts/agent/*|scripts/metrics/*|.claude/hooks/*|.claude/agents/*|\
+    turbo.json|*/turbo.json|.claude/settings*.json)
       protected+=("$f")
       ;;
     package.json|*/package.json)
