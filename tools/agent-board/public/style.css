@@ -448,15 +448,22 @@ main {
 
 .card-top {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  gap: 6px;
+  gap: 2px 6px;
 }
 
 .card-id {
   font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   font-weight: 700;
   font-size: 0.86rem;
+  white-space: nowrap;
+  flex: 0 0 auto;
+}
+
+.card-top .badge {
+  flex-shrink: 0;
 }
 
 .card .badge {
@@ -625,7 +632,7 @@ main {
 
   .corner,
   .col-head,
-  .lane-empty {
+  .lane.lane-empty {
     display: none;
   }
 
