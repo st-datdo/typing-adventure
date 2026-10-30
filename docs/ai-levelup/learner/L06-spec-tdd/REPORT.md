@@ -96,7 +96,7 @@ grep -rhoE "(RL|WP)-[0-9]+" typing-adventure/packages/game-engine/src/__tests__/
   typing-adventure/apps/web/src/app/api/__tests__/wordpacks-moderation.int.test.ts | sort -u
 # WP-01 WP-02 WP-03 WP-04 WP-05 WP-06 WP-07
 ```
-RL 7/7, WP 7/7 → **14/14 = 100%**.
+RL 7/7, WP 7/7 → **14/14 = 100%**. Sau review (spec RL v3): RL 9/9 (`RL-01 … RL-09` cả hai phía), tổng **16/16 = 100%**.
 
 ## EX-4: thiết kế RL
 - `TRUST_PROXY_HEADER` đọc mỗi request; `parseTrustProxyHeader` trim + lowercase, lạ → `none`. Mặc định `none`: lý do và bảng triển khai trong spec và `DEPLOY_AWS.md` (EC2 + nginx → `x-real-ip`; ECS + ALB, App Runner → `x-forwarded-for`; dev → không đặt).
@@ -165,3 +165,38 @@ RL 7/7, WP 7/7 → **14/14 = 100%**.
 - (Đã verify sau chấm) CI PR #9: 4 self-test chạy được trên runner Ubuntu không cần tool thêm, `pnpm install --frozen-lockfile` với lockfile mới trên Node 20 xanh, bước TDD xanh, `guard` đỏ chỉ vì thiếu label. Không cần commit `fix(ci):`.
 - Hành vi header của nginx/ALB/App Runner thật: theo tài liệu và cấu hình nginx trong `DEPLOY_AWS.md`, chưa deploy.
 - Danh sách bảo vệ mới của `guard-diff.sh` trên PR thật: chỉ có hiệu lực sau merge.
+
+## Sửa sau review PR #9
+Review [#issuecomment-6514137708](https://github.com/st-datdo/typing-adventure/pull/9#issuecomment-6514137708), CHANGES REQUESTED, 1 lỗi chặn.
+
+**Lỗi:** limiter lấy email **đầu** (`req.clone().formData().get('email')`), còn Auth.js lấy email **cuối** (`@auth/core/lib/utils/web.js` `getBody`: `Object.fromEntries(new URLSearchParams(await req.text()))`; JSON qua `req.json()`). Body `email=<ngẫu nhiên>&email=nạn-nhân&password=…` nên mỗi request vào một bucket mới trong khi Auth.js thử mật khẩu của nạn nhân. Khi `TRUST_PROXY_HEADER` không đặt thì dò mật khẩu không giới hạn. Test RL-04 chỉ gửi 1 trường email nên không bắt được.
+
+**Quy trình (giờ là author date):**
+| Commit | Giờ | Vai | ID |
+|---|---|---|---|
+| `1c2779a` docs(spec) RL v3 | 10:21:49 | learner | RL-08, RL-09 (Lịch sử `v3 2026-10-30 10:21` từ `date`) |
+| `6feddfd` test(web) | 10:22:20 | **test-writer** (chỉ `credentials-limit.test.ts`) | RL-08, RL-09 |
+| `c56ee59` fix(web) | 10:22:48 | **implementer** (route + `DEPLOY_AWS.md`, không file test) | RL-08, RL-09 |
+
+**Lựa chọn RL-08:** từ chối 400 khi form có nhiều hơn 1 trường `email`, thay vì chép cách lấy "giá trị cuối" của Auth.js. Lý do: form đăng nhập hợp lệ không bao giờ gửi 2 email, và cách này không phụ thuộc chi tiết nội bộ của `next-auth` beta. JSON đọc giống Auth.js (`JSON.parse` chỉ giữ 1 khoá), `email` không phải chuỗi hoặc body hỏng → 400. **RL-09:** email sau trim > 254 ký tự (RFC 5321) → 400, kiểm **trước** limiter nên không tạo bucket. Spec thành 9 ID, vượt khuyến nghị ≤ 7 của LESSON (AC-4): giữ chung vì cả hai là luật lấy key của cùng limiter (lý do ghi ở Lịch sử v3).
+
+**Dòng đỏ ở `6feddfd`** (`Tests 6 failed | 11 passed (17)`). Bản nháp đầu đỏ sai lý do ở 3 ca (chuỗi test dài 254/253 thay vì 255/254; mock handler ném `Unexpected end of JSON input`); đã sửa test trước khi commit:
+| Ca | Dòng đỏ đầu tiên | Đúng lý do |
+|---|---|---|
+| RL-08 nhiều email → 400 | `expected 200 to be 400` | route cũ chuyển thẳng cho Auth.js |
+| RL-08 xoay email mồi 12 lần | `expected [ 200, … ] to deeply equal [ 400, … ]` | đúng lỗ hổng: không lần nào bị chặn |
+| RL-08 JSON theo email | `expected 429 to be 200` (bob) | `formData()` trên JSON ném → key email rỗng, bob dùng chung bucket với ana |
+| RL-08 JSON `email` là mảng | `expected 200 to be 400` | không kiểm kiểu |
+| RL-08 JSON hỏng | `expected 200 to be 400` | không kiểm body |
+| RL-09 255 ký tự | `expected [ 200, … ] to deeply equal [ 400, … ]` | không có trần |
+| RL-09 đúng 254 ký tự → 200 | xanh ngay | ca biên bảo toàn |
+
+**Verify ở HEAD (`c56ee59`):** web `Tests 42 passed (42)`, engine 177; `check-tdd-commits.sh main HEAD` → `OK (25 commits in main..HEAD)`; `rtk proxy pnpm lint --force` exit 0 (`0 errors, 37 warnings`), `typecheck --force` exit 0 (`4 successful`), `test` exit 0, `build --force` exit 0 (23.70 s); `test-hooks.sh` 41/41. `rate-limit.test.ts` vẫn không đổi.
+
+**DEPLOY_AWS.md:** khối cảnh báo "Production bắt buộc đặt `TRUST_PROXY_HEADER`" (để trống thì ai cũng khoá được đăng nhập mật khẩu của tài khoản khác 15 phút bằng 10 lần sai), checklist đổi thành "Bắt buộc", thêm câu về 400 của RL-08/RL-09.
+
+**Follow-up không chặn từ review** (teacher đã ghi BACKLOG #23–#25, không sửa BACKLOG trong PR này):
+- Bộ nhớ limiter: số bucket vẫn tăng theo số email khác nhau trong 15 phút (mỗi key ≤ 254 ký tự sau RL-09, quét mỗi cửa sổ). Lâu dài: store Redis có TTL (#2) hoặc trần số key/LRU.
+- `moderateWords` lách được: token chỉ tách theo dấu cách (`stupid-head`, `idiot's`), dấu kết hợp ngoài U+0300–U+036F (`s⃐tupid`) không bị bỏ khi gấp, chữ đồng hình Cyrillic/Hy Lạp qua `\p{L}`. Hướng sửa: tách token theo `[ '-]`, bỏ mọi `\p{M}` khi gấp, giới hạn script theo ngôn ngữ pack (#23, trước WP-C).
+- `check-tdd-commits.sh` chỉ là lời nhắc, chưa phải chốt chặn: `fix:`/`refactor:`/`chore:` sửa cả test lẫn code vẫn qua; không kiểm `test:` đứng trước `feat:`; `is_test_file` bỏ sót `src/test/**` (guard DB của integration), `*.test.js|mjs`, `*.spec.ts` ngoài `e2e/`, `vitest*.config.ts`; guard chưa bảo vệ `test-writer.md`/`implementer.md` (#25).
+- `ci.yml` vẫn tự sửa được trong PR (job chạy theo bản của PR); chỉ label của người chặn.

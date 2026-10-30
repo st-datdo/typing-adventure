@@ -176,14 +176,14 @@ Diff: `git diff --name-only main...HEAD` (`main` = `b5377bc`, sau khi PR #8 merg
 | Guard bảo vệ workflows/actions/turbo/settings/pr-reviewer + `package.json` `.scripts` | `scripts/ci/guard-diff.sh` | sửa | `test-guard-diff.sh` 28/28; local trên L06 → FAIL đúng (6 file) |
 | +13 ca guard (workflow mới/sửa, action, turbo, settings, settings.local, pr-reviewer, scripts.test, devDep, script mới, package mới) | `scripts/ci/test-guard-diff.sh` | sửa | 28/28, exit 0 |
 | Job `guard` lấy 2 script từ base + bước TDD; job `checks` chạy 4 self-test | `.github/workflows/ci.yml` | sửa | YAML parse; CI `chưa verify runtime` (chưa push) |
-| Spec RL (7 ID, bảng triển khai, v2 RL-07 bảo toàn) | `specs/RL/spec.md` | thêm | AC-4/AC-6 |
+| Spec RL (9 ID, bảng triển khai, v2 RL-07 bảo toàn, v3 RL-08/09 sau review) | `specs/RL/spec.md` | thêm | AC-4/AC-6 |
 | Spec WP (7 ID, đ/Đ, v2 blocklist + va chạm dấu) | `specs/WP/spec.md` | thêm | AC-5/AC-6 |
 | RL-01..03: `parseTrustProxyHeader`, `getTrustedClientIp`, `normalizeEmail` | `typing-adventure/apps/web/src/lib/rate-limit.ts` | sửa | `trusted-proxy.test.ts` 8/8; `rate-limit.test.ts` không đổi 9/9 |
-| RL-04..07: limit IP + email 10/15', trần IP 30/15', body qua `req.clone()` | `typing-adventure/apps/web/src/app/api/auth/[...nextauth]/route.ts` | sửa | `credentials-limit.test.ts` 10/10 |
+| RL-04..09: limit IP + email 10/15', trần IP 30/15', body qua `req.clone()`; sau review: 1 trường email (JSON như Auth.js), trần 254, 400 trước Auth.js | `typing-adventure/apps/web/src/app/api/auth/[...nextauth]/route.ts` | sửa | `credentials-limit.test.ts` 17/17 |
 | Test RL-01..03 (test-writer, `9ea8dc3`) | `typing-adventure/apps/web/src/lib/__tests__/trusted-proxy.test.ts` | thêm | đỏ `parseTrustProxyHeader is not a function` → xanh |
-| Test RL-04..07 (test-writer, `9ea8dc3`) | `typing-adventure/apps/web/src/app/api/auth/[...nextauth]/__tests__/credentials-limit.test.ts` | thêm | đỏ assertion (RL-04/05/06), RL-07 xanh ngay (bảo toàn) |
+| Test RL-04..09 (test-writer, `9ea8dc3`; RL-08/09 `6feddfd`) | `typing-adventure/apps/web/src/app/api/auth/[...nextauth]/__tests__/credentials-limit.test.ts` | thêm | đỏ assertion (RL-04/05/06), RL-07 xanh ngay (bảo toàn) |
 | Biến `TRUST_PROXY_HEADER` | `typing-adventure/.env.example` | sửa | `grep -c TRUST_PROXY_HEADER` = 1 |
-| Bảng triển khai → `TRUST_PROXY_HEADER`, env EC2/ECS/App Runner, checklist | `typing-adventure/docs/DEPLOY_AWS.md` | sửa | đọc tay, khớp bảng trong spec RL |
+| Bảng triển khai → `TRUST_PROXY_HEADER`, env EC2/ECS/App Runner, checklist; cảnh báo bắt buộc ở production (khoá tài khoản) | `typing-adventure/docs/DEPLOY_AWS.md` | sửa | đọc tay, khớp bảng trong spec RL |
 | WP-01..04: `moderateWords`, `DEFAULT_BLOCKLIST`, `MAX_WORD_LENGTH` (pure, 0 import) | `typing-adventure/packages/game-engine/src/moderation.ts` | thêm | `moderation.test.ts` 18/18; Stryker 93.33% |
 | Export moderation | `typing-adventure/packages/game-engine/src/index.ts` | sửa | test import qua `../index` |
 | Test WP-01..04 (test-writer, `28897ba`) | `typing-adventure/packages/game-engine/src/__tests__/moderation.test.ts` | thêm | đỏ `moderateWords is not a function` → xanh |
