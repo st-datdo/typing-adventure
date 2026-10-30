@@ -1,6 +1,7 @@
 import { NextRequest } from 'next/server'
 import { z } from 'zod'
 import { prisma } from '@typing-adventure/db'
+import { moderateWords } from '@typing-adventure/game-engine'
 import { requireAdmin } from '@/lib/admin-guard'
 import { ok, err } from '@/lib/api-response'
 
@@ -18,10 +19,7 @@ interface RouteContext {
   params: Promise<{ id: string }>
 }
 
-export async function GET(
-  _req: NextRequest,
-  context: RouteContext,
-) {
+export async function GET(_req: NextRequest, context: RouteContext) {
   const { id } = await context.params
 
   try {
@@ -33,10 +31,7 @@ export async function GET(
   }
 }
 
-export async function PUT(
-  req: NextRequest,
-  context: RouteContext,
-) {
+export async function PUT(req: NextRequest, context: RouteContext) {
   const { user, error } = await requireAdmin()
   if (error) return error
 
@@ -52,9 +47,19 @@ export async function PUT(
       return err(parsed.error.errors[0].message)
     }
 
+    const data = parsed.data
+    if (data.words) {
+      const moderation = moderateWords(data.words)
+      const refused = moderation.rejected.filter((r) => r.reason !== 'duplicate')
+      if (refused.length > 0) {
+        return err(`${refused.length} word(s) rejected by moderation`)
+      }
+      data.words = moderation.accepted
+    }
+
     const pack = await prisma.wordPack.update({
       where: { id },
-      data: parsed.data,
+      data,
     })
 
     return ok(pack)
@@ -63,10 +68,7 @@ export async function PUT(
   }
 }
 
-export async function DELETE(
-  _req: NextRequest,
-  context: RouteContext,
-) {
+export async function DELETE(_req: NextRequest, context: RouteContext) {
   const { user, error } = await requireAdmin()
   if (error) return error
 

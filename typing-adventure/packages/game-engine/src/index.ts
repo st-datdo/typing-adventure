@@ -51,7 +51,13 @@ export {
   feedPet,
 } from './pet'
 
-export { ISLANDS, getIslandViews, countDoneIslands, getCurrentIsland, newlyReachedIsland } from './islands'
+export {
+  ISLANDS,
+  getIslandViews,
+  countDoneIslands,
+  getCurrentIsland,
+  newlyReachedIsland,
+} from './islands'
 
 export {
   emptyChildProgress,
@@ -147,11 +153,7 @@ export {
 export { ACHIEVEMENTS, checkAchievements } from './achievements'
 
 // Keyboard
-export {
-  KEYBOARD_ROWS,
-  KEY_FINGER_MAP,
-  getFingerForKey,
-} from './keyboard'
+export { KEYBOARD_ROWS, KEY_FINGER_MAP, getFingerForKey } from './keyboard'
 
 // Engine
 export {
@@ -165,3 +167,6 @@ export {
   calculateResult,
   formatTime,
 } from './engine'
+
+export type { ModerationReason, ModerationRejection, ModerationResult } from './moderation'
+export { moderateWords, DEFAULT_BLOCKLIST, MAX_WORD_LENGTH } from './moderation'
