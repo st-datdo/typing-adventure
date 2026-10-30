@@ -30,7 +30,7 @@ Phạm vi chạy lại: người chấm tự chạy 3 bộ test (hooks, guard-di
   4. Devcontainer chưa có lefthook và gitleaks (learner cài bằng brew trên host), nên commit trong container sẽ fail ở bước gitleaks.
 - Comment cơ học của reviewer trên PR L05 chưa đo được vì PR còn draft. Đo khi review.
 
-## Kết luận: FAIL (cần sửa 1 điểm, phần còn lại đạt)
+## Kết luận lần 1: FAIL (cần sửa 1 điểm, phần còn lại đạt). Xem "Chấm lại sau sửa" bên dưới: PASS
 Việc phải làm:
 1. **Plan trước:** thêm v2 vào `docs/plans/L05-mcp-postgres.md` (giờ lấy từ `date '+%F %H:%M'`), commit trước khi sửa SQL.
 2. `.devcontainer/init-db/01-mcp-readonly.sql`: thêm `REVOKE CREATE ON SCHEMA public FROM PUBLIC;`. Lệnh này idempotent và không có tác dụng trên Postgres 15+. Không cấp lại `CREATE` cho `mcp_ro`.
@@ -39,3 +39,23 @@ Việc phải làm:
 5. Push; CI phải vẫn `checks`/`gitleaks` xanh. Sau đó người chấm chấm lại AC-8.
 
 Không bắt buộc nhưng nên làm cùng lượt nếu còn thời gian: BACKLOG #14 (`\rm`).
+
+## Chấm lại sau sửa (2026-10-30, head `6423e2e`)
+Commit sửa: `7f0c1f5` (01:05:44, plan v2 cho `L05-mcp-postgres.md` và `L05-agent-hooks.md`) → `32753b3` (01:06:57, SQL) → `f9d1652` (01:06:58, hook) → `6423e2e` (docs). Plan v2 ghi `01:05`, commit trước code. Mỗi plan có thêm đoạn Thực tế cho v2.
+
+| AC | Đạt/Chưa | Bằng chứng (người chấm tự chạy) |
+|---|---|---|
+| AC-8 | Đạt | `.devcontainer/init-db/01-mcp-readonly.sql:9` có `REVOKE CREATE ON SCHEMA public FROM PUBLIC;`. Người chấm dựng 3 container dùng xong bỏ (`docker run --rm -d`, chỉ dùng `docker exec`, dừng bằng ID, **không** đụng DB host). Mỗi container: tạo bảng `sample` 2 dòng, nạp script, rồi đăng nhập `mcp_ro` qua TCP. **Đối chứng** `postgres:14-alpine` (14.24) với script cũ `721b95d`: `SET default_transaction_read_only = off; CREATE TABLE public.x` → **thành công** (tái hiện đúng lỗi). `postgres:14-alpine` với script mới → `ERROR: permission denied for schema public`. `postgres:16-alpine` (16.10) với script mới → cùng lỗi đó, nạp script exit 0. Cả 3 container: `select count(*) from sample` → `2`; `INSERT` → `permission denied for table sample`. Sau khi dừng, `docker ps -q` → 0 |
+| AC-2 (BACKLOG #14) | Đạt | `guard-bash.sh` bỏ `\` khỏi từng token trước khi so. `test-hooks.sh` → `cases: 41, passed: 41, failed: 0, allow-cases passed: 12, leaks: 0`, exit 0; `shellcheck` sạch. Người chấm thử thêm ngoài bộ test: `\rm -rf`, `"rm" -rf`, `r''m -rf`, `r\m -rf`, `env rm -rf`, `nice rm -rf`, `git push origin \+main` → exit 2. Các lệnh vẫn phải cho qua: `git push origin lesson/x`, `rm notes.txt`, `printf 'a\\nb'` → exit 0 |
+| CI | Như lần đầu | `gh pr checks 8` (run 40927906598, head `6423e2e`): `checks` pass 1m13s, `gitleaks` pass 6s, `guard` fail chỉ vì thiếu label `config-change-approved` (đúng thiết kế), `review` skipping. `mergeStateStatus: BLOCKED`, draft, chưa có label |
+
+Các AC khác không đổi so với lần chấm đầu: diff sửa chỉ chạm `guard-bash.sh` (+1 dòng), `test-hooks.sh` (+5 ca), file SQL (+1 dòng) và docs.
+
+### Kết luận sau chấm lại: PASS
+Learner phải làm trước khi đánh dấu PR ready: commit `GRADE.md`, `README.md`, `BACKLOG.md` (#5 và #14 → đã xong).
+User phải làm:
+1. Gắn label `config-change-approved` cho PR #8, để `guard` xanh.
+2. Trên DB host: `drop table public.mcp_probe;` và chạy lại `psql -f .devcontainer/init-db/01-mcp-readonly.sql` bằng user `dev`.
+3. Gộp `.claude/hooks/settings.hooks.json` vào `.claude/settings.json`, approve server `postgres-ro`.
+
+Reviewer phải làm khi merge: kiểm BACKLOG #16 (`require_extra_approval_for_unattributed_changes`), và đo số comment cơ học (metric L5).
