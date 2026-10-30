@@ -1,4 +1,9 @@
-export type ModerationReason = 'invalid_chars' | 'too_long' | 'blocked' | 'duplicate'
+export type ModerationReason =
+  | 'invalid_chars'
+  | 'too_long'
+  | 'mixed_script'
+  | 'blocked'
+  | 'duplicate'
 
 export interface ModerationRejection {
   word: string
@@ -20,21 +25,42 @@ function normalizeWord(word: string): string {
   return word.normalize('NFC').trim().replace(/\s+/g, ' ')
 }
 
+const LATIN_LETTER = /(?=\p{L})\p{Script=Latin}/u
+const OTHER_SCRIPT_LETTER = /(?=\p{L})[\p{Script=Cyrillic}\p{Script=Greek}]/u
+
 function fold(word: string): string {
-  return word.replace(/[đĐ]/g, 'd').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase()
+  return word.replace(/[đĐ]/g, 'd').normalize('NFD').replace(/\p{M}/gu, '').toLowerCase()
 }
 
-function isBlocked(word: string, blocked: Set<string>): boolean {
-  const folded = fold(word)
-  if (blocked.has(folded)) return true
-  return folded.split(' ').some((token) => blocked.has(token))
+function tokenize(word: string): string[] {
+  return fold(word)
+    .split(/[\s'-]+/)
+    .filter((token) => token !== '')
+}
+
+function isMixedScript(word: string): boolean {
+  return LATIN_LETTER.test(word) && OTHER_SCRIPT_LETTER.test(word)
+}
+
+function containsSequence(tokens: readonly string[], entry: readonly string[]): boolean {
+  for (let start = 0; start + entry.length <= tokens.length; start++) {
+    if (entry.every((token, offset) => tokens[start + offset] === token)) return true
+  }
+  return false
+}
+
+function isBlocked(word: string, blocklist: readonly string[][]): boolean {
+  const tokens = tokenize(word)
+  return blocklist.some((entry) => containsSequence(tokens, entry))
 }
 
 export function moderateWords(
   words: readonly string[],
   blocklist: readonly string[] = DEFAULT_BLOCKLIST,
 ): ModerationResult {
-  const blocked = new Set(blocklist.map((entry) => fold(normalizeWord(entry))))
+  const blocked = blocklist
+    .map((entry) => tokenize(normalizeWord(entry)))
+    .filter((tokens) => tokens.length > 0)
   const seen = new Set<string>()
   const accepted: string[] = []
   const rejected: ModerationRejection[] = []
@@ -44,6 +70,7 @@ export function moderateWords(
     let reason: ModerationReason | null = null
     if (!ALLOWED_WORD.test(word)) reason = 'invalid_chars'
     else if ([...word].length > MAX_WORD_LENGTH) reason = 'too_long'
+    else if (isMixedScript(word)) reason = 'mixed_script'
     else if (isBlocked(word, blocked)) reason = 'blocked'
     else if (seen.has(word.toLowerCase())) reason = 'duplicate'
 
