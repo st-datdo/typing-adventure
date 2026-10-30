@@ -1,27 +1,34 @@
 import { NextRequest } from 'next/server'
 import { z } from 'zod'
 import { prisma } from '@typing-adventure/db'
+import { checkSessionPlausibility } from '@typing-adventure/game-engine'
 import { getSessionUser } from '@/lib/auth'
 import { ok, err, unauthorized, tooManyRequests } from '@/lib/api-response'
 import { createRateLimiter } from '@/lib/rate-limit'
 
 const sessionsLimiter = createRateLimiter({ limit: 30, windowMs: 60 * 1000 })
 
-const createSessionSchema = z.object({
-  gameMode: z.enum(['classic', 'lesson', 'timeAttack', 'challenge']),
-  level: z.enum(['easy', 'medium', 'hard']),
-  lessonIndex: z.number().int().optional(),
-  wpm: z.number().int().min(0),
-  cps: z.number().min(0),
-  accuracy: z.number().int().min(0).max(100),
-  score: z.number().int().min(0),
-  stars: z.number().int().min(1).max(3),
-  timeSeconds: z.number().min(0),
-  wordCount: z.number().int().min(0),
-  maxCombo: z.number().int().min(0).default(0),
-  mistakeMap: z.record(z.number()).default({}),
-  textContent: z.string().optional(),
-})
+const createSessionSchema = z
+  .object({
+    gameMode: z.enum(['classic', 'lesson', 'timeAttack', 'challenge']),
+    level: z.enum(['easy', 'medium', 'hard']),
+    lessonIndex: z.number().int().optional(),
+    wpm: z.number().int().min(0),
+    cps: z.number().min(0),
+    accuracy: z.number().int().min(0).max(100),
+    score: z.number().int().min(0),
+    stars: z.number().int().min(1).max(3),
+    timeSeconds: z.number().min(0),
+    wordCount: z.number().int().min(0),
+    maxCombo: z.number().int().min(0).default(0),
+    mistakeMap: z.record(z.number()).default({}),
+    textContent: z.string().optional(),
+  })
+  .superRefine((data, ctx) => {
+    if (checkSessionPlausibility(data) !== null) {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, message: 'Implausible session result' })
+    }
+  })
 
 export async function POST(req: NextRequest) {
   const user = await getSessionUser()
@@ -64,8 +71,16 @@ export async function POST(req: NextRequest) {
     })
 
     const bestWpm = (record?.bestWpm as Record<string, number>) ?? { easy: 0, medium: 0, hard: 0 }
-    const bestAcc = (record?.bestAccuracy as Record<string, number>) ?? { easy: 0, medium: 0, hard: 0 }
-    const bestScore = (record?.bestScore as Record<string, number>) ?? { easy: 0, medium: 0, hard: 0 }
+    const bestAcc = (record?.bestAccuracy as Record<string, number>) ?? {
+      easy: 0,
+      medium: 0,
+      hard: 0,
+    }
+    const bestScore = (record?.bestScore as Record<string, number>) ?? {
+      easy: 0,
+      medium: 0,
+      hard: 0,
+    }
 
     const newBestWpm = { ...bestWpm }
     const newBestAcc = { ...bestAcc }
@@ -76,9 +91,7 @@ export async function POST(req: NextRequest) {
     if (data.score > (newBestScore[data.level] ?? 0)) newBestScore[data.level] = data.score
 
     const today = new Date().toISOString().slice(0, 10)
-    const lastDate = record?.lastPlayDate
-      ? record.lastPlayDate.toISOString().slice(0, 10)
-      : null
+    const lastDate = record?.lastPlayDate ? record.lastPlayDate.toISOString().slice(0, 10) : null
     const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10)
 
     let dayStreak = record?.dayStreak ?? 0

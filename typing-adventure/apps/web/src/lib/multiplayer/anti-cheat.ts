@@ -1,4 +1,5 @@
-const MAX_WPM = 200
+import { MAX_WPM } from '@typing-adventure/game-engine'
+
 const MIN_KEYSTROKE_INTERVAL_MS = 20
 
 interface ProgressCheck {
