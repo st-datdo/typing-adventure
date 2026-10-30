@@ -43,3 +43,4 @@ File dự kiến: `typing-adventure/apps/web/src/lib/rate-limit.ts` (sửa: thê
 
 ## Lịch sử
 - v1 2026-10-30 09:40: bản đầu, approved.
+- v2 2026-10-30 09:41: RL-07 là test bảo toàn (route hiện tại đã chuyển nguyên request, không đếm path khác), xanh ngay ở commit `test:`; nó chặn hỏng body khi `feat:` thêm bước đọc email từ `req.clone()`. Ca "thiếu email" đặt dưới RL-04 (key email rỗng).
