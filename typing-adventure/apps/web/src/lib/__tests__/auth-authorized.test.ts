@@ -1,10 +1,11 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 type Authorized = (params: { auth: unknown; request: Request }) => unknown
-let captured: { callbacks?: { authorized?: Authorized } } | undefined
+type Config = { callbacks?: { authorized?: Authorized } }
+let captured: Config | undefined
 
 vi.mock('next-auth', () => ({
-  default: (config: typeof captured) => {
+  default: (config: Config) => {
     captured = config
     return { handlers: {}, auth: vi.fn(), signIn: vi.fn(), signOut: vi.fn() }
   },
@@ -19,7 +20,8 @@ async function authorized() {
   vi.resetModules()
   captured = undefined
   await import('../auth')
-  const cb = captured?.callbacks?.authorized
+  const config = captured as Config | undefined
+  const cb = config?.callbacks?.authorized
   expect(cb).toBeTypeOf('function')
   return cb as Authorized
 }
