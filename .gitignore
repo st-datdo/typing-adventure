@@ -8,3 +8,4 @@
 # Worktrees (scripts/wt-new.sh)
 .worktrees/
 .wt-env
+.wt-scope
