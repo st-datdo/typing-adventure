@@ -230,6 +230,8 @@ Diff của 3 PR: #10 (`gh pr diff 10 --name-only`, merge `4df98c8`), #11 (`gh pr
 | Test WM-01..06, 11 ca GRADE L06 | `typing-adventure/packages/game-engine/src/__tests__/moderation-v3.test.ts` | thêm | đỏ 10 ca → xanh; `moderation.test.ts` 0 dòng đổi |
 | Báo cáo task B | `docs/ai-levelup/learner/L07-parallel/task-B.md` | thêm | đọc tay |
 | Báo cáo L07 | `docs/ai-levelup/learner/L07-parallel/REPORT.md` | thêm | đọc tay |
+| Chấm điểm L07 (teacher, PASS 9/9 AC; thử phá hook) | `docs/ai-levelup/lessons/L07-parallel/GRADE.md` | thêm | kết luận chấm |
+| Backlog: #20, #21, #23 `đã xong`, #24 `một phần`; mới #27–#30 từ GRADE L07 (teacher) | `docs/ai-levelup/lessons/BACKLOG.md` | sửa | đọc tay |
 | Section L07 | `docs/ai-levelup/learner/FEATURE_MAP.md` | sửa | mọi file trong diff 3 PR có đúng 1 dòng |
 | 13 dòng L7 | `docs/ai-levelup/metrics.md` | sửa | output `lead-time.sh`, `gh api …/commits`, timeline |
 | Lỗi rtk `git diff` trong vòng lặp scope (lần 4) | `docs/ai-levelup/mistakes.md` | sửa | đọc tay |

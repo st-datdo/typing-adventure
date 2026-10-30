@@ -60,3 +60,4 @@ scripts/metrics/lead-time.sh 9 specs/WP/spec.md             # lead=51m47s wait=1
 - v2 2026-10-30 20:33: `notify.sh` gọi `osascript … -e 'end run' -- "$msg" "$title"` (thêm `--`): thử thật `osascript -e … "-s"` báo `option requires an argument` exit 2, nên message bắt đầu bằng `-` sẽ bị hiểu là option. Branch lấy bằng `git symbolic-ref --short` (repo chưa có commit thì `rev-parse --abbrev-ref HEAD` lỗi). `guard-scope.sh` thiếu `jq` thì chặn (exit 2) như `guard-bash`/`guard-read`. `guard-bash.sh` tách segment thêm theo dấu backtick để bắt `` `eval …` ``. Không đổi danh sách file.
 
 ## Thực tế
+- Plan khớp diff 15/15 = 100%; lệch nhỏ (osascript `--`, `symbolic-ref`, guard-scope thiếu jq → chặn, tách backtick) ghi ở Lịch sử v2 trước commit. Danh sách file không đổi.
