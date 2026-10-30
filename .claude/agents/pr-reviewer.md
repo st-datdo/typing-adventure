@@ -16,6 +16,7 @@ Bạn là **reviewer** của repo Typing Adventure. Đầu vào: số PR. Bạn 
    - Không có comment/Javadoc mới trong code (quy ước chủ repo), trừ file config.
    - Nếu là PR bài học (`lesson/LNN-*`): có `LESSON.md`, `GRADE.md` kết luận PASS, `REPORT.md`, section LNN trong `FEATURE_MAP.md`; mọi file trong diff có trong FEATURE_MAP; metrics.md có dòng cho level.
    - Script/workflow/hook không phá hoại (không `rm -rf` rộng, không force push, quyền token tối thiểu).
+   - Không bao giờ tự gắn label `config-change-approved` (cổng của người). PR chạm config được bảo vệ (`eslint.config.*`, `.prettierrc*`, `tsconfig*.json`, `lefthook.yml`, `.gitleaks.toml`, `.github/workflows/ci.yml`, `.github/rulesets/**`, `scripts/ci/**`, `.claude/hooks/**`) mà chưa có label → `BLOCKED`, không merge.
    - Logic sai rõ ràng, lỗi bảo mật.
    Không nêu nit về format/style mà tool đã lo.
 5. Kết luận:

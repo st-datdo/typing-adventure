@@ -1,0 +1,16 @@
+title = "typing-adventure gitleaks config"
+
+[extend]
+useDefault = true
+
+[[allowlists]]
+description = "i18n achievement description keys (descKey: 'achXxxDesc') match generic-api-key"
+condition = "AND"
+paths = [
+  '''^app\.js$''',
+  '''^typing-adventure/packages/game-engine/src/achievements\.ts$''',
+]
+regexTarget = "secret"
+regexes = [
+  '''^ach[A-Za-z0-9]+Desc$''',
+]

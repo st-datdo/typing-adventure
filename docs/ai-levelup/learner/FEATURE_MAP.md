@@ -116,3 +116,41 @@ Mỗi lesson một section. Mỗi file thay đổi xuất hiện đúng 1 lần 
 | Feature map | `docs/ai-levelup/learner/FEATURE_MAP.md` | sửa | section L04 |
 | Metric L4 | `docs/ai-levelup/metrics.md` | sửa | 6 dòng L4 |
 | Lỗi gặp trong L04 | `docs/ai-levelup/mistakes.md` | sửa | 4 dòng L04 |
+
+## L05 · Enforcement
+| Feature | File | Loại | Verify bằng |
+|---|---|---|---|
+| Bài học L05 (teacher) | `docs/ai-levelup/lessons/L05-enforcement/LESSON.md` | thêm | đọc tay |
+| Backlog: #5, #10–#13 `đã nhận` L05; #14–#17 từ GRADE (teacher) | `docs/ai-levelup/lessons/BACKLOG.md` | sửa | đọc tay |
+| Mục lục: L04 PR #7, L05 trạng thái + link GRADE (teacher) | `docs/ai-levelup/lessons/README.md` | sửa | đọc tay |
+| Chấm điểm L05 (teacher; lần 1 FAIL AC-8) | `docs/ai-levelup/lessons/L05-enforcement/GRADE.md` | thêm | kết luận chấm |
+| `mcp_ro`: `REVOKE CREATE ON SCHEMA public FROM PUBLIC` (sửa sau chấm) | `.devcontainer/init-db/01-mcp-readonly.sql` | sửa | container PG14 + PG16 dùng xong bỏ: `permission denied for schema public`; đối chứng script cũ tạo được |
+| Plan agent hooks (approved, `bafa8d0`) | `docs/plans/L05-agent-hooks.md` | thêm | commit trước code `961284d`; Thực tế 5/5 |
+| Plan Lefthook + CI + ruleset (approved `bafa8d0`, v2 `9e49fb6`) | `docs/plans/L05-git-hooks-ci.md` | thêm | commit trước code `372f7f4`/`913e101`/`71bceaa`; Thực tế 8/9 |
+| Plan nợ script PR #7 (approved, `bafa8d0`) | `docs/plans/L05-script-fixes.md` | thêm | commit trước code `b6a7760`; Thực tế 5/5 |
+| Plan thay MCP postgres (approved, `bafa8d0`) | `docs/plans/L05-mcp-postgres.md` | thêm | commit trước code `2a4a3aa`; Thực tế 1/1 |
+| Lịch sử plan lấy giờ từ `date '+%F %H:%M'` | `docs/plans/_template.md` | sửa | AC-1: giờ Lịch sử ≤ giờ commit plan |
+| Hook PostToolUse: prettier + eslint file vừa sửa | `.claude/hooks/format-lint.sh` | thêm | `test-hooks.sh` 6 ca; 0.86–0.95 s/file `.tsx`; EX-5 (1)(2)(5) |
+| Hook PreToolUse Bash: chặn `rm -rf`, force push, prisma ghi DB lạ | `.claude/hooks/guard-bash.sh` | thêm | `test-hooks.sh` 30 ca (7 cho qua, gồm `\rm`/`command rm`/`/bin/rm` sau chấm), output không có URL/password |
+| Hook PreToolUse Read: chặn `.env*` trừ `.env.example` | `.claude/hooks/guard-read.sh` | thêm | `test-hooks.sh` 5 ca |
+| Test hooks bằng pipe JSON (36 ca) | `.claude/hooks/test-hooks.sh` | thêm | `bash .claude/hooks/test-hooks.sh` 41/41 exit 0 |
+| Đề xuất khối `hooks` cho user gộp | `.claude/hooks/settings.hooks.json` | thêm | `jq empty`; 3 matcher; activation chưa verify runtime |
+| Git hooks pre-commit / pre-push | `lefthook.yml` | thêm | `lefthook run pre-commit` 3.25 s; `pre-push` 1.37/4.20 s; EX-5 (3)(4) |
+| Allowlist gitleaks hẹp (path + regex) | `.gitleaks.toml` | thêm | lịch sử 4 → 0 finding; token giả EX-5 vẫn bị bắt |
+| Dòng lệnh cài hook + cách bỏ qua | `CLAUDE.md` | sửa | `wc -l` 63, dòng 24 |
+| CI `checks` / `gitleaks` / `guard` | `.github/workflows/ci.yml` | thêm | run 40923821932: checks + gitleaks xanh, guard đỏ (thiếu label) |
+| Guard dòng thêm tắt kiểm tra + config được bảo vệ | `scripts/ci/guard-diff.sh` | thêm | `test-guard-diff.sh` 15/15; EX-5 (5)(6) |
+| Test guard bằng repo tạm | `scripts/ci/test-guard-diff.sh` | thêm | exit 0 |
+| Ruleset `main` (JSON đã POST, id 26147711) | `.github/rulesets/main.json` | thêm | `gh api …/rules/branches/main` 4 rule |
+| Reviewer không tự gắn label, thiếu label → BLOCKED | `.claude/agents/pr-reviewer.md` | sửa | đọc tay |
+| Lib Postgres dùng chung (password không vào argv, giữ `\`) | `scripts/lib/pg.sh` | thêm | `test-pg.sh` 9/9; smoke wt-new/wt-prune |
+| Test lib bằng stub `psql` + `od -c` | `scripts/lib/test-pg.sh` | thêm | exit 0 |
+| `wt-new` source lib | `scripts/wt-new.sh` | sửa | `shellcheck`; smoke `wt/l05-smoke`, `wt/l05-matrix` |
+| `wt-prune` source lib, bỏ `WT_PRUNE_TEST_MERGED_OIDS` | `scripts/wt-prune.sh` | sửa | `grep -rn WT_PRUNE_TEST scripts/` rỗng; stub `gh` → force-delete |
+| Shellcheck theo `source` không cần comment | `.shellcheckrc` | thêm | `shellcheck` 0 cảnh báo |
+| MCP `postgres-ro` → MCP Toolbox 1.15.0 (`mcp_ro`) | `.mcp.json` | sửa | `jq empty`, `claude mcp list`; role kiểm bằng `psql` |
+| Ignore `.turbo/` gốc (cache turbo từ worktree) | `.gitignore` | sửa | `git check-ignore -q .turbo/cache/x` |
+| Báo cáo người học | `docs/ai-levelup/learner/L05-enforcement/REPORT.md` | thêm | đọc tay |
+| Feature map | `docs/ai-levelup/learner/FEATURE_MAP.md` | sửa | section L05 |
+| Metric L5 | `docs/ai-levelup/metrics.md` | sửa | 9 dòng L5 |
+| Lỗi lặp / rule mới | `docs/ai-levelup/mistakes.md` | sửa | dòng lần 2 → rule; `turbo.json` → hook; 2 dòng L05 |
