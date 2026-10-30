@@ -60,14 +60,6 @@ export function createRateLimiter({
   }
 }
 
-export function getClientIp(headers: Headers): string {
-  const realIp = headers.get('x-real-ip')?.trim()
-  if (realIp) return realIp
-  const forwarded = headers.get('x-forwarded-for')?.split(',')
-  const last = forwarded?.[forwarded.length - 1]?.trim()
-  return last || 'unknown'
-}
-
 export type TrustProxyHeader = 'x-real-ip' | 'x-forwarded-for' | 'none'
 
 export function parseTrustProxyHeader(value: string | undefined): TrustProxyHeader {
@@ -85,6 +77,16 @@ export function getTrustedClientIp(headers: Headers, trust: TrustProxyHeader): s
     return forwarded?.[forwarded.length - 1]?.trim() || 'unknown'
   }
   return 'unknown'
+}
+
+let proxyWarningLogged = false
+
+export function warnIfProxyUntrusted(trust: TrustProxyHeader): void {
+  if (proxyWarningLogged || trust !== 'none' || process.env.NODE_ENV !== 'production') return
+  proxyWarningLogged = true
+  console.warn(
+    '[rate-limit] TRUST_PROXY_HEADER is not set to x-real-ip or x-forwarded-for in production; IP-based limits are disabled',
+  )
 }
 
 export function normalizeEmail(email: unknown): string {

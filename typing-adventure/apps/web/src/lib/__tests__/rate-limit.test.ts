@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
-import { createRateLimiter, getClientIp } from '../rate-limit'
+import { createRateLimiter } from '../rate-limit'
+import * as rateLimit from '../rate-limit'
 
 function clock(start = 1_000_000) {
   let t = start
@@ -62,31 +63,8 @@ describe('createRateLimiter', () => {
   })
 })
 
-describe('getClientIp', () => {
-  it('prefers x-real-ip set by the proxy', () => {
-    const headers = new Headers({
-      'x-real-ip': '198.51.100.2',
-      'x-forwarded-for': '9.9.9.9, 198.51.100.2',
-    })
-    expect(getClientIp(headers)).toBe('198.51.100.2')
-  })
-
-  it('uses the last x-forwarded-for entry appended by the proxy', () => {
-    const headers = new Headers({ 'x-forwarded-for': ' 9.9.9.9 , 203.0.113.7 ' })
-    expect(getClientIp(headers)).toBe('203.0.113.7')
-  })
-
-  it('falls back to unknown without proxy headers', () => {
-    expect(getClientIp(new Headers())).toBe('unknown')
-  })
-
-  it('cannot reset a blocked key by spoofing x-forwarded-for', () => {
-    const limiter = createRateLimiter({ limit: 1, windowMs: 1000, now: () => 0 })
-    const real = { 'x-real-ip': '203.0.113.7' }
-    expect(limiter.check(getClientIp(new Headers(real))).allowed).toBe(true)
-    const spoofed = new Headers({ ...real, 'x-forwarded-for': '9.9.9.9' })
-    expect(limiter.check(getClientIp(spoofed)).allowed).toBe(false)
-    const appended = new Headers({ 'x-forwarded-for': '9.9.9.9, 203.0.113.7' })
-    expect(limiter.check(getClientIp(appended)).allowed).toBe(false)
+describe('rate-limit exports', () => {
+  it('RG-05: no longer exports getClientIp', () => {
+    expect(Object.keys(rateLimit)).not.toContain('getClientIp')
   })
 })
