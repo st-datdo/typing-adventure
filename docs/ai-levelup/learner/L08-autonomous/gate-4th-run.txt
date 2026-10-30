@@ -1,0 +1,5 @@
+gate[1] label+owner: FAIL (label agent-ready missing)
+gate[2] open agent PRs < 3: FAIL (3 open agent/* PRs, limit 3)
+gate[3] template sections: PASS (7/7)
+ready-gate: FAIL issue #19
+rc=1

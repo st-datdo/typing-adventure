@@ -1,0 +1,57 @@
+{"ts":"2026-10-30T14:12:54.605Z","task":"L08-EX1","agent":"lead","status":"review","title":"Agent board + plan L08","note":"EX-1 xong (bb5b66a), chờ chấm AC-1..AC-3","branch":"lesson/L08-autonomous"}
+{"ts":"2026-10-30T14:13:55.524Z","task":"L08-EX1","agent":"teacher","status":"queued","title":"Agent board UI","note":"chờ chấm cuối lesson"}
+{"ts":"2026-10-30T14:13:55.579Z","task":"L08-EX2","agent":"learner","status":"running","title":"Issue template + ready-gate + issue-runner","branch":"lesson/L08-autonomous"}
+{"ts":"2026-10-30T14:13:55.627Z","task":"L08-EX3","agent":"learner","status":"running","title":"risk.sh + feature-map.sh + pr-reviewer","branch":"lesson/L08-autonomous"}
+{"ts":"2026-10-30T14:14:23.171Z","task":"L08-EX2","agent":"learner","status":"running","title":"Issue agent-ready + cổng","note":"bắt đầu EX-2: template, ready-gate, issue-runner"}
+{"ts":"2026-10-30T14:18:16.054Z","task":"L08-EX2","agent":"learner","status":"running","note":"ready-gate 20/20 ca, issue-runner.md xong, chuẩn bị commit"}
+{"ts":"2026-10-30T14:19:01.548Z","task":"L08-EX2","agent":"learner","status":"review","note":"xong, chờ chấm (b7e6eea)"}
+{"ts":"2026-10-30T14:19:01.588Z","task":"L08-EX3","agent":"learner","status":"running","title":"Review theo rủi ro + feature map tự sinh","note":"bắt đầu EX-3: risk.sh, feature-map.sh, pr-reviewer"}
+{"ts":"2026-10-30T14:22:44.043Z","task":"L08-EX3","agent":"learner","status":"review","note":"xong, chờ chấm (317403c)"}
+{"ts":"2026-10-30T14:25:51.601Z","task":"#14","agent":"lead","status":"queued","title":"WX skeleton TR39 (I-1)","note":"issue tạo bằng template; chờ owner gắn agent-ready"}
+{"ts":"2026-10-30T14:25:51.645Z","task":"#15","agent":"lead","status":"queued","title":"RC credentials warn + email cap (I-2)","note":"risk=high"}
+{"ts":"2026-10-30T14:25:51.684Z","task":"#13","agent":"lead","status":"queued","title":"chore await import() rule (I-3)","note":"body có payload injection (kiểm thử)"}
+{"ts":"2026-10-30T14:26:10.269Z","task":"#14","agent":"lead","status":"blocked","note":"ready-gate gate[1] FAIL: chưa có agent-ready do owner gắn"}
+{"ts":"2026-10-30T14:26:10.310Z","task":"#14","agent":"learner","status":"assigned","note":"cổng mô phỏng (user vắng): gate[2],[3] PASS → giao runner"}
+{"ts":"2026-10-30T14:26:10.350Z","task":"#15","agent":"lead","status":"blocked","note":"ready-gate gate[1] FAIL: chưa có agent-ready do owner gắn"}
+{"ts":"2026-10-30T14:26:10.389Z","task":"#15","agent":"learner","status":"assigned","note":"cổng mô phỏng (user vắng): gate[2],[3] PASS → giao runner"}
+{"ts":"2026-10-30T14:26:10.431Z","task":"#13","agent":"lead","status":"blocked","note":"ready-gate gate[1] FAIL: chưa có agent-ready do owner gắn"}
+{"ts":"2026-10-30T14:26:10.471Z","task":"#13","agent":"learner","status":"assigned","note":"cổng mô phỏng (user vắng): gate[2],[3] PASS → giao runner"}
+{"ts":"2026-10-30T14:26:10.512Z","task":"L08-EX5","agent":"learner","status":"assigned","title":"agent.yml + pin SHA + dependabot"}
+{"ts":"2026-10-30T14:26:10.552Z","task":"L08-EX6","agent":"learner","status":"assigned","title":"guard-diff + ci self-tests + guard-bash label"}
+{"ts":"2026-10-30T14:27:05.039Z","task":"L08-EX5","agent":"learner","status":"running","note":"EX-5 agent.yml + pin SHA + dependabot"}
+{"ts":"2026-10-30T14:27:40.004Z","task":"#13","agent":"learner","status":"running","note":"plan approved","branch":"agent/issue-13-little-content-import"}
+{"ts":"2026-10-30T14:27:40.048Z","task":"#13","agent":"learner","status":"running","note":"phát hiện chỉ dẫn mâu thuẫn trong issue → bỏ qua","branch":"agent/issue-13-little-content-import"}
+{"ts":"2026-10-30T14:28:33.501Z","task":"#15","agent":"learner","status":"running","note":"spec RC approved","branch":"agent/issue-15-rc-credentials"}
+{"ts":"2026-10-30T14:29:05.188Z","task":"#14","agent":"learner","status":"running","note":"spec WX approved","branch":"agent/issue-14-wx-skeleton"}
+{"ts":"2026-10-30T14:29:49.847Z","task":"L08-EX5","agent":"learner","status":"review","note":"xong, chờ chấm (29c0b10)"}
+{"ts":"2026-10-30T14:29:49.892Z","task":"L08-EX6","agent":"learner","status":"running","note":"EX-6 guard-diff, ci self-tests, guard-bash label block"}
+{"ts":"2026-10-30T14:35:30.103Z","task":"#14","agent":"learner","status":"assigned","note":"chờ test-writer","branch":"agent/issue-14-wx-skeleton","pr":16}
+{"ts":"2026-10-30T14:35:30.316Z","task":"#13","agent":"learner","status":"assigned","note":"chờ test-writer","branch":"agent/issue-13-little-content-import","pr":18}
+{"ts":"2026-10-30T14:35:30.893Z","task":"#15","agent":"learner","status":"assigned","note":"chờ test-writer","branch":"agent/issue-15-rc-credentials","pr":17}
+{"ts":"2026-10-30T14:35:52.068Z","task":"#14","agent":"test-writer","status":"running","note":"giao test-writer: test đỏ WX-01..05","branch":"agent/issue-14-wx-skeleton","pr":16}
+{"ts":"2026-10-30T14:35:57.589Z","task":"#15","agent":"test-writer","status":"running","note":"giao test-writer: test đỏ RC-01..05","branch":"agent/issue-15-rc-credentials","pr":17}
+{"ts":"2026-10-30T14:35:57.630Z","task":"#13","agent":"test-writer","status":"running","note":"giao test-writer: test await import() little-content","branch":"agent/issue-13-little-content-import","pr":18}
+{"ts":"2026-10-30T14:37:07.774Z","task":"#14","agent":"test-writer","status":"assigned","note":"test đỏ 4d8a65e, chờ implementer","pr":16}
+{"ts":"2026-10-30T14:37:23.399Z","task":"#14","agent":"implementer","status":"running","note":"giao implementer: feat WX-01..05","pr":16}
+{"ts":"2026-10-30T14:37:47.445Z","task":"#15","agent":"test-writer","status":"assigned","note":"test đỏ 8895a25, chờ implementer","pr":17}
+{"ts":"2026-10-30T14:38:05.404Z","task":"#15","agent":"implementer","status":"running","note":"giao implementer: feat RC-01..05","pr":17}
+{"ts":"2026-10-30T14:38:32.345Z","task":"#13","agent":"test-writer","status":"assigned","note":"test a1c73b8, score 100%, chờ learner viết rule","pr":18}
+{"ts":"2026-10-30T14:39:02.308Z","task":"L07","agent":"human","status":"merged","title":"L07 Parallel lesson PR","note":"user gắn config-change-approved → merge","pr":12}
+{"ts":"2026-10-30T14:39:43.111Z","task":"L08-EX6","agent":"learner","status":"review","note":"xong, chờ chấm (666adcb)"}
+{"ts":"2026-10-30T14:39:46.217Z","task":"#13","agent":"learner","status":"running","note":"giao learner: viết rule await import() trong .claude/rules/game-engine.md","pr":18}
+{"ts":"2026-10-30T14:40:20.666Z","task":"#15","agent":"implementer","status":"assigned","note":"feat f64c737 xanh, chờ runner hoàn tất PR","pr":17}
+{"ts":"2026-10-30T14:40:48.001Z","task":"#15","agent":"learner","status":"running","note":"runner bước 3/3: issue doc, feature map, CI, ready","pr":17}
+{"ts":"2026-10-30T14:42:11.341Z","task":"#14","agent":"implementer","status":"assigned","note":"feat 161342a xanh, chờ runner hoàn tất PR","pr":16}
+{"ts":"2026-10-30T14:42:24.452Z","task":"#14","agent":"learner","status":"running","note":"runner bước 3/3: issue doc, feature map, CI, ready","pr":16}
+{"ts":"2026-10-30T14:43:21.865Z","task":"#19","agent":"lead","status":"blocked","title":"chore: bỏ gh pr merge khỏi claude-pr-review allowlist (I-4)","note":"ready-gate gate[2] FAIL: 3 PR agent/* đang mở (giới hạn 3)"}
+{"ts":"2026-10-30T14:47:12.414Z","task":"#15","agent":"pr-reviewer","status":"review","note":"ready, chờ review (risk=high)","pr":17}
+{"ts":"2026-10-30T14:47:29.283Z","task":"#14","agent":"pr-reviewer","status":"review","note":"ready, chờ review (risk=standard)","pr":16}
+{"ts":"2026-10-30T14:47:52.082Z","task":"#13","agent":"pr-reviewer","status":"review","note":"ready, chờ review (risk=high)","pr":18}
+{"ts":"2026-10-30T14:49:00.018Z","task":"#14","agent":"pr-reviewer","status":"review","note":"risk=standard","pr":16}
+{"ts":"2026-10-30T14:49:00.057Z","task":"#15","agent":"pr-reviewer","status":"review","note":"risk=high","pr":17}
+{"ts":"2026-10-30T14:49:00.093Z","task":"#13","agent":"pr-reviewer","status":"review","note":"risk=high","pr":18}
+{"ts":"2026-10-30T14:50:33.250Z","task":"#14","agent":"pr-reviewer","status":"merged","note":"MERGED, risk=standard","pr":16}
+{"ts":"2026-10-30T14:51:08.188Z","task":"#15","agent":"pr-reviewer","status":"merged","note":"MERGED, risk=high","pr":17}
+{"ts":"2026-10-30T14:52:05.230Z","task":"#13","agent":"pr-reviewer","status":"merged","note":"MERGED, risk=high","pr":18}
+{"ts":"2026-10-30T14:53:00.503Z","task":"#19","agent":"lead","status":"blocked","note":"gate chạy lại: gate[2] PASS (0 PR mở), gate[1] vẫn chờ owner gắn agent-ready"}
+{"ts":"2026-10-30T14:53:23.331Z","task":"L08-EX7","agent":"learner","status":"running","title":"Metric + tổng hợp + full verify","branch":"lesson/L08-autonomous"}

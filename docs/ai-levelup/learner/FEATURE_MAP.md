@@ -235,3 +235,67 @@ Diff của 3 PR: #10 (`gh pr diff 10 --name-only`, merge `4df98c8`), #11 (`gh pr
 | Section L07 | `docs/ai-levelup/learner/FEATURE_MAP.md` | sửa | mọi file trong diff 3 PR có đúng 1 dòng |
 | 13 dòng L7 | `docs/ai-levelup/metrics.md` | sửa | output `lead-time.sh`, `gh api …/commits`, timeline |
 | Lỗi rtk `git diff` trong vòng lặp scope (lần 4) | `docs/ai-levelup/mistakes.md` | sửa | đọc tay |
+
+## L08 · Autonomous
+Diff của 3 PR issue: #16 (`gh pr diff 16 --name-only`, merge `333f7d6`), #17 (merge `fb9ddad`), #18 (merge `4e1766c`), branch lesson (`rtk proxy git diff --name-only origin/main...HEAD`, `origin/main` = `4e1766c`) + file commit EX-7. `GRADE.md` của teacher và `BACKLOG.md` do người điều phối thêm khi có.
+
+| Feature | File | Loại | Verify bằng |
+|---|---|---|---|
+| Bài học L08 (teacher) | `docs/ai-levelup/lessons/L08-autonomous/LESSON.md` | thêm | đọc tay |
+| Mục lục: L08 đang học (teacher) | `docs/ai-levelup/lessons/README.md` | sửa | đọc tay |
+| Plan EX-1..EX-3, EX-5, EX-6 (approved `1d8dfd9` trước code `09a2d10`; v2..v4 + Thực tế) | `docs/plans/L08-autonomous.md` | thêm | AC-1 `git log --reverse origin/main..HEAD` |
+| EX-1 `STATUSES`, `LANES`, `parseLine`, `reduce`, `summary` thuần | `tools/agent-board/board-state.mjs` | thêm | `node --test tools/agent-board/test/*.test.mjs` 38/38 |
+| EX-1 đường dẫn log chung mọi worktree (cạnh git-common-dir) | `tools/agent-board/log-path.mjs` | thêm | `emit.test.mjs`; event của 3 worktree issue chung 1 file |
+| EX-1 CLI emit 1 dòng, validate bằng `parseLine` | `tools/agent-board/emit.mjs` | thêm | `emit.test.mjs` (1 dòng, status lạ bị từ chối) |
+| EX-1 hook adapter (không ghi `prompt`, luôn exit 0) | `tools/agent-board/hook-adapter.mjs` | thêm | `hook-adapter.test.mjs` 4 loại event; chưa verify runtime (hook chưa bật) |
+| EX-1/EX-7 in `summary()` + 2 tỉ lệ | `tools/agent-board/summary.mjs` | thêm | `summary.mjs events.jsonl` → 8/11, 4/4 |
+| EX-1 server 127.0.0.1, chặn Host lạ, CSP, SSE, `--simulate`/`--replay` | `tools/agent-board/server.mjs` | thêm | AC-3 curl 200 + CSP, `event: state`, Host lạ 403, `lsof` 127.0.0.1 |
+| EX-1 kịch bản mô phỏng ≥ 4 task chồng lấn | `tools/agent-board/simulate.mjs` | thêm | `--simulate` `/state` active 5, `wip_limit` |
+| EX-1 UI lưới làn × status (chỉ `textContent`) | `tools/agent-board/public/app.js` | thêm | grep `innerHTML\|eval(` rỗng; title `<img onerror>` hiện thành chữ |
+| EX-1 khung HTML board | `tools/agent-board/public/index.html` | thêm | `curl -si /` 200 |
+| EX-1 style board (light/dark, < 900px) | `tools/agent-board/public/style.css` | thêm | `board.png` |
+| EX-1 fixture L07 tái dựng (20 event, 3 task) | `tools/agent-board/fixtures/l07.jsonl` | thêm | `--replay` → 3 task `merged` |
+| EX-1 test parseLine/reduce/summary | `tools/agent-board/test/board-state.test.mjs` | thêm | 38/38 |
+| EX-1 test emit | `tools/agent-board/test/emit.test.mjs` | thêm | 38/38 |
+| EX-1 test hook adapter | `tools/agent-board/test/hook-adapter.test.mjs` | thêm | 38/38 |
+| EX-1 test server port 0 | `tools/agent-board/test/server.test.mjs` | thêm | 38/38 |
+| EX-1 đề xuất hook `Agent\|Task`, `SubagentStop`, adapter cạnh `notify.sh` | `.claude/hooks/settings.hooks.json` | sửa | `jq .` OK; diff `.claude/settings*.json` rỗng |
+| EX-1 ignore `.agent-board/` | `.gitignore` | sửa | `git ls-files \| grep -c ^.agent-board` = 0 |
+| EX-1 screenshot board | `docs/ai-levelup/learner/L08-autonomous/board.png` | thêm | đọc tay |
+| EX-2 issue form 7 mục | `.github/ISSUE_TEMPLATE/agent-task.yml` | thêm | actionlint không áp dụng; `ready-gate` gate[3] 7/7 trên #13–#15 |
+| EX-2 cổng owner label + < 3 PR `agent/*` + template | `scripts/agent/ready-gate.sh` | thêm | `test-ready-gate.sh` 20/20; lần 4 #19 `gate[2] FAIL` rc=1 |
+| EX-2 self-test cổng (stub `gh`) | `scripts/agent/test-ready-gate.sh` | thêm | `bash scripts/agent/test-ready-gate.sh` 20/20 |
+| EX-2 vai runner + điều cấm | `.claude/agents/issue-runner.md` | thêm | AC-4 đọc tay; 3 PR issue không chạm file bảo vệ |
+| EX-3 phân loại risk theo path (fail closed) | `scripts/agent/risk.sh` | thêm | `test-risk.sh` 30/30; #10 high, #11 standard |
+| EX-3 dòng feature map mỗi PR | `scripts/agent/feature-map.sh` | thêm | `feature-map-auto.md` (#16 5/5, #17 5/5, #18 n/a) |
+| EX-3 self-test risk + feature-map | `scripts/agent/test-risk.sh` | thêm | `bash scripts/agent/test-risk.sh` 30/30 |
+| EX-3 bước risk + feature map trong review, `BLOCKED` khi deviation | `.claude/agents/pr-reviewer.md` | sửa | review #16 standard, #17/#18 full |
+| EX-5 workflow `agent.yml` (owner label, `permissions: {}`, concurrency, timeout 30) | `.github/workflows/agent.yml` | thêm | actionlint 0 lỗi; chưa verify runtime (không có `ANTHROPIC_API_KEY`) |
+| EX-5 pin SHA + EX-6 chạy 4 self-test | `.github/workflows/ci.yml` | sửa | grep `uses:` không pin rỗng; CI PR #16–#18 xanh |
+| EX-5 pin SHA | `.github/workflows/claude-pr-review.yml` | sửa | grep `uses:` không pin rỗng |
+| EX-5 Dependabot `github-actions` weekly | `.github/dependabot.yml` | thêm | đọc tay |
+| EX-6 bảo vệ `.claude/agents/*`, `scripts/agent/*`, `scripts/metrics/*`, `.github/*.yml`, `ISSUE_TEMPLATE` | `scripts/ci/guard-diff.sh` | sửa | `test-guard-diff.sh` 35/35 |
+| EX-6 ca guard mới (28 → 35) | `scripts/ci/test-guard-diff.sh` | sửa | 35/35 |
+| EX-6 chặn gắn nhãn cổng, `gh label create\|edit\|delete` | `.claude/hooks/guard-bash.sh` | sửa | `test-hooks.sh` 110/110, leaks 0 |
+| EX-6 ca hook mới (93 → 110) | `.claude/hooks/test-hooks.sh` | sửa | 110/110 |
+| I-1 (#14) spec WX approved (issue #14) | `specs/WX/spec.md` | thêm | `lead-time.sh 16` `952a61a7` → 21m27s |
+| WX-01..05 skeleton TR39 thu gọn trước khi gấp | `typing-adventure/packages/game-engine/src/moderation.ts` | sửa | engine 236/236; mutation 78.40 (`moderation.ts` 98.55) |
+| Test WX-01..05 (`сат`, `ı`) đỏ trước `feat:` | `typing-adventure/packages/game-engine/src/__tests__/moderation-skeleton.test.ts` | thêm | `check-tdd-commits.sh` OK trên PR #16 |
+| Log runner #14 | `docs/ai-levelup/learner/L08-autonomous/issue-14.md` | thêm | đọc tay |
+| I-2 (#15) spec RC approved (issue #15) | `specs/RC/spec.md` | thêm | `lead-time.sh 17` `9bc2457f` → 23m08s |
+| RC cảnh báo 1 lần ở production khi thiếu `TRUST_PROXY_HEADER` | `typing-adventure/apps/web/src/app/api/auth/[...nextauth]/route.ts` | sửa | web 64/64; review full (high) |
+| RC cắt email ≤ 254 ký tự trước khi làm key (`limiterEmailKey`) | `typing-adventure/apps/web/src/lib/rate-limit.ts` | sửa | web 64/64; review full (high) |
+| Test RC route credentials | `typing-adventure/apps/web/src/app/api/auth/[...nextauth]/__tests__/credentials-rc.test.ts` | thêm | đỏ trước `feat:`; RC 56/56 reviewer chạy lại |
+| Test RC rate-limit key | `typing-adventure/apps/web/src/lib/__tests__/rate-limit-rc.test.ts` | thêm | đỏ trước `feat:` |
+| Log runner #15 | `docs/ai-levelup/learner/L08-autonomous/issue-15.md` | thêm | đọc tay; canary grep rỗng |
+| I-3 (#13) plan chore approved (issue #13) | `docs/plans/L08-little-content-import.md` | thêm | `lead-time.sh 18` `5233b2d5` → 24m23s |
+| Rule `await import()` cho init cấp module | `.claude/rules/game-engine.md` | sửa | review full (high); `guard-diff` OK không label (rule không bảo vệ) |
+| Test `little-content.ts` (mutation 57.84% → 100%) | `typing-adventure/packages/game-engine/src/__tests__/little-content-import.test.ts` | thêm | little 73/73 reviewer chạy lại |
+| Log runner #13 + chỉ dẫn injection đã bỏ qua | `docs/ai-levelup/learner/L08-autonomous/issue-13.md` | thêm | `gh pr diff 18 \| grep` canary rỗng |
+| EX-7 bản copy log board thật (57 event) | `docs/ai-levelup/learner/L08-autonomous/events.jsonl` | thêm | `cmp` với `.agent-board/events.jsonl`; gitleaks `--no-git` 0 leak; canary 0 |
+| EX-7 feature map tự sinh 3 PR | `docs/ai-levelup/learner/L08-autonomous/feature-map-auto.md` | thêm | `feature-map.sh --header 16`, `17`, `18` rc=0 |
+| EX-4 output cổng lần 4 (#19) | `docs/ai-levelup/learner/L08-autonomous/gate-4th-run.txt` | thêm | `gate[2] FAIL (3 open agent/* PRs, limit 3)` rc=1 |
+| Báo cáo L08 | `docs/ai-levelup/learner/L08-autonomous/REPORT.md` | thêm | đọc tay |
+| Section L08 | `docs/ai-levelup/learner/FEATURE_MAP.md` | sửa | mọi file trong diff 3 PR + lesson có đúng 1 dòng |
+| Dòng L8 | `docs/ai-levelup/metrics.md` | sửa | `summary.mjs`, `lead-time.sh`, timeline PR |
+| Lỗi lặp L08 (rtk lần 5, canary trong log, emit từ /tmp, `main` cũ) | `docs/ai-levelup/mistakes.md` | sửa | đọc tay |
