@@ -13,7 +13,7 @@ Hàm `moderateWords(words, blocklist = DEFAULT_BLOCKLIST)` trong `packages/game-
 |---|---|---|
 | WP-01 | WHEN nhận danh sách từ THE SYSTEM SHALL chuẩn hoá từng từ (Unicode NFC, trim, gộp chuỗi khoảng trắng bên trong thành 1 dấu cách) rồi trả `accepted` theo thứ tự vào, dạng đã chuẩn hoá; `rejected[].word` cũng là dạng đã chuẩn hoá | `packages/game-engine/src/__tests__/moderation.test.ts` |
 | WP-02 | IF từ sau chuẩn hoá rỗng hoặc có ký tự ngoài chữ cái (`\p{L}`), dấu kết hợp (`\p{M}`), dấu cách, `'`, `-` THEN THE SYSTEM SHALL loại với `invalid_chars`; IF dài hơn 30 ký tự (code point, sau NFC) THEN loại với `too_long` | `moderation.test.ts` |
-| WP-03 | IF từ khớp một mục blocklist sau khi gấp (lowercase, NFD bỏ dấu kết hợp `U+0300–U+036F`, `đ`/`Đ` → `d`) THEN THE SYSTEM SHALL loại với `blocked`. Khớp = cả từ bằng mục đó, hoặc một token (tách theo dấu cách) bằng mục đó; **không** khớp chuỗi con (`nguyen` không bị chặn bởi `ngu`). `DEFAULT_BLOCKLIST` có ≥ 3 từ nhẹ, xuất qua `index.ts` | `moderation.test.ts` |
+| WP-03 | IF từ khớp một mục blocklist sau khi gấp (lowercase, NFD bỏ dấu kết hợp `U+0300–U+036F`, `đ`/`Đ` → `d`) THEN THE SYSTEM SHALL loại với `blocked`. Khớp = cả từ bằng mục đó, hoặc một token (tách theo dấu cách) bằng mục đó; **không** khớp chuỗi con (`nguyen` không bị chặn bởi `ngu`). `DEFAULT_BLOCKLIST` = `stupid`, `idiot`, `dumb`, `đồ ngốc`, xuất qua `index.ts` | `moderation.test.ts` |
 | WP-04 | IF từ (sau chuẩn hoá, so lowercase, **giữ dấu**: `ma` ≠ `mà`) đã có trong `accepted` THEN THE SYSTEM SHALL loại với `duplicate`, giữ lần xuất hiện đầu | `moderation.test.ts` |
 | WP-05 | IF `POST /api/wordpacks` có từ bị loại với lý do khác `duplicate` THEN THE SYSTEM SHALL trả 400, `error` = `"<n> word(s) rejected by moderation"` (n = số từ bị loại khác `duplicate`) và không tạo bản ghi | `apps/web/src/app/api/__tests__/wordpacks-moderation.int.test.ts` |
 | WP-06 | WHEN `POST /api/wordpacks` hợp lệ THE SYSTEM SHALL lưu `words` = `accepted` (đã chuẩn hoá, bỏ trùng theo WP-04, thứ tự vào) và trả 200 với pack đã lưu; từ trùng không làm request lỗi | `wordpacks-moderation.int.test.ts` |
@@ -34,3 +34,4 @@ File dự kiến: `typing-adventure/packages/game-engine/src/moderation.ts` (th�
 
 ## Lịch sử
 - v1 2026-10-30 09:42: bản đầu, approved.
+- v2 2026-10-30 09:43: ghim `DEFAULT_BLOCKLIST` (test integration dùng `Stupid`, `IDIOT`). Gấp bỏ dấu làm từ tiếng Việt 1 âm tiết va nhau: `ngu` chặn cả `ngủ` (ngủ), `ngũ` (năm); `đần` chặn `đàn`, `dân`. Vì vậy danh sách mặc định không có mục tiếng Việt 1 âm tiết; blocklist tiếng Việt thật cần cụm từ hoặc so có dấu (ngoài phạm vi).
