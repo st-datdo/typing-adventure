@@ -90,4 +90,5 @@ docker run --rm -v "$PWD":/repo -w /repo rhysd/actionlint:1.7.7
 - v1 2026-10-30 20:57: bản đầu, approved.
 
 ## Thực tế
-<điền sau khi code>
+- EX-1 (2026-10-30 21:13): 16/16 file dự đoán của EX-1 khớp (14 file `tools/agent-board/**`, `settings.hooks.json`, `.gitignore`), 0 file ngoài dự đoán, thêm `docs/ai-levelup/learner/L08-autonomous/board.png`. Không có design round 2. 38 test `node --test`. Sửa sau screenshot đầu: id task không bị cắt (badge xuống dòng), làn trống ẩn trên màn hẹp.
+- EX-2, EX-3, EX-5, EX-6: <điền sau>
