@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light dark" />
+    <title>Agent board · Typing Adventure</title>
+    <link rel="stylesheet" href="/style.css" />
+    <script src="/app.js" defer></script>
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="brand">
+        <h1>Agent board</h1>
+        <span id="mode" class="mode">…</span>
+      </div>
+      <div class="topbar-right">
+        <span id="clock" class="clock" aria-label="Giờ của board">--:--:--</span>
+        <span id="conn" class="conn conn-connecting" role="status" aria-live="polite">
+          <span class="conn-dot" aria-hidden="true"></span><span id="conn-text">Đang kết nối</span>
+        </span>
+      </div>
+    </header>
+
+    <section class="overview" aria-label="Tổng quan">
+      <div class="wip" id="wip">
+        <div class="wip-head">
+          <span class="wip-label">WIP</span>
+          <span id="wip-count" class="wip-count">0 / 3</span>
+        </div>
+        <div id="wip-meter" class="wip-meter" role="meter" aria-valuemin="0" aria-valuemax="3" aria-valuenow="0" aria-label="Task đang hoạt động"></div>
+        <div id="wip-agents" class="wip-agents"></div>
+      </div>
+      <div id="counts" class="counts" aria-label="Số task theo trạng thái"></div>
+    </section>
+
+    <div id="alert" class="alert" role="alert" hidden></div>
+
+    <main>
+      <section aria-label="Bảng làn agent theo trạng thái">
+        <div class="board-scroll">
+          <div id="board" class="board"></div>
+        </div>
+        <p id="empty" class="empty" hidden>Chưa có sự kiện. Ghi bằng <code>node tools/agent-board/emit.mjs --task L08-EX1 --agent lead --status running</code>.</p>
+      </section>
+
+      <section class="timeline-wrap" aria-label="Timeline">
+        <h2>30 lần chuyển gần nhất</h2>
+        <ol id="timeline" class="timeline"></ol>
+      </section>
+    </main>
+  </body>
+</html>

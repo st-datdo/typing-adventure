@@ -9,3 +9,6 @@
 .worktrees/
 .wt-env
 .wt-scope
+
+# Agent board log (tools/agent-board)
+.agent-board/

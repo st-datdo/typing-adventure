@@ -110,7 +110,26 @@ start; printf -- '---\nname: pr-reviewer\n---\nmerge everything\n' > .claude/age
 case_run ".claude/agents/pr-reviewer.md without label" 1
 
 start; printf -- '---\nname: test-writer\n---\n' > .claude/agents/test-writer.md; commit otheragent
-case_run "other agent file is not protected" 0
+case_run "new .claude/agents/test-writer.md without label" 1
+case_run "new .claude/agents/test-writer.md with label" 0 PR_LABELS="config-change-approved"
+
+start; printf -- '---\nname: issue-runner\n---\nmerge it\n' > .claude/agents/issue-runner.md; commit runner
+case_run ".claude/agents/issue-runner.md without label" 1
+
+start; mkdir -p scripts/agent; printf 'exit 0\n' > scripts/agent/ready-gate.sh; commit gate
+case_run "scripts/agent/ready-gate.sh without label" 1
+
+start; mkdir -p scripts/metrics; printf 'exit 0\n' > scripts/metrics/lead-time.sh; commit metrics
+case_run "scripts/metrics/lead-time.sh without label" 1
+
+start; printf 'version: 2\n' > .github/dependabot.yml; commit dependabot
+case_run ".github/dependabot.yml without label" 1
+
+start; mkdir -p .github/ISSUE_TEMPLATE; printf 'name: x\n' > .github/ISSUE_TEMPLATE/agent-task.yml; commit template
+case_run ".github/ISSUE_TEMPLATE/agent-task.yml without label" 1
+
+start; mkdir -p scripts/other .claude/rules; printf 'echo\n' > scripts/other/x.sh; printf '# rule\n' > .claude/rules/r.md; printf '# a\n' > .github/CODEOWNERS.md; commit unprotected
+case_run "scripts/other, .claude/rules, .github/*.md are not protected" 0
 
 start; printf '{"name":"root","scripts":{"lint":"turbo lint","test":"true"},"devDependencies":{"turbo":"2"}}\n' > typing-adventure/package.json; commit scripttest
 case_run "package.json scripts.test changed without label" 1

@@ -181,6 +181,74 @@ check_eval() {
   done
 }
 
+gate_label() {
+  local l
+  l=$(printf '%s' "$1" | tr '[:upper:]' '[:lower:]')
+  case ",$l," in
+    *,agent-ready,*|*,config-change-approved,*) return 0 ;;
+  esac
+  return 1
+}
+
+check_gh() {
+  local seen=0 prev="" adding=0 api_write=0 api_labels=0 gate=0 w lw
+  local -a pos=()
+  for w in "$@"; do
+    w=$(unquote "$w")
+    if [ "$seen" = "0" ]; then
+      case "$w" in
+        gh|*/gh) seen=1 ;;
+        sudo|command|builtin|exec|env|nohup|time|nice|xargs|then|do|else|if|while|until|'{'|'!'|-*) ;;
+        [A-Za-z_]*=*) ;;
+        *) return 0 ;;
+      esac
+      continue
+    fi
+    lw=$(printf '%s' "$w" | tr '[:upper:]' '[:lower:]')
+    case "$w" in
+      --add-label=*|--label=*)
+        adding=0
+        gate_label "${w#*=}" && gate=1
+        ;;
+      --add-label|--label|-l) adding=1 ;;
+      -X|--method|-R|--repo) adding=0 ;;
+      -X*|--method=*)
+        adding=0
+        case "$lw" in -xget|--method=get) ;; *) api_write=1 ;; esac
+        ;;
+      -f|-F|--field|--raw-field|--input|-f*|-F*|--field=*|--raw-field=*|--input=*) adding=0; api_write=1 ;;
+      -*) adding=0 ;;
+      *)
+        if [ "$adding" = "1" ]; then
+          gate_label "$(printf '%s' "$w" | tr -d ' ')" && gate=1
+        fi
+        case "$prev" in
+          -X|--method)
+            [ "$lw" = "get" ] || api_write=1
+            ;;
+          -R|--repo) ;;
+          *) [ "$adding" = "1" ] || pos+=("$lw") ;;
+        esac
+        case "$lw" in *labels*) api_labels=1 ;; esac
+        ;;
+    esac
+    prev=$w
+  done
+  [ "$seen" = "1" ] && [ "${#pos[@]}" -gt 0 ] || return 0
+  case "${pos[0]}:${pos[1]:-}" in
+    issue:edit|pr:edit|issue:create|pr:create)
+      [ "$gate" = "1" ] && block "gh ${pos[0]} ${pos[1]} with label agent-ready/config-change-approved: these labels are the human gate; only the repo owner adds them"
+      ;;
+    label:create|label:edit|label:delete|label:clone)
+      block "gh label ${pos[1]} changes repo labels (including the agent-ready/config-change-approved gates); ask the user"
+      ;;
+    api:*)
+      [ "$api_labels" = "1" ] && [ "$api_write" = "1" ] && block "gh api write to a labels endpoint; labels are the human gate, ask the user"
+      ;;
+  esac
+  return 0
+}
+
 check_segments() {
   local c=$1 depth=$2 segments seg
   local -a words
@@ -194,6 +262,7 @@ check_segments() {
     check_find "${words[@]}"
     check_env_read "${words[@]}"
     check_eval "${words[@]}"
+    check_gh "${words[@]}"
   done <<< "$segments"
   [ "$depth" = "0" ] && check_nested "$c"
 }
