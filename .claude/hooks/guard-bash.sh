@@ -131,13 +131,87 @@ if [[ "$cmd" =~ prisma[[:space:]]+(migrate|db[[:space:]]+(push|execute)) ]] || [
   check_prisma
 fi
 
-segments=${cmd//[;&|()]/$'\n'}
-while IFS= read -r seg; do
-  [ -n "$seg" ] || continue
-  read -ra words <<< "$seg" || true
-  [ "${#words[@]}" -gt 0 ] || continue
-  check_rm "${words[@]}"
-  check_push "${words[@]}"
-done <<< "$segments"
+check_find() {
+  local seen=0 prev="" w
+  for w in "$@"; do
+    w=$(unquote "$w")
+    if [ "$seen" = "0" ]; then
+      case "$w" in find|*/find) seen=1 ;; esac
+      continue
+    fi
+    case "$w" in
+      -delete) block "find -delete removes files in bulk; list the files first and delete specific paths, or ask the user" ;;
+    esac
+    case "$prev" in
+      -exec|-execdir|-ok|-okdir)
+        case "$w" in rm|*/rm) block "find $prev rm removes files in bulk; list the files first and delete specific paths, or ask the user" ;; esac
+        ;;
+    esac
+    prev=$w
+  done
+}
+
+check_env_read() {
+  local seen="" w name
+  for w in "$@"; do
+    w=$(unquote "$w")
+    if [ -z "$seen" ]; then
+      case "$w" in cat|head|tail|less|more|bat|*/cat|*/head|*/tail|*/less|*/more|*/bat) seen=${w##*/} ;; esac
+      continue
+    fi
+    w=${w#<}
+    name=${w##*/}
+    case "$name" in
+      .env.example) ;;
+      .env|.env.*) block "$seen $name prints secrets; read .env.example for variable names, or compare names with grep -o '^[A-Z_]*='" ;;
+    esac
+  done
+}
+
+check_eval() {
+  local w
+  for w in "$@"; do
+    w=$(unquote "$w")
+    case "$w" in
+      eval) block "eval runs a string the guard cannot inspect; run the command directly" ;;
+      sudo|command|builtin|exec|env|nohup|time|nice|xargs|then|do|else|if|while|until|'{'|'!'|-*) ;;
+      [A-Za-z_]*=*) ;;
+      *) return ;;
+    esac
+  done
+}
+
+check_segments() {
+  local c=$1 depth=$2 segments seg
+  local -a words
+  segments=${c//[;&|()\`]/$'\n'}
+  while IFS= read -r seg; do
+    [ -n "$seg" ] || continue
+    read -ra words <<< "$seg" || true
+    [ "${#words[@]}" -gt 0 ] || continue
+    check_rm "${words[@]}"
+    check_push "${words[@]}"
+    check_find "${words[@]}"
+    check_env_read "${words[@]}"
+    check_eval "${words[@]}"
+  done <<< "$segments"
+  [ "$depth" = "0" ] && check_nested "$c"
+}
+
+check_nested() {
+  local rest=$1 sq="'" dq='"' re inner
+  re="(^|[[:space:];&|(\`])([^[:space:];&|()\`]*/)?(bash|sh|zsh|dash|ksh)[[:space:]]+(-[[:alnum:]]*[[:space:]]+)*-[[:alpha:]]*c[[:alpha:]]*[[:space:]]+(${sq}[^${sq}]*${sq}|${dq}([^${dq}\\]|\\\\.)*${dq}|[^[:space:]]+)"
+  while [[ "$rest" =~ $re ]]; do
+    inner=${BASH_REMATCH[5]}
+    rest=${rest#*"${BASH_REMATCH[0]}"}
+    case "$inner" in
+      "$sq"*) inner=${inner#"$sq"}; inner=${inner%"$sq"} ;;
+      "$dq"*) inner=${inner#"$dq"}; inner=${inner%"$dq"}; inner=${inner//\\\"/\"} ;;
+    esac
+    check_segments "$inner" 1
+  done
+}
+
+check_segments "$cmd" 0
 
 exit 0
