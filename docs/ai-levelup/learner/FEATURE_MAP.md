@@ -200,3 +200,4 @@ Diff: `git diff --name-only main...HEAD` (`main` = `b5377bc`, sau khi PR #8 merg
 | Section L06 | `docs/ai-levelup/learner/FEATURE_MAP.md` | sửa | mọi file của diff có đúng 1 dòng |
 | Dòng L6 | `docs/ai-levelup/metrics.md` | sửa | đọc tay |
 | 2 dòng lỗi (rtk diff lần 3 → rule; gitignore toàn cục) | `docs/ai-levelup/mistakes.md` | sửa | đọc tay |
+| Tổng kết đợt 1 L00–L06 | `docs/ai-levelup/lessons/SUMMARY-L00-L06.md` | thêm | đọc tay |

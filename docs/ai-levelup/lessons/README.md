@@ -28,6 +28,8 @@ Follow-up không chặn từ review: [BACKLOG.md](BACKLOG.md).
 | L03 | Plan-first | `lesson/L03-plan-first` | #6 | đã đạt | [GRADE](L03-plan-first/GRADE.md) |
 | L04 | Isolation | `lesson/L04-isolation` | #7 | đã đạt | [GRADE](L04-isolation/GRADE.md) |
 | L05 | Enforcement | `lesson/L05-enforcement` | #8 | đã đạt, đã merge | [GRADE](L05-enforcement/GRADE.md) |
-| L06 | Spec + TDD | `lesson/L06-spec-tdd` | (chưa mở) | đã đạt (CI chờ push) | [GRADE](L06-spec-tdd/GRADE.md) |
+| L06 | Spec + TDD | `lesson/L06-spec-tdd` | #9 | đã đạt | [GRADE](L06-spec-tdd/GRADE.md) |
 | L07 | Parallel | | | chưa học | |
 | L08 | Autonomous | | | chưa học | |
+
+Tổng kết đợt 1 (L00 → L06): [SUMMARY-L00-L06.md](SUMMARY-L00-L06.md). L07, L08 học ở đợt sau.
