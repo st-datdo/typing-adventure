@@ -49,4 +49,11 @@ wc -l CLAUDE.md                                      # ≤ 64
 - v1 2026-10-30 09:37: bản đầu, approved.
 
 ## Thực tế
-<điền sau khi code>
+Điền 2026-10-30 09:56. Plan `5d9777b` (09:37:30) trước code `1da9728` (09:37:35, template + CLAUDE.md), `552eab4` (09:37:57, agents), `cc10e40` (09:38:46, check-tdd + guard step), `403ccd9` (09:39:50, guard-diff + 4 self-test).
+
+Lệnh: `git diff --name-only lesson/L05-enforcement...HEAD -- specs/_template.md CLAUDE.md .claude scripts .github`.
+
+- Khớp (9): `specs/_template.md`, `CLAUDE.md`, `.claude/agents/test-writer.md`, `.claude/agents/implementer.md`, `scripts/ci/check-tdd-commits.sh`, `scripts/ci/test-check-tdd-commits.sh`, `scripts/ci/guard-diff.sh`, `scripts/ci/test-guard-diff.sh`, `.github/workflows/ci.yml`.
+- Dự đoán mà không đổi (0). Đổi mà không dự đoán (0). Tỉ lệ khớp 9/9 = 100%.
+- Lệch nhỏ: bước TDD trong `guard` có `if: ${{ !cancelled() }}` để vẫn chạy khi `guard-diff` đỏ (PR có config được bảo vệ luôn đỏ tới khi có label, mà vẫn cần thấy kết quả TDD). Test repo tạm thêm `-c core.excludesFile=/dev/null`: gitignore toàn cục của máy bỏ qua `settings.local.json`, ca `.claude/settings.local.json` thành commit rỗng. `test-hooks.sh` hiện 41 ca (L05 36 + 5 ca sửa sau chấm). Chưa chạy trên runner (không push), nên giả định "runner có `jq`, `ps`, không cần `shellcheck`" chưa kiểm.
+- Design round 2: không.
