@@ -6,7 +6,7 @@ tmp=$(mktemp -d "${TMPDIR:-/tmp}/tddtest.XXXXXX")
 trap 'rm -rf "$tmp"' EXIT
 cd "$tmp" || exit 1
 
-g() { git -c user.name=t -c user.email=t@example.invalid -c commit.gpgsign=false "$@"; }
+g() { git -c user.name=t -c user.email=t@example.invalid -c commit.gpgsign=false -c core.excludesFile=/dev/null "$@"; }
 
 g init -q -b main
 mkdir -p apps/web/src/lib/__tests__ apps/web/e2e packages/game-engine/src

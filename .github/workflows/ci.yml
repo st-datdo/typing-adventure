@@ -37,6 +37,18 @@ jobs:
           cache: pnpm
           cache-dependency-path: typing-adventure/pnpm-lock.yaml
       - run: pnpm install --frozen-lockfile
+      - name: Self-test agent hooks
+        working-directory: .
+        run: bash .claude/hooks/test-hooks.sh
+      - name: Self-test guard-diff
+        working-directory: .
+        run: bash scripts/ci/test-guard-diff.sh
+      - name: Self-test check-tdd-commits
+        working-directory: .
+        run: bash scripts/ci/test-check-tdd-commits.sh
+      - name: Self-test pg lib
+        working-directory: .
+        run: bash scripts/lib/test-pg.sh
       - run: pnpm --filter @typing-adventure/db db:generate
       - run: pnpm lint
       - run: pnpm typecheck
