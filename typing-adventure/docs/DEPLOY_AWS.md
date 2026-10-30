@@ -285,7 +285,7 @@ App Runner tự cấp domain HTTPS, auto-scale, zero server management.
 
 - [ ] Đổi `AUTH_SECRET` thành random string (chạy `openssl rand -base64 32`)
 - [ ] Set `NEXTAUTH_URL` đúng domain production
-- [ ] Set `TRUST_PROXY_HEADER` theo proxy đứng trước app (bảng "Rate limit và IP client" bên dưới)
+- [ ] **Bắt buộc:** set `TRUST_PROXY_HEADER` theo proxy đứng trước app (bảng "Rate limit và IP client" bên dưới); để trống thì ai cũng khoá được đăng nhập của người khác
 - [ ] RDS Security Group chỉ cho phép truy cập từ app (không public)
 - [ ] Bật RDS automated backups
 - [ ] Chạy `prisma db push` và `prisma db seed` trên production DB
@@ -303,4 +303,6 @@ Limiter đăng nhập (`/api/auth/callback/credentials`, spec `specs/RL/spec.md`
 | Cách 3: App Runner | App Runner nối IP vào cuối `X-Forwarded-For` | `x-forwarded-for` |
 | Dev local, không proxy | không | để trống |
 
-Không đặt (hoặc giá trị lạ) = không tin header nào: IP là `unknown`, chỉ còn limit theo email, không có trần theo IP. Đặt sai kiểu (vd `x-real-ip` sau ALB) thì client tự gửi header để né limiter. Thêm CloudFront trước ALB thì phần tử cuối của `X-Forwarded-For` là IP của CloudFront: chưa hỗ trợ.
+> **Production bắt buộc đặt `TRUST_PROXY_HEADER`.** Không đặt (hoặc giá trị lạ) = không tin header nào: IP là `unknown`, key chỉ còn email và không có trần theo IP. Khi đó **bất kỳ ai cũng khoá được đăng nhập mật khẩu của một tài khoản 15 phút** chỉ bằng 10 lần sai với email của người đó, lặp lại được mãi. Chỉ để trống ở dev local.
+
+Request tới `/api/auth/callback/credentials` có nhiều trường `email`, JSON có `email` không phải chuỗi, body hỏng, hoặc email dài hơn 254 ký tự bị trả 400 trước khi tới Auth.js. Đặt sai kiểu (vd `x-real-ip` sau ALB) thì client tự gửi header để né limiter. Thêm CloudFront trước ALB thì phần tử cuối của `X-Forwarded-For` là IP của CloudFront: chưa hỗ trợ.
