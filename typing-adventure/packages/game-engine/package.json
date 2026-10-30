@@ -6,10 +6,13 @@
   "scripts": {
     "test": "vitest run",
     "test:watch": "vitest",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "mutation": "stryker run"
   },
   "devDependencies": {
-    "vitest": "^2.1.0",
-    "typescript": "^5.7.0"
+    "@stryker-mutator/core": "9.6.1",
+    "@stryker-mutator/vitest-runner": "9.6.1",
+    "typescript": "^5.7.0",
+    "vitest": "^2.1.0"
   }
 }

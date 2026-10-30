@@ -67,3 +67,26 @@ export function getClientIp(headers: Headers): string {
   const last = forwarded?.[forwarded.length - 1]?.trim()
   return last || 'unknown'
 }
+
+export type TrustProxyHeader = 'x-real-ip' | 'x-forwarded-for' | 'none'
+
+export function parseTrustProxyHeader(value: string | undefined): TrustProxyHeader {
+  const normalized = value?.trim().toLowerCase()
+  if (normalized === 'x-real-ip' || normalized === 'x-forwarded-for') return normalized
+  return 'none'
+}
+
+export function getTrustedClientIp(headers: Headers, trust: TrustProxyHeader): string {
+  if (trust === 'x-real-ip') {
+    return headers.get('x-real-ip')?.trim() || 'unknown'
+  }
+  if (trust === 'x-forwarded-for') {
+    const forwarded = headers.get('x-forwarded-for')?.split(',')
+    return forwarded?.[forwarded.length - 1]?.trim() || 'unknown'
+  }
+  return 'unknown'
+}
+
+export function normalizeEmail(email: unknown): string {
+  return typeof email === 'string' ? email.trim().toLowerCase() : ''
+}

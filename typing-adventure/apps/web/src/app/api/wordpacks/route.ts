@@ -1,6 +1,7 @@
 import { NextRequest } from 'next/server'
 import { z } from 'zod'
 import { prisma, Prisma } from '@typing-adventure/db'
+import { moderateWords } from '@typing-adventure/game-engine'
 import { getSessionUser } from '@/lib/auth'
 import { requireAdmin } from '@/lib/admin-guard'
 import { ok, err, unauthorized } from '@/lib/api-response'
@@ -84,13 +85,19 @@ export async function POST(req: NextRequest) {
     }
 
     const data = parsed.data
+    const moderation = moderateWords(data.words)
+    const refused = moderation.rejected.filter((r) => r.reason !== 'duplicate')
+    if (refused.length > 0) {
+      return err(`${refused.length} word(s) rejected by moderation`)
+    }
+
     const pack = await prisma.wordPack.create({
       data: {
         name: data.name,
         description: data.description,
         language: data.language,
         level: data.level,
-        words: data.words,
+        words: moderation.accepted,
         category: data.category,
         isDefault: data.isDefault,
         createdBy: user!.id,

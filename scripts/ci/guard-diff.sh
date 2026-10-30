@@ -33,13 +33,32 @@ if [ -n "$markers" ]; then
   failed=1
 fi
 
+command -v jq >/dev/null 2>&1 || {
+  echo "guard-diff: jq is required to compare package.json scripts" >&2
+  exit 2
+}
+merge_base=$(git merge-base "$base" "$head")
+scripts_of() {
+  if ! git cat-file -e "$1:$2" 2>/dev/null; then
+    echo null
+    return
+  fi
+  git show "$1:$2" | jq -S '.scripts // null' 2>/dev/null || echo "unreadable"
+}
+
 protected=()
 while IFS= read -r f; do
   [ -n "$f" ] || continue
   case "$f" in
     eslint.config.*|*/eslint.config.*|.prettierrc*|*/.prettierrc*|tsconfig*.json|*/tsconfig*.json|\
-    lefthook.yml|.gitleaks.toml|.github/workflows/ci.yml|.github/rulesets/*|scripts/ci/*|.claude/hooks/*)
+    lefthook.yml|.gitleaks.toml|.github/workflows/*|.github/actions/*|.github/rulesets/*|scripts/ci/*|.claude/hooks/*|\
+    turbo.json|*/turbo.json|.claude/settings*.json|.claude/agents/pr-reviewer.md)
       protected+=("$f")
+      ;;
+    package.json|*/package.json)
+      if [ "$(scripts_of "$merge_base" "$f")" != "$(scripts_of "$head" "$f")" ]; then
+        protected+=("$f (scripts changed)")
+      fi
       ;;
   esac
 done < <(git diff --name-only --no-renames "$range")

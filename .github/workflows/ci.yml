@@ -37,6 +37,18 @@ jobs:
           cache: pnpm
           cache-dependency-path: typing-adventure/pnpm-lock.yaml
       - run: pnpm install --frozen-lockfile
+      - name: Self-test agent hooks
+        working-directory: .
+        run: bash .claude/hooks/test-hooks.sh
+      - name: Self-test guard-diff
+        working-directory: .
+        run: bash scripts/ci/test-guard-diff.sh
+      - name: Self-test check-tdd-commits
+        working-directory: .
+        run: bash scripts/ci/test-check-tdd-commits.sh
+      - name: Self-test pg lib
+        working-directory: .
+        run: bash scripts/lib/test-pg.sh
       - run: pnpm --filter @typing-adventure/db db:generate
       - run: pnpm lint
       - run: pnpm typecheck
@@ -69,17 +81,19 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Use guard script from base when it exists there
+      - name: Use guard scripts from base when they exist there
         env:
           BASE: ${{ github.event.pull_request.base.sha || github.event.before }}
         run: |
-          if git cat-file -e "$BASE:scripts/ci/guard-diff.sh" 2>/dev/null; then
-            git show "$BASE:scripts/ci/guard-diff.sh" > "$RUNNER_TEMP/guard-diff.sh"
-            echo "using scripts/ci/guard-diff.sh from base $BASE"
-          else
-            cp scripts/ci/guard-diff.sh "$RUNNER_TEMP/guard-diff.sh"
-            echo "base has no guard script yet, using the one from this change"
-          fi
+          for s in guard-diff.sh check-tdd-commits.sh; do
+            if git cat-file -e "$BASE:scripts/ci/$s" 2>/dev/null; then
+              git show "$BASE:scripts/ci/$s" > "$RUNNER_TEMP/$s"
+              echo "using scripts/ci/$s from base $BASE"
+            else
+              cp "scripts/ci/$s" "$RUNNER_TEMP/$s"
+              echo "base has no scripts/ci/$s yet, using the one from this change"
+            fi
+          done
       - name: Guard pull request diff
         if: github.event_name == 'pull_request'
         env:
@@ -94,3 +108,9 @@ jobs:
           HEAD: ${{ github.sha }}
           GUARD_SKIP_LABEL: '1'
         run: bash "$RUNNER_TEMP/guard-diff.sh" "$BASE" "$HEAD"
+      - name: Check TDD commit order (feat commits must not touch tests)
+        if: ${{ !cancelled() }}
+        env:
+          BASE: ${{ github.event.pull_request.base.sha || github.event.before }}
+          HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: bash "$RUNNER_TEMP/check-tdd-commits.sh" "$BASE" "$HEAD"

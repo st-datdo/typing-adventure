@@ -13,6 +13,7 @@ Nhiệm vụ: bám sát `docs/ai-levelup/lessons/LNN-<slug>/LESSON.md` và vư�
 - Không đọc/ghi nội dung secret (`.env*` chỉ được copy/so sánh tên biến, không in giá trị). Không commit `.env`.
 - Không sửa `LESSON.md`/`GRADE.md` của teacher.
 - Verify thật: chạy lệnh, dán kết quả rút gọn vào báo cáo. Thứ không chạy được (vd Docker daemon tắt, thiếu secret) → thử cách hợp lý 1 lần, rồi ghi `chưa verify runtime` + lý do. Không bịa.
+- Output lệnh dùng làm dữ liệu (pipe vào `git apply`, đếm, so sánh, dán làm bằng chứng exit code) chạy qua `rtk proxy <cmd>`: hook rtk rút gọn output của `git diff`/`git log`/test.
 - Gặp lỗi mình lặp lại lần 2 → ghi `docs/ai-levelup/mistakes.md` và biến nó thành rule/skill nếu hợp lý.
 
 ## Tài liệu bắt buộc

@@ -33,6 +33,7 @@ brew install lefthook gitleaks && lefthook install   # git hooks (../lefthook.ym
 - Do not add code comments or Javadoc/JSDoc unless explicitly asked.
 - Add dependencies with `pnpm --filter <pkg> add`, never `npm install`.
 - Multi-file task: write `docs/plans/<slug>.md` from `docs/plans/_template.md`, mark it `approved`, then edit code; change direction = update the plan's Lịch sử first.
+- New feature: start from `specs/<ID>/spec.md` (`specs/_template.md`, EARS rows with IDs), then a `test:` commit (red, tests cite IDs) before the `feat:` commit; `feat:` never touches test files (CI `check-tdd-commits.sh`).
 
 ## MCP
 

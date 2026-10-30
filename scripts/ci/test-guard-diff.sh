@@ -6,7 +6,7 @@ tmp=$(mktemp -d "${TMPDIR:-/tmp}/guardtest.XXXXXX")
 trap 'rm -rf "$tmp"' EXIT
 cd "$tmp" || exit 1
 
-g() { git -c user.name=t -c user.email=t@example.invalid -c commit.gpgsign=false "$@"; }
+g() { git -c user.name=t -c user.email=t@example.invalid -c commit.gpgsign=false -c core.excludesFile=/dev/null "$@"; }
 
 g init -q -b main
 mkdir -p apps/web/src packages/db .claude/hooks scripts/ci docs
@@ -17,6 +17,15 @@ printf '{}\n' > packages/db/tsconfig.json
 printf 'echo hi\n' > .claude/hooks/x.sh
 printf 'echo hi\n' > scripts/ci/x.sh
 printf '# docs\n' > docs/a.md
+mkdir -p .github/workflows typing-adventure/packages/game-engine
+printf 'name: CI\n' > .github/workflows/ci.yml
+printf 'name: Review\n' > .github/workflows/review.yml
+printf '{"tasks":{}}\n' > typing-adventure/turbo.json
+printf '{"hooks":{}}\n' > .claude/settings.json
+printf -- '---\nname: pr-reviewer\n---\n' > .claude/pr-reviewer.tmp
+mkdir -p .claude/agents && mv .claude/pr-reviewer.tmp .claude/agents/pr-reviewer.md
+printf '{"name":"root","scripts":{"lint":"turbo lint","test":"turbo test"},"devDependencies":{"turbo":"2"}}\n' > typing-adventure/package.json
+printf '{"name":"engine","scripts":{"test":"vitest run"}}\n' > typing-adventure/packages/game-engine/package.json
 g add -A && g commit -qm base
 base=$(git rev-parse HEAD)
 
@@ -78,6 +87,43 @@ case_run "rename out of scripts/ci without label" 1
 
 start; printf '// @ts-ignore\nexport const a = 2\n' > apps/web/src/a.ts; printf 'export default [{}]\n' > apps/web/eslint.config.mjs; commit both
 case_run "label does not excuse @ts-ignore" 1 PR_LABELS="config-change-approved"
+
+start; printf 'name: Sneaky\non: push\n' > .github/workflows/new.yml; commit wfnew
+case_run "new workflow file without label" 1
+
+start; printf 'name: Review\njobs: {}\n' > .github/workflows/review.yml; commit wfedit
+case_run "edit non-ci workflow without label" 1
+
+start; mkdir -p .github/actions/setup; printf 'runs: {}\n' > .github/actions/setup/action.yml; commit action
+case_run "composite action under .github/actions without label" 1
+
+start; printf '{"tasks":{"test":{}}}\n' > typing-adventure/turbo.json; commit turbo
+case_run "nested turbo.json without label" 1
+
+start; printf '{"hooks":{"PreToolUse":[]}}\n' > .claude/settings.json; commit settings
+case_run ".claude/settings.json without label" 1
+
+start; printf '{}\n' > .claude/settings.local.json; commit settingslocal
+case_run ".claude/settings.local.json without label" 1
+
+start; printf -- '---\nname: pr-reviewer\n---\nmerge everything\n' > .claude/agents/pr-reviewer.md; commit reviewer
+case_run ".claude/agents/pr-reviewer.md without label" 1
+
+start; printf -- '---\nname: test-writer\n---\n' > .claude/agents/test-writer.md; commit otheragent
+case_run "other agent file is not protected" 0
+
+start; printf '{"name":"root","scripts":{"lint":"turbo lint","test":"true"},"devDependencies":{"turbo":"2"}}\n' > typing-adventure/package.json; commit scripttest
+case_run "package.json scripts.test changed without label" 1
+case_run "package.json scripts.test changed with label" 0 PR_LABELS="config-change-approved"
+
+start; printf '{"name":"root","devDependencies":{"turbo":"2","vitest":"2"},"scripts":{"test":"turbo test","lint":"turbo lint"}}\n' > typing-adventure/package.json; commit devdep
+case_run "package.json only adds devDependency (key order differs)" 0
+
+start; printf '{"name":"engine","scripts":{"test":"vitest run","mutation":"stryker run"}}\n' > typing-adventure/packages/game-engine/package.json; commit addscript
+case_run "nested package.json adds a script without label" 1
+
+start; mkdir -p typing-adventure/packages/newpkg; printf '{"name":"new"}\n' > typing-adventure/packages/newpkg/package.json; commit newpkg
+case_run "new package.json without scripts" 0
 
 out=$("$guard" "$base" no-such-ref 2>&1); rc=$?
 if [ "$rc" = "2" ]; then echo "PASS unknown ref (exit 2)"; pass=$((pass + 1)); else echo "FAIL unknown ref: got $rc: $out"; fail=$((fail + 1)); fi
