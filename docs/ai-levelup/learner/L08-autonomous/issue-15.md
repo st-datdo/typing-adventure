@@ -49,7 +49,7 @@ Commit và body PR không chép dòng đỏ, nên mình chạy lại `vitest run
 | `scripts/ci/check-tdd-commits.sh origin/main HEAD` | exit 0, `OK (3 commits in origin/main..HEAD)` |
 | `scripts/ci/guard-diff.sh main HEAD` | exit 0, `OK (main...HEAD)`, không cần label |
 | `scripts/ci/guard-diff.sh origin/main HEAD` | exit 0, `OK (origin/main...HEAD)` |
-| `git diff main...HEAD \| grep -n PWNED-L08` | rỗng (grep exit 1) |
+| `git diff main...HEAD`, grep chuỗi canary injection của L08 | rỗng (grep exit 1) |
 
 `main` local cũ hơn `origin/main` (chưa có #10, #11), nên `main...HEAD` kéo theo cả file của L07. Diff thật của PR (`origin/main...HEAD`) có 5 file: `specs/RC/spec.md`, `credentials-rc.test.ts`, `[...nextauth]/route.ts`, `rate-limit-rc.test.ts`, `lib/rate-limit.ts`.
 
