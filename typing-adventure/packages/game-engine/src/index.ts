@@ -149,6 +149,9 @@ export {
   calculateStars,
 } from './scoring'
 
+export { MAX_WPM, checkSessionPlausibility } from './plausibility'
+export type { SessionClaim } from './plausibility'
+
 // Achievements
 export { ACHIEVEMENTS, checkAchievements } from './achievements'
 
