@@ -38,7 +38,8 @@ start=""
 start_sha=""
 while IFS=$'\t' read -r sha date; do
   [ -n "$sha" ] || continue
-  if spec_at "$sha" | grep -qE '^Trạng thái:[[:space:]]*approved'; then
+  body=$(spec_at "$sha") || continue
+  if grep -qE '^Trạng thái:[[:space:]]*approved' <<< "$body"; then
     start=$date
     start_sha=$sha
     break

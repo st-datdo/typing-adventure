@@ -67,11 +67,11 @@ doc_at() {
   printf '%s' "$body" | jq -r '.content // empty' | tr -d '\n' | base64 --decode 2>/dev/null
 }
 
-spec=$(printf '%s\n' "$file_list" | awk -F'\t' '$1 == "added" && $2 ~ /^specs\/[^\/]+\/spec\.md$/ { print $2; exit }')
-[ -n "$spec" ] || spec=$(printf '%s\n' "$file_list" | awk -F'\t' '$1 != "removed" && $2 ~ /^specs\/[^\/]+\/spec\.md$/ { print $2; exit }')
+spec=$(printf '%s\n' "$file_list" | awk -F'\t' '$1 == "added" && $2 ~ /^specs\/[^\/]+\/spec\.md$/ && !found { print $2; found = 1 }')
+[ -n "$spec" ] || spec=$(printf '%s\n' "$file_list" | awk -F'\t' '$1 != "removed" && $2 ~ /^specs\/[^\/]+\/spec\.md$/ && !found { print $2; found = 1 }')
 kind=spec
 if [ -z "$spec" ]; then
-  spec=$(printf '%s\n' "$file_list" | awk -F'\t' '$1 != "removed" && $2 ~ /^docs\/plans\/[^\/_][^\/]*\.md$/ { print $2; exit }')
+  spec=$(printf '%s\n' "$file_list" | awk -F'\t' '$1 != "removed" && $2 ~ /^docs\/plans\/[^\/_][^\/]*\.md$/ && !found { print $2; found = 1 }')
   kind=plan
 fi
 
@@ -82,8 +82,8 @@ if [ -n "$spec" ]; then
   if [ "$kind" = "spec" ]; then
     expected=$(printf '%s\n' "$doc" | awk '
       /^File dự kiến:/ { on = 1 }
-      on && /^[[:space:]]*$/ { exit }
-      on { print }
+      on && /^[[:space:]]*$/ { on = 0; done = 1 }
+      on && !done { print }
     ' | grep -oE "${bt}[^${bt}]+${bt}" | tr -d "$bt")
     ids=$(printf '%s\n' "$doc" | grep -oE '^\|[[:space:]]*[A-Z][A-Z0-9]*-[0-9]+[[:space:]]*\|' | grep -oE '[A-Z][A-Z0-9]*-[0-9]+' | sort -u)
     cited=$(printf '%s\n' "$diff" | awk '
@@ -121,7 +121,8 @@ while IFS= read -r f; do
   [ "$allowed" = "1" ] || deviation+=("$f")
 done <<< "$files"
 
-risk=$(printf '%s\n' "$files" | bash "$here/risk.sh" | head -n 1)
+risk=$(printf '%s\n' "$files" | bash "$here/risk.sh")
+risk=${risk%%$'\n'*}
 risk=${risk#risk=}
 
 evidence=$(printf '%s' "$view" | jq -r '

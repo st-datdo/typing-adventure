@@ -29,9 +29,9 @@ expect_risk() {
   rc=$?
   local good=1 p
   [ "$rc" = "0" ] || good=0
-  [ "$(printf '%s\n' "$out" | head -n 1)" = "risk=$want" ] || good=0
+  [ "${out%%$'\n'*}" = "risk=$want" ] || good=0
   for p in "$@"; do
-    printf '%s\n' "$out" | grep -qF -- "$p" || good=0
+    grep -qF -- "$p" <<< "$out" || good=0
   done
   if [ "$good" = "1" ]; then
     ok "$name -> risk=$want"
@@ -84,7 +84,7 @@ expect_risk "empty stdin fails closed" high "" "high: no paths on stdin"
 
 out=$(printf 'a\n' | bash "$risk" extra 2>&1)
 rc=$?
-if [ "$rc" = "2" ] && printf '%s' "$out" | grep -q usage; then ok "argument given: exit 2"; else ko "argument given: got exit $rc '$out'"; fi
+if [ "$rc" = "2" ] && grep -q usage <<< "$out"; then ok "argument given: exit 2"; else ko "argument given: got exit $rc '$out'"; fi
 
 out=$(printf '%b' "$pr10" | bash "$risk")
 if [ "$(printf '%s\n' "$out" | wc -l | tr -d ' ')" = "7" ] && [ "$(printf '%s\n' "$out" | tail -n +2 | grep -c "$tab")" = "6" ]; then
@@ -212,10 +212,28 @@ files_json "$d" added=docs/plans/rule-await.md modified=.claude/rules/game-engin
 printf '+++ b/x\n+y\n' > "$d/diff.patch"
 expect_fm "chore plan: criteria n/a, file outside plan list" "$d" "| #5 | docs/plans/rule-await.md | n/a | high | no checks | ${bt}README.md${bt} |"
 
+d=$(fm_case fm-sigpipe)
+spec_zz > "$d/contents/specs_ZZ_spec.md"
+view_json "$d" '[{"name":"checks","status":"COMPLETED","conclusion":"SUCCESS"}]'
+many=(added=specs/ZZ/spec.md added=typing-adventure/packages/game-engine/src/zz.ts added=typing-adventure/packages/game-engine/src/__tests__/zz.test.ts)
+for i in $(seq 1 3000); do
+  many+=("added=docs/ai-levelup/learner/L08-autonomous/many/notes-$i-padding-padding-padding.md")
+done
+files_json "$d" "${many[@]}"
+printf '+++ b/typing-adventure/packages/game-engine/src/__tests__/zz.test.ts\n+ZZ-01 ZZ-02\n' > "$d/diff.patch"
+out=$( (trap '' PIPE; cd "$tmp" && GH_STUB_DIR="$d" PATH="$tmp/bin:$PATH" bash "$fmap" 5) 2>"$tmp/sigpipe.err")
+rc=$?
+want="| #5 | specs/ZZ/spec.md | 2/2 | standard | checks:success |  |"
+if [ "$rc" = "0" ] && [ "$out" = "$want" ] && [ ! -s "$tmp/sigpipe.err" ]; then
+  ok "feature-map with SIGPIPE ignored and 3003 files: no broken pipe on stderr"
+else
+  ko "feature-map with SIGPIPE ignored: exit $rc '$out' stderr: $(sed -n '1,3p' "$tmp/sigpipe.err")"
+fi
+
 d=$(fm_case fm-gh-down)
 out=$(cd "$tmp" && GH_STUB_DIR="$d" PATH="$tmp/bin:$PATH" bash "$fmap" 5 2>&1)
 rc=$?
-if [ "$rc" = "1" ] && printf '%s' "$out" | grep -q "cannot read PR #5"; then ok "feature-map gh failure: exit 1"; else ko "feature-map gh failure: got exit $rc '$out'"; fi
+if [ "$rc" = "1" ] && grep -q "cannot read PR #5" <<< "$out"; then ok "feature-map gh failure: exit 1"; else ko "feature-map gh failure: got exit $rc '$out'"; fi
 
 out=$(bash "$fmap" 'x; rm -rf /' 2>&1)
 rc=$?

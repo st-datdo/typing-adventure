@@ -64,10 +64,10 @@ run() {
   local ok=1 p
   [ "$rc" = "$want_rc" ] || ok=0
   for p in "$@"; do
-    printf '%s\n' "$out" | grep -qF -- "$p" || ok=0
+    grep -qF -- "$p" <<< "$out" || ok=0
   done
   if [ "$ok" = "1" ]; then
-    echo "PASS $name (exit $rc) $(printf '%s\n' "$out" | grep -E 'FAIL|usage' | head -n 1)"
+    echo "PASS $name (exit $rc) $(grep -E 'FAIL|usage' <<< "$out" | sed -n '1p')"
     pass=$((pass + 1))
   else
     echo "FAIL $name: expected exit $want_rc with [$*], got exit $rc:"
@@ -140,8 +140,8 @@ run "gh cannot read the issue: other gates still reported" "$d" 1 "gate[1] label
 
 d=$(new_case read-only)
 run "only read-only gh calls" "$d" 0 "ready-gate: OK"
-if grep -vE '^(issue view|repo view|pr list|api repos/\{owner\}/\{repo\}/issues/7/timeline) ' "$d/calls.log" | grep -q .; then
-  echo "FAIL unexpected gh call: $(grep -vE '^(issue view|repo view|pr list|api )' "$d/calls.log" | head -n 1)"
+if grep -qvE '^(issue view|repo view|pr list|api repos/\{owner\}/\{repo\}/issues/7/timeline) ' "$d/calls.log"; then
+  echo "FAIL unexpected gh call: $(grep -vE '^(issue view|repo view|pr list|api )' "$d/calls.log" | sed -n '1p')"
   fail=$((fail + 1))
 else
   echo "PASS gh calls: $(cut -d' ' -f1-2 "$d/calls.log" | sort -u | tr '\n' ',' | sed 's/,$//')"
