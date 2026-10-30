@@ -34,3 +34,4 @@ File dự kiến: `typing-adventure/apps/web/src/app/api/auth/register/route.ts`
 
 ## Lịch sử
 - v1 2026-10-30 20:27: bản đầu, approved.
+- v2 2026-10-30 20:29: `grep -rn getClientIp apps/web/src` sau `feat:` chỉ còn 2 dòng trong test RG-05 (`rate-limit.test.ts`: tên test và chuỗi `'getClientIp'` trong assertion). Giữ lại vì đó là test chặn hàm quay lại; code không còn định nghĩa hay caller nào.
