@@ -1,0 +1,78 @@
+name: typing-adventure
+
+x-database-url: &database-url postgresql://typing:${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}@postgres:5432/typing_adventure
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: typing_adventure
+      POSTGRES_USER: typing
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
+    command:
+      - postgres
+      - -c
+      - shared_buffers=64MB
+      - -c
+      - max_connections=30
+      - -c
+      - work_mem=2MB
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U typing -d typing_adventure']
+      interval: 10s
+      timeout: 5s
+      retries: 6
+    mem_limit: 256m
+
+  migrate:
+    image: ${WEB_IMAGE:?set WEB_IMAGE in .env}
+    profiles: ['tools']
+    working_dir: /app/packages/db
+    environment:
+      DATABASE_URL: *database-url
+    command: ['node_modules/.bin/prisma', 'migrate', 'deploy']
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  web:
+    image: ${WEB_IMAGE:?set WEB_IMAGE in .env}
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      DATABASE_URL: *database-url
+      NODE_OPTIONS: --max-old-space-size=384
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ['CMD-SHELL', 'wget -q -O /dev/null http://127.0.0.1:3000/ || exit 1']
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+    mem_limit: 640m
+
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    ports:
+      - '80:80'
+      - '443:443'
+      - '443:443/udp'
+    environment:
+      DOMAIN: ${DOMAIN:?set DOMAIN in .env}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - web
+
+volumes:
+  postgres_data:
+  caddy_data:
+  caddy_config:

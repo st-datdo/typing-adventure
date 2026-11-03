@@ -1,0 +1,139 @@
+name: Deploy
+
+on:
+  workflow_dispatch:
+    inputs:
+      image_tag:
+        description: 'Deploy an existing image tag (commit SHA) without building; empty = build this ref'
+        required: false
+        default: ''
+
+permissions:
+  contents: read
+  packages: write
+
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    env:
+      IMAGE: ghcr.io/${{ github.repository }}
+      DOMAIN: ${{ vars.PROD_DOMAIN }}
+      SENTRY_DSN: ${{ vars.NEXT_PUBLIC_SENTRY_DSN }}
+      INPUT_TAG: ${{ inputs.image_tag }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Check configuration
+        env:
+          HAS_HOST: ${{ secrets.VPS_HOST != '' }}
+          HAS_USER: ${{ secrets.VPS_USER != '' }}
+          HAS_KEY: ${{ secrets.VPS_SSH_KEY != '' }}
+          HAS_KNOWN: ${{ secrets.VPS_KNOWN_HOSTS != '' }}
+        run: |
+          missing=()
+          [ -n "$DOMAIN" ] || missing+=("vars.PROD_DOMAIN")
+          [ "$HAS_HOST" = true ] || missing+=("secrets.VPS_HOST")
+          [ "$HAS_USER" = true ] || missing+=("secrets.VPS_USER")
+          [ "$HAS_KEY" = true ] || missing+=("secrets.VPS_SSH_KEY")
+          [ "$HAS_KNOWN" = true ] || missing+=("secrets.VPS_KNOWN_HOSTS")
+          if [ "${#missing[@]}" -gt 0 ]; then
+            echo "::error::missing ${missing[*]}"
+            exit 1
+          fi
+
+      - name: Resolve image tag
+        run: |
+          tag=${INPUT_TAG:-$GITHUB_SHA}
+          echo "TAG=$tag" >> "$GITHUB_ENV"
+          echo "WEB_IMAGE=$IMAGE:$tag" >> "$GITHUB_ENV"
+
+      - name: Log in to GHCR
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: echo "$GH_TOKEN" | docker login ghcr.io -u "$GITHUB_ACTOR" --password-stdin
+
+      - name: Build and push image
+        if: inputs.image_tag == ''
+        run: |
+          docker buildx create --use --name deploy-builder
+          docker buildx build typing-adventure \
+            --platform linux/amd64 \
+            --build-arg "NEXT_PUBLIC_URL=https://$DOMAIN" \
+            --build-arg "NEXT_PUBLIC_WS_URL=wss://$DOMAIN" \
+            --build-arg "NEXT_PUBLIC_SENTRY_DSN=$SENTRY_DSN" \
+            --cache-from "type=registry,ref=$IMAGE:buildcache" \
+            --cache-to "type=registry,ref=$IMAGE:buildcache,mode=max" \
+            --tag "$WEB_IMAGE" \
+            --tag "$IMAGE:latest" \
+            --push
+
+      - name: Check image exists
+        if: inputs.image_tag != ''
+        run: docker manifest inspect "$WEB_IMAGE" > /dev/null
+
+      - name: Set up SSH
+        env:
+          SSH_KEY: ${{ secrets.VPS_SSH_KEY }}
+          KNOWN_HOSTS: ${{ secrets.VPS_KNOWN_HOSTS }}
+          VPS_HOST: ${{ secrets.VPS_HOST }}
+          VPS_USER: ${{ secrets.VPS_USER }}
+        run: |
+          install -d -m 700 ~/.ssh
+          printf '%s\n' "$SSH_KEY" > ~/.ssh/id_deploy
+          chmod 600 ~/.ssh/id_deploy
+          printf '%s\n' "$KNOWN_HOSTS" > ~/.ssh/known_hosts
+          printf 'Host vps\n  HostName %s\n  User %s\n  IdentityFile ~/.ssh/id_deploy\n  IdentitiesOnly yes\n  StrictHostKeyChecking yes\n' \
+            "$VPS_HOST" "$VPS_USER" > ~/.ssh/config
+
+      - name: Copy deploy files
+        run: |
+          scp typing-adventure/deploy/docker-compose.prod.yml \
+              typing-adventure/deploy/Caddyfile \
+              typing-adventure/deploy/backup.sh \
+              vps:typing-adventure/
+          ssh vps 'chmod +x typing-adventure/backup.sh'
+
+      - name: Migrate and restart
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          {
+            printf '%s\n' "$GH_TOKEN"
+            cat <<'REMOTE'
+          set -euo pipefail
+          image=$1
+          actor=$2
+          token=$GHCR_TOKEN
+          cd ~/typing-adventure
+          test -f .env || { echo "missing ~/typing-adventure/.env" >&2; exit 1; }
+          if grep -q '^WEB_IMAGE=' .env; then
+            sed -i "s|^WEB_IMAGE=.*|WEB_IMAGE=$image|" .env
+          else
+            echo "WEB_IMAGE=$image" >> .env
+          fi
+          echo "$token" | docker login ghcr.io -u "$actor" --password-stdin
+          trap 'docker logout ghcr.io >/dev/null 2>&1 || true' EXIT
+          docker compose -f docker-compose.prod.yml --profile tools pull web migrate
+          docker compose -f docker-compose.prod.yml --profile tools run --rm migrate
+          docker compose -f docker-compose.prod.yml up -d --remove-orphans
+          docker image prune -f
+          REMOTE
+          } | ssh vps "IFS= read -r GHCR_TOKEN && export GHCR_TOKEN && exec bash -s -- '$WEB_IMAGE' '$GITHUB_ACTOR'"
+
+      - name: Smoke test
+        run: |
+          for i in $(seq 1 20); do
+            if curl -fsS -o /dev/null "https://$DOMAIN/" \
+              && curl -fsS "https://$DOMAIN/socket.io/?EIO=4&transport=polling" | grep -q '^0{'; then
+              echo "deployed $WEB_IMAGE to https://$DOMAIN"
+              exit 0
+            fi
+            sleep 6
+          done
+          echo "::error::https://$DOMAIN did not become healthy"
+          exit 1

@@ -96,6 +96,20 @@ Thủ công: đăng ký + đăng nhập Credentials, đăng nhập Google, chơi
 
 ## Lịch sử
 - v1 2026-11-03 16:41: bản đầu, approved.
+- v2 2026-11-03 16:42: đọc code thấy 4 điểm, chỉnh trước khi sửa code.
+  - `docker-compose.prod.yml` chuyển vào `typing-adventure/deploy/`, để workflow chỉ cần copy 1 thư mục lên VPS.
+  - Thêm sửa `typing-adventure/.dockerignore`: pattern `node_modules`, `.next`, `.env*` chỉ khớp ở gốc, nên `apps/web/.env` và `packages/db/.env` (có secret) bị đóng vào image public, và `node_modules` build trên macOS ghi đè bản Linux.
+  - Runner chạy `node --import tsx server.ts` thay vì `pnpm ... start:ws`: user non-root không có pnpm do corepack cache sẵn, sẽ phải tải lúc chạy. Cài `openssl` cho Prisma trên Alpine.
+  - Workflow thêm secret `VPS_KNOWN_HOSTS` (không dùng `ssh-keyscan` lúc chạy) và input `image_tag` để rollback mà không build lại. Chỉ dùng `docker` CLI, không thêm action bên thứ ba.
 
 ## Thực tế
-<điền sau khi code>
+File thật: `typing-adventure/Dockerfile`, `typing-adventure/.dockerignore`, `typing-adventure/.env.example`, `typing-adventure/deploy/{docker-compose.prod.yml,Caddyfile,.env.prod.example,backup.sh,bootstrap-vps.sh}`, `typing-adventure/docs/DEPLOY_VPS.md`, `.github/workflows/deploy.yml`.
+
+- Khớp dự đoán: Dockerfile, Caddyfile, `.env.prod.example`, `backup.sh`, `bootstrap-vps.sh`, `deploy.yml`, `DEPLOY_VPS.md`, `.env.example`.
+- Dự đoán mà không đổi: không có.
+- Đổi mà không dự đoán (đã ghi ở v2): `.dockerignore`; vị trí `docker-compose.prod.yml` chuyển vào `deploy/`.
+- Tỉ lệ khớp: 9/10 file dự đoán đúng (vị trí compose lệch), cộng 1 file ngoài dự đoán.
+
+Verify local (Docker Desktop, image `linux/amd64` 636MB, user `node`, không có `.env*` trong `/app`): `prisma migrate deploy` áp 2 migration; seed chạy OK; `/` 200; `/socket.io/?EIO=4&transport=polling` trả `0{"sid"...`; `/lobby` khi chưa đăng nhập → 307 `/login`; đăng ký → đăng nhập Credentials → session có `id` → `/lobby` 200; sai mật khẩu với cùng `X-Real-IP` lần thứ 11 → 429, IP khác vẫn 302; CSP `connect-src` lấy đúng `NEXT_PUBLIC_WS_URL` từ build-arg. RAM idle: web ~292MB/640MB, postgres ~53MB/256MB. Log có cảnh báo `"next start" does not work with "output: standalone"`: vô hại vì chạy custom server chứ không chạy `next start`; chưa bỏ `output: 'standalone'` để giữ diff nhỏ (image hiện không dùng thư mục standalone nữa, có thể bỏ ở plan sau).
+
+Chưa verify được: Caddy cấp cert thật, `deploy.yml` chạy trên GitHub, `bootstrap-vps.sh` trên Ubuntu thật, backup lên R2. Cần VPS + domain.

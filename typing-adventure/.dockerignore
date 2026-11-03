@@ -1,6 +1,12 @@
-node_modules
-.next
+**/node_modules
+**/.next
+**/.turbo
+**/.env*
+**/*.tsbuildinfo
+**/test-results
+**/playwright-report
+**/coverage
 .git
 *.md
-.env*
 docker-compose.yml
+deploy
