@@ -21,6 +21,7 @@ test.describe('KR games hub', () => {
     await page.setViewportSize({ width: 375, height: 667 })
     await page.goto('/games')
     await page.locator('.games-card').first().waitFor()
+    await page.waitForTimeout(1000)
     expect(await tapTargetsUnder44(page, '.games-card, .ui-topbar a, .ui-topbar button')).toEqual(
       [],
     )
