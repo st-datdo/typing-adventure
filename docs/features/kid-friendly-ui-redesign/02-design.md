@@ -1,6 +1,6 @@
 # KR · Thiết kế lại giao diện thân thiện trẻ em — Design
 
-Trạng thái: draft
+Trạng thái: approved
 Nguồn: 01-requirements.md (KR-01…KR-22, E1…E15, Q1…Q8), hệ thiết kế từ skill ui-ux-pro-max (Claymorphism, palette "learning blue + play yellow + fun pink", Baloo 2, motion stagger back-out).
 
 ## Luồng người dùng
@@ -501,3 +501,4 @@ Tổng: 9 key mới + 8 key đổi giá trị.
 
 ## Lịch sử
 - v1 2026-11-05 10:45: bản đầu.
+- 2026-11-05 23:48: approved by user.

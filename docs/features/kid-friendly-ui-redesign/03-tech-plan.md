@@ -1,6 +1,6 @@
 # KR · Thiết kế lại giao diện thân thiện trẻ em — Tech plan
 
-Trạng thái: draft
+Trạng thái: approved
 Nguồn: 01-requirements.md, 02-design.md
 
 ## Hướng tiếp cận
@@ -562,3 +562,4 @@ bash ../scripts/ci/check-tdd-commits.sh main HEAD
 
 ## Lịch sử
 - v1 2026-11-05 11:30: bản đầu.
+- 2026-11-05 23:48: approved by user.

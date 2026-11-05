@@ -1,6 +1,6 @@
 # KR · Thiết kế lại giao diện thân thiện trẻ em — Requirements
 
-Trạng thái: draft
+Trạng thái: approved
 Slug: kid-friendly-ui-redesign
 
 ## Bối cảnh
@@ -224,3 +224,4 @@ App đã có màu tươi và vài animation, nhưng các màn trẻ dùng nhiề
 
 ## Lịch sử
 - v1 2026-11-05 10:00: bản đầu.
+- 2026-11-05 23:48: approved by user.
