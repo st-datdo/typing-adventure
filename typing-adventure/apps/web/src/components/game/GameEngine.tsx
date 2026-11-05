@@ -21,6 +21,8 @@ import { TopBar } from '@/components/ui/TopBar'
 import { Icon } from '@/components/ui/icons/Icon'
 import { SceneBackdrop } from '@/components/decor/SceneBackdrop'
 import { GameOwl } from './GameOwl'
+import { ComboBurst } from './ComboBurst'
+import { ComboAnnouncer } from './ComboAnnouncer'
 import { shouldCaptureSpace } from '@/lib/game-input'
 
 import { saveSession, getStats, getHistory } from '@/lib/api/sessions'
@@ -442,8 +444,9 @@ export function GameEngine() {
         <div className="kr-enter" style={enter(1)}>
           <StatsBar gameState={gameState} />
         </div>
-        <div className="kr-enter" style={enter(2)}>
+        <div className="kr-enter word-stage" style={enter(2)}>
           <WordDisplay gameState={gameState} onCustomText={() => setPanel('customText')} />
+          <ComboBurst />
         </div>
         <div className="kr-enter" style={enter(3)}>
           <Keyboard gameState={gameState} onKeyClick={handleKeyClick} lastKeyFlash={lastKeyFlash} />
@@ -515,6 +518,7 @@ export function GameEngine() {
         spellCheck={false}
       />
 
+      <ComboAnnouncer />
       <SyncIndicator status={syncStatus} />
     </div>
   )

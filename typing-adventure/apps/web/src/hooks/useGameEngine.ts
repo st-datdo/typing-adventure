@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef } from 'react'
 import { useGameStore } from '@/stores/game-store'
 import { useSettingsStore } from '@/stores/settings-store'
 import { useRecordsStore } from '@/stores/records-store'
+import { useComboCelebrationStore } from '@/stores/combo-celebration-store'
 import { useSound } from '@/hooks/useSound'
 import { useSpeech } from '@/hooks/useSpeech'
 import { checkAchievements, formatTime } from '@typing-adventure/game-engine'
@@ -37,6 +38,10 @@ export function useGameEngine() {
       if (timerRef.current) clearInterval(timerRef.current)
     }
   }, [gameState.startTime, gameState.isFinished, gameState.gameMode, gameState.timeAttackDuration])
+
+  useEffect(() => {
+    if (gameState.startTime === null) useComboCelebrationStore.getState().clear()
+  }, [gameState.startTime])
 
   // Save result when game finishes
   useEffect(() => {
@@ -76,27 +81,35 @@ export function useGameEngine() {
     }
   }, [result, showCelebration])
 
-  const handleKeypress = useCallback((char: string) => {
-    if (gameState.isFinished) return
+  const handleKeypress = useCallback(
+    (char: string) => {
+      if (gameState.isFinished) return
 
-    // Start timer on first keypress
-    if (!gameState.startTime) {
-      gameStore.setStartTime(Date.now())
-    }
-
-    const { isCorrect, completedWord, isMilestone } = gameStore.handleKeypress(char)
-
-    if (isCorrect) {
-      playCorrect()
-      if (settings.soundMode === 'character' && char !== ' ') {
-        speakLetter(char)
-      } else if (settings.soundMode === 'word' && completedWord && char !== ' ') {
-        speakWord(completedWord)
+      // Start timer on first keypress
+      if (!gameState.startTime) {
+        gameStore.setStartTime(Date.now())
       }
-    } else {
-      playWrong()
-    }
-  }, [gameState.isFinished, gameState.startTime, settings.soundMode])
+
+      const { isCorrect, completedWord, isMilestone } = gameStore.handleKeypress(char)
+
+      const celebration = useComboCelebrationStore.getState()
+      const after = useGameStore.getState().gameState
+      if (after.isFinished) celebration.finish()
+      else if (isMilestone) celebration.celebrate(after.combo)
+
+      if (isCorrect) {
+        playCorrect()
+        if (settings.soundMode === 'character' && char !== ' ') {
+          speakLetter(char)
+        } else if (settings.soundMode === 'word' && completedWord && char !== ' ') {
+          speakWord(completedWord)
+        }
+      } else {
+        playWrong()
+      }
+    },
+    [gameState.isFinished, gameState.startTime, settings.soundMode],
+  )
 
   const resetGame = useCallback(() => {
     cancelSpeech()
@@ -109,7 +122,13 @@ export function useGameEngine() {
       gameState.timeAttackDuration,
       customWords,
     )
-  }, [gameState.gameMode, settings.level, settings.wordCount, gameState.lessonIndex, gameState.timeAttackDuration])
+  }, [
+    gameState.gameMode,
+    settings.level,
+    settings.wordCount,
+    gameState.lessonIndex,
+    gameState.timeAttackDuration,
+  ])
 
   const focusInput = useCallback(() => {
     hiddenInputRef.current?.focus()
@@ -130,12 +149,11 @@ export function useGameEngine() {
   const getLiveStats = useCallback(() => {
     const elapsed = getElapsedSeconds()
     const cps = elapsed > 0 ? gameState.correctKeystrokes / elapsed : 0
-    const wpm = elapsed > 0
-      ? Math.round((gameState.correctKeystrokes / 5) / (elapsed / 60))
-      : 0
-    const accuracy = gameState.totalKeystrokes > 0
-      ? Math.round((gameState.correctKeystrokes / gameState.totalKeystrokes) * 100)
-      : 100
+    const wpm = elapsed > 0 ? Math.round(gameState.correctKeystrokes / 5 / (elapsed / 60)) : 0
+    const accuracy =
+      gameState.totalKeystrokes > 0
+        ? Math.round((gameState.correctKeystrokes / gameState.totalKeystrokes) * 100)
+        : 100
     return { cps: cps.toFixed(2), wpm, accuracy }
   }, [getElapsedSeconds, gameState.correctKeystrokes, gameState.totalKeystrokes])
 
