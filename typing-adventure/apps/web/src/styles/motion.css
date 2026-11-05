@@ -11,7 +11,7 @@
 
 .kr-enter {
   --i: 0;
-  animation: kr-pop-in var(--kr-dur-enter) var(--kr-ease-back) both;
+  animation: kr-pop-in var(--kr-dur-enter) var(--kr-ease-back) backwards;
   animation-delay: calc(var(--i) * var(--kr-stagger));
 }
 
