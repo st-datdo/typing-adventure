@@ -21,6 +21,7 @@ import { TopBar } from '@/components/ui/TopBar'
 import { Icon } from '@/components/ui/icons/Icon'
 import { SceneBackdrop } from '@/components/decor/SceneBackdrop'
 import { GameOwl } from './GameOwl'
+import { shouldCaptureSpace } from '@/lib/game-input'
 
 import { saveSession, getStats, getHistory } from '@/lib/api/sessions'
 import { useRecordsStore } from '@/stores/records-store'
@@ -43,7 +44,6 @@ export function GameEngine() {
   const [syncStatus, setSyncStatus] = useState<'idle' | 'syncing' | 'saved' | 'offline'>('idle')
   const [panel, setPanel] = useState<Panel>('none')
   const [navOpen, setNavOpen] = useState(false)
-  const closeNav = useCallback(() => setNavOpen(false), [])
   const flashIdRef = useRef(0)
   const [lastKeyFlash, setLastKeyFlash] = useState<{
     key: string
@@ -148,13 +148,18 @@ export function GameEngine() {
     }
 
     const handleKeydown = (e: KeyboardEvent) => {
-      if (panel !== 'none') return
-      if (gameState.isFinished) return
-      if (e.key === ' ') {
-        e.preventDefault()
-        doFlash(' ')
-        handleKeypress(' ')
-      }
+      const target = e.target instanceof Element ? e.target : null
+      const capture = shouldCaptureSpace({
+        key: e.key,
+        panelOpen: panel !== 'none',
+        navOpen,
+        isFinished: gameState.isFinished,
+        targetInSideNav: target?.closest('.side-nav') != null,
+      })
+      if (!capture) return
+      e.preventDefault()
+      doFlash(' ')
+      handleKeypress(' ')
     }
 
     const input = hiddenInputRef.current
@@ -165,7 +170,7 @@ export function GameEngine() {
       input?.removeEventListener('input', handleInput)
       document.removeEventListener('keydown', handleKeydown)
     }
-  }, [handleKeypress, gameState.isFinished, panel, doFlash])
+  }, [handleKeypress, gameState.isFinished, panel, navOpen, doFlash])
 
   // Auto-focus
   const focusInput = useCallback(() => {
@@ -174,6 +179,11 @@ export function GameEngine() {
   }, [panel])
 
   useEffect(() => {
+    focusInput()
+  }, [focusInput])
+
+  const closeNav = useCallback(() => {
+    setNavOpen(false)
     focusInput()
   }, [focusInput])
 
