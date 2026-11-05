@@ -4,6 +4,8 @@ import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { LoadingScreen } from '../ui/LoadingScreen'
 import { SceneBackdrop } from '../decor/SceneBackdrop'
+import { Mascot, type MascotMood } from '../little/Mascot'
+import { TopBar } from '../ui/TopBar'
 
 const decorCss = (() => {
   try {
@@ -51,5 +53,45 @@ describe('KR shared UI', () => {
     const m = decorCss.match(/@media\s*\(max-width:\s*767px\)\s*\{([\s\S]*?)\n\}/)
     expect(m, 'mobile media query').toBeTruthy()
     expect(m![1]).toMatch(/\.kr-scene--top[^{]*\{[^}]*display:\s*none/)
+  })
+
+  const moods: MascotMood[] = [
+    'idle',
+    'wave',
+    'happy',
+    'cheer',
+    'encourage',
+    'sad',
+    'thinking',
+    'sleep',
+  ]
+  for (const mood of moods) {
+    it(`KR-04 Mascot ${mood} renders the SVG owl`, () => {
+      const html = renderToStaticMarkup(<Mascot mood={mood}>Hi</Mascot>)
+      expect(html).toContain(`data-mood="${mood}"`)
+      expect(html).toContain('<svg')
+      expect(html).not.toMatch(/🦉|💤/u)
+      expect(html).toMatch(/class="little-bubble"[^>]*role="status"/)
+    })
+  }
+
+  it('KR-05 LoadingScreen default shows the owl SVG, no emoji', () => {
+    const html = renderToStaticMarkup(<LoadingScreen />)
+    expect(html).toContain('<svg')
+    expect(html).not.toContain('🦉')
+    expect(html).toContain('role="status"')
+  })
+
+  it('KR-05 LoadingScreen keeps a caller string icon', () => {
+    const html = renderToStaticMarkup(<LoadingScreen icon="🏁" />)
+    expect(html).toContain('🏁')
+  })
+
+  it('KR-05 KR-13 TopBar back link uses an SVG icon', () => {
+    const html = renderToStaticMarkup(<TopBar back={{ href: '/', label: 'Home' }} />)
+    const link = html.match(/<a[^>]*aria-label="Home"[^>]*>[\s\S]*?<\/a>/)
+    expect(link).toBeTruthy()
+    expect(link![0]).toContain('<svg')
+    expect(html).not.toMatch(/🏠|⬅️/u)
   })
 })
