@@ -74,7 +74,7 @@ esac
 scope_rel=${scope_abs#"$root"/}
 [ "$target" = "$scope_abs" ] && exit 0
 case "$rel" in
-  specs/*|docs/plans/*|docs/ai-levelup/*) exit 0 ;;
+  specs/*|docs/plans/*|docs/ai-levelup/*|docs/features/*) exit 0 ;;
 esac
 
 glob_to_regex() {

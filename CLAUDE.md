@@ -20,6 +20,9 @@ pnpm build
 pnpm test                                             # Vitest: packages/game-engine + apps/web
 pnpm --filter @typing-adventure/game-engine exec vitest run scoring        # single file
 pnpm --filter @typing-adventure/game-engine exec vitest run -t "combo"   # single test by name
+pnpm --filter @typing-adventure/web test:integration  # *.int.test.ts, needs local DB
+pnpm --filter @typing-adventure/web test:e2e          # Playwright, apps/web/e2e/*.spec.ts
+bash ../.claude/hooks/test-hooks.sh                   # self-test agent hooks (CI runs it)
 ../scripts/wt-new.sh <branch> [--base <ref>]          # isolated worktree .worktrees/<slug>, PORT 3000+n in ../.wt-env, DB schema wt_<slug>; clean up: ../scripts/wt-prune.sh <branch> --into <ref>
 brew install lefthook gitleaks && lefthook install   # git hooks (../lefthook.yml): pre-commit prettier+eslint+gitleaks on staged, pre-push typecheck+engine test; skip once: LEFTHOOK=0 (CI still checks)
 ```
@@ -34,6 +37,14 @@ brew install lefthook gitleaks && lefthook install   # git hooks (../lefthook.ym
 - Add dependencies with `pnpm --filter <pkg> add`, never `npm install`.
 - Multi-file task: write `docs/plans/<slug>.md` from `docs/plans/_template.md`, mark it `approved`, then edit code; change direction = update the plan's Lịch sử first.
 - New feature: start from `specs/<ID>/spec.md` (`specs/_template.md`, EARS rows with IDs), then a `test:` commit (red, tests cite IDs) before the `feat:` commit; `feat:` never touches test files (CI `check-tdd-commits.sh`).
+- Or run `/feature <mô tả>` (`.claude/commands/feature.md`): branch `feature/<slug>`, agents `ba` → `designer` → `ptl` write `docs/features/<slug>/01..03-*.md`, user approves, then `dev` ⇄ `qc` (`04-qc-report.md`, max 3 fix rounds), then push + `gh pr create`. AC IDs `<ID>-NN` play the role of spec IDs. `ba`/`designer`/`ptl` can only write `docs/features/**`, `qc` only test files + `docs/features/**` (hook `.claude/hooks/role-scope.sh`).
+
+## Agents (`.claude/agents/`)
+
+- Feature pipeline: `ba`, `designer`, `ptl`, `dev`, `qc` (see `docs/features/README.md`).
+- Spec/issue pipeline: `test-writer` → `implementer`, driven by `issue-runner`; `pr-reviewer` reviews and squash-merges.
+- Course: `teacher`, `learner` (`docs/ai-levelup/`).
+- PRs touching `.claude/agents/*`, `.claude/hooks/*`, `.github/workflows/*`, `scripts/ci/*`, tsconfig/eslint or package.json scripts need the `config-change-approved` label from the owner (CI `guard-diff.sh`).
 
 ## MCP
 

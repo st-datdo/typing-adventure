@@ -215,6 +215,7 @@ run_case "relative path from cwd subdir" $S 2 "$(scope_json "other.ts" "$scope_r
 run_case "always allowed: specs/**" $S 0 "$(scope_json "$scope_repo/specs/x/spec.md")" CLAUDE_SCOPE_FILE=
 run_case "always allowed: docs/ai-levelup/**" $S 0 "$(scope_json "$scope_repo/docs/ai-levelup/learner/L07/task-A.md")" CLAUDE_SCOPE_FILE=
 run_case "always allowed: docs/plans/**" $S 0 "$(scope_json "$scope_repo/docs/plans/x.md")" CLAUDE_SCOPE_FILE=
+run_case "always allowed: docs/features/**" $S 0 "$(scope_json "$scope_repo/docs/features/x/04-qc-report.md")" CLAUDE_SCOPE_FILE=
 run_case "always allowed: path outside repo" $S 0 "$(scope_json "$tmp/scratch/x.ts")" CLAUDE_SCOPE_FILE=
 run_case "../ escapes the repo and comes back to an unlisted file" $S 2 "$(scope_json "$scope_repo/src/../../${scope_repo##*/}/src/other.ts")" CLAUDE_SCOPE_FILE=
 run_case "../ inside the repo to an unlisted file" $S 2 "$(scope_json "$scope_repo/src/lib/../other.ts")" CLAUDE_SCOPE_FILE=
@@ -225,6 +226,32 @@ run_case "plan: backtick outside File thay đổi section" $S 2 "$(scope_json "$
 run_case "scope file itself is editable" $S 0 "$(scope_json "$scope_repo/tasks/plan.md")" CLAUDE_SCOPE_FILE="$scope_repo/tasks/plan.md"
 scope_msg=$(scope_json "$scope_repo/src/other.ts" | env CLAUDE_SCOPE_FILE= "$hooks_dir/$S" 2>&1 >/dev/null)
 check "[$S] block message names scope file and fix" grep -q 'specs/S/spec.md.*File dự kiến.*Lịch sử' <<< "$scope_msg"
+
+R=role-scope.sh
+role_case() {
+  local name=$1 mode=$2 expect=$3 json=$4 rc
+  printf '%s' "$json" | "$hooks_dir/role-scope.sh" "$mode" >/dev/null 2>&1
+  rc=$?
+  if [ "$rc" = "$expect" ]; then
+    echo "PASS [$R] $name (exit $rc)"
+    pass=$((pass + 1))
+    [ "$expect" = "0" ] && allowed=$((allowed + 1))
+  else
+    echo "FAIL [$R] $name: expected exit $expect, got $rc"
+    fail=$((fail + 1))
+  fi
+}
+role_case "docs: docs/features/** allowed" docs 0 "$(scope_json "$scope_repo/docs/features/x/01-requirements.md")"
+role_case "docs: relative docs/features path allowed" docs 0 "$(scope_json "docs/features/x/02-design.md")"
+role_case "docs: source file blocked" docs 2 "$(scope_json "$scope_repo/src/lib/rate.ts")"
+role_case "docs: docs/plans blocked" docs 2 "$(scope_json "$scope_repo/docs/plans/x.md")"
+role_case "docs: ../ escape back into source blocked" docs 2 "$(scope_json "$scope_repo/docs/features/../../src/a.ts")"
+role_case "docs: path outside repo allowed" docs 0 "$(scope_json "$tmp/scratch/x.md")"
+role_case "qc: test file allowed" qc 0 "$(scope_json "$scope_repo/src/__tests__/s.test.ts")"
+role_case "qc: e2e spec allowed" qc 0 "$(scope_json "$scope_repo/typing-adventure/apps/web/e2e/x.spec.ts")"
+role_case "qc: qc report allowed" qc 0 "$(scope_json "$scope_repo/docs/features/x/04-qc-report.md")"
+role_case "qc: source file blocked" qc 2 "$(scope_json "$scope_repo/src/lib/rate.ts")"
+role_case "unknown mode blocked" dev 2 "$(scope_json "$scope_repo/docs/features/x/a.md")"
 
 stub_bin="$tmp/stub-bin"
 no_osa_bin="$tmp/no-osa-bin"
