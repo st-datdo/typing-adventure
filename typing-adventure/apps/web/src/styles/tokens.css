@@ -1,0 +1,159 @@
+:root {
+  --font-heading: var(--font-kid), system-ui, sans-serif;
+  --font-body: var(--font-kid), system-ui, sans-serif;
+  --font-ui: var(--font-kid), system-ui, sans-serif;
+
+  --kr-border-w: 3px;
+  --kr-border-w-lg: 4px;
+  --kr-inset-hi: rgba(255, 255, 255, 0.6);
+  --kr-inset-lo: rgba(15, 23, 42, 0.08);
+
+  --kr-radius-sm: 12px;
+  --kr-radius-md: 16px;
+  --kr-radius-lg: 24px;
+  --kr-radius-xl: 32px;
+  --kr-radius-pill: 999px;
+
+  --kr-ease-back: cubic-bezier(0.34, 1.4, 0.64, 1);
+  --kr-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --kr-dur-press: 120ms;
+  --kr-dur-hover: 180ms;
+  --kr-dur-enter: 400ms;
+  --kr-stagger: 80ms;
+  --kr-dur-combo: 1200ms;
+  --kr-dur-star: 450ms;
+  --kr-star-gap: 220ms;
+  --kr-dur-confetti: 2200ms;
+}
+
+:root,
+[data-theme='light'] {
+  --kr-bg: #eff6ff;
+  --kr-card: #ffffff;
+  --kr-card-soft: #f1f5fd;
+  --kr-fg: #0f172a;
+  --kr-fg-muted: #475569;
+  --kr-primary: #2563eb;
+  --kr-primary-deep: #1d4ed8;
+  --kr-on-primary: #ffffff;
+  --kr-primary-soft: #dbeafe;
+  --kr-play: #f59e0b;
+  --kr-play-deep: #b45309;
+  --kr-on-play: #0f172a;
+  --kr-fun: #ec4899;
+  --kr-fun-deep: #be185d;
+  --kr-on-fun: #000000;
+  --kr-success: #15803d;
+  --kr-success-deep: #166534;
+  --kr-on-success: #ffffff;
+  --kr-danger: #dc2626;
+  --kr-danger-deep: #991b1b;
+  --kr-on-danger: #ffffff;
+  --kr-edge: #bfd3f6;
+  --kr-drop: #c7d7f5;
+  --kr-glow: rgba(37, 99, 235, 0.14);
+  --kr-ring: #2563eb;
+  --kr-overlay: rgba(15, 23, 42, 0.45);
+  --kr-tint-yellow: #fef3c7;
+  --kr-tint-blue: #dbeafe;
+  --kr-tint-pink: #fce7f3;
+  --kr-inset-hi: rgba(255, 255, 255, 0.6);
+
+  --kr-shadow-sm:
+    0 4px 0 var(--kr-drop), inset 0 -3px 0 var(--kr-inset-lo), inset 0 2px 0 var(--kr-inset-hi);
+  --kr-shadow-md:
+    0 6px 0 var(--kr-drop), 0 12px 24px var(--kr-glow), inset 0 -4px 0 var(--kr-inset-lo),
+    inset 0 3px 0 var(--kr-inset-hi);
+  --kr-shadow-lg:
+    0 8px 0 var(--kr-drop), 0 18px 36px var(--kr-glow), inset 0 -5px 0 var(--kr-inset-lo),
+    inset 0 4px 0 var(--kr-inset-hi);
+  --kr-shadow-pressed: 0 1px 0 var(--kr-drop), inset 0 3px 6px rgba(15, 23, 42, 0.16);
+}
+
+[data-theme='colorful'] {
+  --kr-bg: #fdf2f8;
+  --kr-card: #ffffff;
+  --kr-card-soft: #fce7f3;
+  --kr-fg: #0f172a;
+  --kr-fg-muted: #475569;
+  --kr-primary: #7c3aed;
+  --kr-primary-deep: #5b21b6;
+  --kr-on-primary: #ffffff;
+  --kr-primary-soft: #ede9fe;
+  --kr-play: #f59e0b;
+  --kr-play-deep: #b45309;
+  --kr-on-play: #0f172a;
+  --kr-fun: #ec4899;
+  --kr-fun-deep: #be185d;
+  --kr-on-fun: #000000;
+  --kr-success: #15803d;
+  --kr-success-deep: #166534;
+  --kr-on-success: #ffffff;
+  --kr-danger: #dc2626;
+  --kr-danger-deep: #991b1b;
+  --kr-on-danger: #ffffff;
+  --kr-edge: #f5c6ec;
+  --kr-drop: #f0bfe3;
+  --kr-glow: rgba(124, 58, 237, 0.16);
+  --kr-ring: #7c3aed;
+  --kr-overlay: rgba(59, 7, 100, 0.4);
+  --kr-tint-yellow: #fef3c7;
+  --kr-tint-blue: #ede9fe;
+  --kr-tint-pink: #fce7f3;
+  --kr-inset-hi: rgba(255, 255, 255, 0.6);
+}
+
+[data-theme='dark'] {
+  --kr-bg: #0f172a;
+  --kr-card: #1e293b;
+  --kr-card-soft: #273449;
+  --kr-fg: #f1f5f9;
+  --kr-fg-muted: #cbd5e1;
+  --kr-primary: #60a5fa;
+  --kr-primary-deep: #3b82f6;
+  --kr-on-primary: #0f172a;
+  --kr-primary-soft: #1e3a8a;
+  --kr-play: #fbbf24;
+  --kr-play-deep: #d97706;
+  --kr-on-play: #0f172a;
+  --kr-fun: #f472b6;
+  --kr-fun-deep: #db2777;
+  --kr-on-fun: #0f172a;
+  --kr-success: #4ade80;
+  --kr-success-deep: #16a34a;
+  --kr-on-success: #0f172a;
+  --kr-danger: #f87171;
+  --kr-danger-deep: #dc2626;
+  --kr-on-danger: #0f172a;
+  --kr-edge: #334155;
+  --kr-drop: #0b1222;
+  --kr-glow: rgba(0, 0, 0, 0.45);
+  --kr-ring: #93c5fd;
+  --kr-overlay: rgba(2, 6, 23, 0.7);
+  --kr-tint-yellow: #3b2f12;
+  --kr-tint-blue: #1e3a8a;
+  --kr-tint-pink: #4a1d3a;
+  --kr-inset-hi: rgba(255, 255, 255, 0.08);
+}
+
+.little-root:not(.games-root) {
+  --kr-bg: #eff6ff;
+  --kr-card: #ffffff;
+  --kr-card-soft: #f1f5fd;
+  --kr-fg: #0f172a;
+  --kr-fg-muted: #475569;
+  --kr-edge: #bfd3f6;
+  --kr-drop: #c7d7f5;
+  --kr-glow: rgba(37, 99, 235, 0.14);
+  --kr-overlay: rgba(15, 23, 42, 0.45);
+  --kr-inset-hi: rgba(255, 255, 255, 0.6);
+  --kr-shadow-sm:
+    0 4px 0 var(--kr-drop), inset 0 -3px 0 var(--kr-inset-lo), inset 0 2px 0 var(--kr-inset-hi);
+  --kr-shadow-md:
+    0 6px 0 var(--kr-drop), 0 12px 24px var(--kr-glow), inset 0 -4px 0 var(--kr-inset-lo),
+    inset 0 3px 0 var(--kr-inset-hi);
+  --kr-shadow-lg:
+    0 8px 0 var(--kr-drop), 0 18px 36px var(--kr-glow), inset 0 -5px 0 var(--kr-inset-lo),
+    inset 0 4px 0 var(--kr-inset-hi);
+  --kr-shadow-pressed: 0 1px 0 var(--kr-drop), inset 0 3px 6px rgba(15, 23, 42, 0.16);
+}
