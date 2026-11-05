@@ -563,3 +563,15 @@ bash ../scripts/ci/check-tdd-commits.sh main HEAD
 ## Lịch sử
 - v1 2026-11-05 11:30: bản đầu.
 - 2026-11-05 23:48: approved by user.
+
+## Thực tế
+- File sửa đúng danh sách `## File thay đổi`, không thêm file ngoài plan. `useGameEngine.ts` gọi `celebrate`/`finish`/`clear` qua `useComboCelebrationStore.getState()`; `game-store.ts` và `packages/game-engine` không đổi (diff KR-21 rỗng).
+- Lệch nhỏ so với dự đoán:
+  - `.kr-enter` dùng fill `backwards` thay vì `both`: với `both` Chrome giữ `transform: matrix(1,0,0,1,0,0)` sau khi xong, e2e KR-07 đòi `none`. Có cặp `test(KR)`/`fix(KR)` riêng.
+  - Khối reduced-motion toàn cục thêm `animation-delay: 0s !important` và `transition-delay: 0s !important`; `.combo-burst` tắt animation khi reduce (burst hiện tĩnh 1200ms rồi gỡ). Lý do: animation đang ở pha delay vẫn tính `running` (KR-14).
+  - Rule tạm dừng loop dùng `animation-play-state: paused !important` vì shorthand `animation` của `.owl--idle` ghi đè cùng độ ưu tiên (KR-16).
+  - `ComboBurst`/`ComboAnnouncer` tách bản thuần `ComboBurstView`/`ComboAnnouncerView` (test SSR theo props) và bản nối store.
+  - `LoadingScreen` thêm prop tuỳ chọn `lang` (mặc định `vi`) cho chữ sr-only `loadingText`, vì component không dùng hook.
+  - `game-store-parity.test.ts` và `kr-layout.spec.ts` phần theme (T15) xanh ngay khi viết: là test giữ hành vi/kết quả của T2, T7; T15 không cần code.
+  - T16 sửa thêm vùng chạm 44px cho `.guest-banner a`, `.guest-banner-close`, `.auth-link a` (`auth.css`) và `.btn-custom-text` (`game.css`).
+- Verify: `pnpm lint` 0 error (40 warning cũ + 1 `no-img-element` theo plan dùng `<img>`), `pnpm typecheck` 4/4, `pnpm test` engine 255 + web 208 pass, `pnpm build` OK (`/` First Load JS 157 kB, chưa so với `main`), e2e 95/95 pass trên `next dev` (PORT=3117), `check-tdd-commits` OK. Chưa chạy `KR_PERF=1` trên production build.
