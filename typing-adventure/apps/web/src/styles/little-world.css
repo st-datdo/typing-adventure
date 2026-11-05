@@ -40,9 +40,15 @@
   animation: little-egg-wobble 2.6s ease-in-out infinite;
 }
 
-.little-pet--kitty .little-pet-egg { filter: hue-rotate(300deg) saturate(1.6); }
-.little-pet--puppy .little-pet-egg { filter: hue-rotate(170deg) saturate(1.6); }
-.little-pet--dino .little-pet-egg { filter: hue-rotate(60deg) saturate(1.8); }
+.little-pet--kitty .little-pet-egg {
+  filter: hue-rotate(300deg) saturate(1.6);
+}
+.little-pet--puppy .little-pet-egg {
+  filter: hue-rotate(170deg) saturate(1.6);
+}
+.little-pet--dino .little-pet-egg {
+  filter: hue-rotate(60deg) saturate(1.8);
+}
 
 .little-pet-acc {
   position: absolute;
@@ -107,9 +113,18 @@
   animation: little-egg-wobble 2.6s ease-in-out infinite;
 }
 
-.little-egg--kitty .little-egg-shell { filter: hue-rotate(300deg) saturate(1.6); animation-delay: 0s; }
-.little-egg--puppy .little-egg-shell { filter: hue-rotate(170deg) saturate(1.6); animation-delay: 0.4s; }
-.little-egg--dino .little-egg-shell { filter: hue-rotate(60deg) saturate(1.8); animation-delay: 0.8s; }
+.little-egg--kitty .little-egg-shell {
+  filter: hue-rotate(300deg) saturate(1.6);
+  animation-delay: 0s;
+}
+.little-egg--puppy .little-egg-shell {
+  filter: hue-rotate(170deg) saturate(1.6);
+  animation-delay: 0.4s;
+}
+.little-egg--dino .little-egg-shell {
+  filter: hue-rotate(60deg) saturate(1.8);
+  animation-delay: 0.8s;
+}
 
 .little-egg-peek {
   position: absolute;
@@ -203,7 +218,9 @@
 }
 
 .little-island--current .little-island-land {
-  box-shadow: 0 6px 0 rgba(0, 70, 120, 0.18), 0 0 0 8px rgba(255, 207, 77, 0.6);
+  box-shadow:
+    0 6px 0 rgba(0, 70, 120, 0.18),
+    0 0 0 8px rgba(255, 207, 77, 0.6);
   animation: little-breathe 2.2s ease-in-out infinite;
 }
 
@@ -341,12 +358,40 @@
 }
 
 .games-star {
-  color: var(--ink-faint);
+  display: inline-flex;
+  line-height: 0;
 }
 
-.games-star--on {
-  color: var(--l-sun);
-  text-shadow: 0 2px 0 var(--l-sun-deep);
+.star--off {
+  color: var(--kr-fg-muted);
+}
+
+.star--off svg {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-dasharray: 3 3;
+}
+
+.star--on {
+  color: var(--kr-play);
+  filter: drop-shadow(0 2px 0 var(--kr-play-deep));
+}
+
+.star--pop {
+  animation: star-pop 450ms var(--kr-ease-back) both;
+}
+
+@keyframes star-pop {
+  0% {
+    transform: scale(0) rotate(-20deg);
+  }
+  60% {
+    transform: scale(1.25) rotate(0);
+  }
+  100% {
+    transform: scale(1) rotate(0);
+  }
 }
 
 .games-counter {
@@ -410,7 +455,9 @@
   font-size: 2.4rem;
   font-weight: 800;
   text-shadow: 0 2px 0 rgba(0, 0, 0, 0.18);
-  box-shadow: inset -8px -10px 0 rgba(0, 0, 0, 0.12), inset 8px 8px 0 rgba(255, 255, 255, 0.25);
+  box-shadow:
+    inset -8px -10px 0 rgba(0, 0, 0, 0.12),
+    inset 8px 8px 0 rgba(255, 255, 255, 0.25);
 }
 
 .games-balloon-item::after {
@@ -423,12 +470,24 @@
   background: rgba(59, 51, 85, 0.35);
 }
 
-.games-balloon-item--c0 { background: #e8553d; }
-.games-balloon-item--c1 { background: #2f8fd8; }
-.games-balloon-item--c2 { background: #3a9b2f; }
-.games-balloon-item--c3 { background: #9a4fd1; }
-.games-balloon-item--c4 { background: #d97a0c; }
-.games-balloon-item--c5 { background: #d64a8f; }
+.games-balloon-item--c0 {
+  background: #e8553d;
+}
+.games-balloon-item--c1 {
+  background: #2f8fd8;
+}
+.games-balloon-item--c2 {
+  background: #3a9b2f;
+}
+.games-balloon-item--c3 {
+  background: #9a4fd1;
+}
+.games-balloon-item--c4 {
+  background: #d97a0c;
+}
+.games-balloon-item--c5 {
+  background: #d64a8f;
+}
 
 .games-pop {
   position: absolute;
@@ -458,39 +517,89 @@
 }
 
 @keyframes little-pet-idle {
-  0%, 100% { transform: scale(1, 1); }
-  50% { transform: scale(1.04, 0.96); }
+  0%,
+  100% {
+    transform: scale(1, 1);
+  }
+  50% {
+    transform: scale(1.04, 0.96);
+  }
 }
 
 @keyframes little-pet-jump {
-  0% { transform: translateY(0) scale(1); }
-  40% { transform: translateY(-34px) scale(1.08); }
-  100% { transform: translateY(0) scale(1); }
+  0% {
+    transform: translateY(0) scale(1);
+  }
+  40% {
+    transform: translateY(-34px) scale(1.08);
+  }
+  100% {
+    transform: translateY(0) scale(1);
+  }
 }
 
 @keyframes little-pet-grow {
-  0% { transform: scale(0.7); }
-  60% { transform: scale(1.2); }
-  100% { transform: scale(1); }
+  0% {
+    transform: scale(0.7);
+  }
+  60% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+  }
 }
 
 @keyframes little-egg-wobble {
-  0%, 70%, 100% { transform: rotate(0deg); }
-  78% { transform: rotate(-9deg); }
-  86% { transform: rotate(9deg); }
-  94% { transform: rotate(-4deg); }
+  0%,
+  70%,
+  100% {
+    transform: rotate(0deg);
+  }
+  78% {
+    transform: rotate(-9deg);
+  }
+  86% {
+    transform: rotate(9deg);
+  }
+  94% {
+    transform: rotate(-4deg);
+  }
 }
 
 @keyframes games-pop {
-  0% { transform: scale(0.4); opacity: 1; }
-  100% { transform: scale(1.6); opacity: 0; }
+  0% {
+    transform: scale(0.4);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1.6);
+    opacity: 0;
+  }
 }
 
 @media (max-width: 480px) {
-  .little-egg { width: 96px; height: 112px; }
-  .little-egg-shell { font-size: 64px; }
-  .little-island-land { width: 92px; height: 92px; }
-  .little-island-emoji { font-size: 44px; }
-  .games-balloon-item { width: 62px; height: 74px; margin-left: -31px; font-size: 1.9rem; }
-  .games-card-icon { font-size: 64px; }
+  .little-egg {
+    width: 96px;
+    height: 112px;
+  }
+  .little-egg-shell {
+    font-size: 64px;
+  }
+  .little-island-land {
+    width: 92px;
+    height: 92px;
+  }
+  .little-island-emoji {
+    font-size: 44px;
+  }
+  .games-balloon-item {
+    width: 62px;
+    height: 74px;
+    margin-left: -31px;
+    font-size: 1.9rem;
+  }
+  .games-card-icon {
+    font-size: 64px;
+  }
 }
