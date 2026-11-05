@@ -42,4 +42,20 @@ test.describe('KR game screen', () => {
     await typeText(page, text.slice(1))
     await expect(screen).toHaveAttribute('data-playing', 'false')
   })
+
+  test('KR-09 a 5-combo shows a burst without stealing focus', async ({ page }) => {
+    const text = await textToType(page)
+    await typeText(page, text.slice(0, 5))
+    const burst = page.locator('.combo-burst')
+    await expect(burst).toBeVisible()
+    await expect(burst).toContainText('x5')
+    await expect(page.locator('[aria-live="polite"].sr-only')).toContainText('Giỏi lắm!')
+    expect(await burst.evaluate((el) => getComputedStyle(el).pointerEvents)).toBe('none')
+    expect(
+      await page.evaluate(() => document.activeElement?.classList.contains('hidden-input')),
+    ).toBe(true)
+    await expect(page.locator('.game-owl')).toHaveAttribute('data-mood', 'happy')
+    await page.waitForTimeout(1500)
+    await expect(page.locator('.combo-burst')).toHaveCount(0)
+  })
 })
