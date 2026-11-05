@@ -1,0 +1,81 @@
+.kr-scene {
+  position: fixed;
+  left: 0;
+  right: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+.kr-scene--top {
+  top: 0;
+  height: 240px;
+  background-image: url('/illustrations/scene-day-top.svg');
+  background-position: center top;
+  animation: cloud-drift 40s linear infinite alternate;
+}
+
+.kr-scene--bottom {
+  bottom: 0;
+  height: 200px;
+  background-image: url('/illustrations/scene-day-bottom.svg');
+  background-position: center bottom;
+}
+
+[data-theme='colorful'] .kr-scene--top {
+  background-image: url('/illustrations/scene-candy-top.svg');
+}
+
+[data-theme='colorful'] .kr-scene--bottom {
+  background-image: url('/illustrations/scene-candy-bottom.svg');
+}
+
+[data-theme='dark'] .kr-scene--top {
+  background-image: url('/illustrations/scene-night-top.svg');
+  animation: twinkle 3s ease-in-out infinite;
+}
+
+[data-theme='dark'] .kr-scene--bottom {
+  background-image: url('/illustrations/scene-night-bottom.svg');
+}
+
+.kr-scene--game.kr-scene--bottom {
+  opacity: 0.8;
+}
+
+@keyframes cloud-drift {
+  from {
+    transform: translateX(-24px);
+  }
+  to {
+    transform: translateX(24px);
+  }
+}
+
+@keyframes twinkle {
+  0%,
+  100% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  .kr-scene--game.kr-scene--top {
+    height: 144px;
+    opacity: 0.5;
+  }
+}
+
+@media (max-width: 767px) {
+  .kr-scene--top {
+    display: none;
+  }
+  .kr-scene--bottom {
+    height: 96px;
+    opacity: 0.7;
+  }
+}

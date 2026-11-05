@@ -3,6 +3,7 @@
 @tailwind utilities;
 @import './tokens.css';
 @import './motion.css';
+@import './decor.css';
 @import './ui.css';
 @import './game.css';
 @import './auth.css';
