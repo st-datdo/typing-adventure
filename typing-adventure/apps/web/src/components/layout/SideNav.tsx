@@ -8,12 +8,25 @@ import type { TranslationKey } from '@typing-adventure/i18n'
 import { LESSONS, AGE_PROFILES, isModeAllowed } from '@typing-adventure/game-engine'
 import type { GameMode, Level, SoundMode, Lang } from '@typing-adventure/game-engine'
 import { getWordPacks, type WordPackSummary } from '@/lib/api/wordpacks'
+import { ChoiceCards } from '@/components/ui/ChoiceCards'
+import type { IconName } from '@/components/ui/icons/icons'
+import { Icon } from '@/components/ui/icons/Icon'
+import { OwlMascot } from '@/components/mascot/OwlMascot'
+import { plainLabel } from '@/lib/kr/plain-label'
 
-const MODE_OPTIONS: { value: GameMode; label: TranslationKey }[] = [
-  { value: 'classic', label: 'modeClassic' },
-  { value: 'lesson', label: 'modeLesson' },
-  { value: 'timeAttack', label: 'modeTimeAttack' },
-  { value: 'challenge', label: 'modeChallenge' },
+const MODE_OPTIONS: { value: GameMode; label: TranslationKey; icon: IconName }[] = [
+  { value: 'classic', label: 'modeClassic', icon: 'keyCap' },
+  { value: 'lesson', label: 'modeLesson', icon: 'book' },
+  { value: 'timeAttack', label: 'modeTimeAttack', icon: 'stopwatch' },
+  { value: 'challenge', label: 'modeChallenge', icon: 'shield' },
+]
+
+const LESSON_ICONS: IconName[] = ['home', 'arrowUp', 'arrowDown', 'arrowsUpDown', 'rainbow']
+
+const LEVEL_OPTIONS: { value: Level; label: TranslationKey; icon: IconName }[] = [
+  { value: 'easy', label: 'lvEasy', icon: 'hillSmall' },
+  { value: 'medium', label: 'lvMedium', icon: 'hillDouble' },
+  { value: 'hard', label: 'lvHard', icon: 'mountainFlag' },
 ]
 
 interface SideNavProps {
@@ -92,7 +105,9 @@ export function SideNav({
         inert={!open}
       >
         <div className="side-nav-head">
-          <span className="side-nav-title">🦉 {t(lang, 'navMenu')}</span>
+          <span className="side-nav-title">
+            <OwlMascot size="sm" still /> {t(lang, 'navMenu')}
+          </span>
           <button
             ref={closeRef}
             type="button"
@@ -101,7 +116,7 @@ export function SideNav({
             title={t(lang, 'navClose')}
             onClick={onClose}
           >
-            ✕
+            <Icon name="close" />
           </button>
         </div>
 
@@ -121,42 +136,43 @@ export function SideNav({
         </div>
 
         <div className="side-nav-field">
-          <label className="ui-label" htmlFor="nav-mode">
+          <span className="ui-label" id="nav-mode-label">
             {t(lang, 'lblGameMode')}
-          </label>
-          <select
-            id="nav-mode"
-            className="ui-select"
+          </span>
+          <ChoiceCards
+            labelId="nav-mode-label"
             value={gameMode}
-            onChange={(e) => onModeChange(e.target.value as GameMode)}
-          >
-            {MODE_OPTIONS.filter((m) => isModeAllowed(settings.ageGroup, m.value)).map((m) => (
-              <option key={m.value} value={m.value}>
-                {t(lang, m.label)}
-              </option>
-            ))}
-          </select>
+            onChange={(m) => {
+              if (m !== gameMode) onModeChange(m)
+            }}
+            options={MODE_OPTIONS.filter((m) => isModeAllowed(settings.ageGroup, m.value)).map(
+              (m) => ({
+                value: m.value,
+                label: plainLabel(t(lang, m.label)),
+                icon: m.icon,
+              }),
+            )}
+          />
         </div>
 
         {gameMode === 'lesson' && (
           <div className="side-nav-field">
-            <label className="ui-label" htmlFor="nav-lesson">
+            <span className="ui-label" id="nav-lesson-label">
               {t(lang, 'lblLessonPick')}
-            </label>
-            <select
-              id="nav-lesson"
-              className="ui-select"
+            </span>
+            <ChoiceCards
+              labelId="nav-lesson-label"
+              columns={1}
               value={lessonIndex}
-              onChange={(e) => onLessonChange(parseInt(e.target.value))}
-            >
-              {LESSONS.map((lesson, i) => (
-                <option key={i} value={i}>
-                  {i === 4
-                    ? t(lang, 'lessonAll')
-                    : `${['🏠', '⬆️', '⬇️', '🔀', '🌈'][i]} ${lesson.name}`}
-                </option>
-              ))}
-            </select>
+              onChange={(i) => {
+                if (i !== lessonIndex) onLessonChange(i)
+              }}
+              options={LESSONS.map((lesson, i) => ({
+                value: i,
+                label: i === 4 ? plainLabel(t(lang, 'lessonAll')) : lesson.name,
+                icon: LESSON_ICONS[i] ?? 'book',
+              }))}
+            />
           </div>
         )}
 
@@ -179,19 +195,21 @@ export function SideNav({
         )}
 
         <div className="side-nav-field">
-          <label className="ui-label" htmlFor="nav-level">
+          <span className="ui-label" id="nav-level-label">
             {t(lang, 'lblLevelPick')}
-          </label>
-          <select
-            id="nav-level"
-            className="ui-select"
+          </span>
+          <ChoiceCards
+            labelId="nav-level-label"
             value={settings.level}
-            onChange={(e) => onLevelChange(e.target.value as Level)}
-          >
-            <option value="easy">{t(lang, 'lvEasy')}</option>
-            <option value="medium">{t(lang, 'lvMedium')}</option>
-            <option value="hard">{t(lang, 'lvHard')}</option>
-          </select>
+            onChange={(lv) => {
+              if (lv !== settings.level) onLevelChange(lv)
+            }}
+            options={LEVEL_OPTIONS.map((lv) => ({
+              value: lv.value,
+              label: plainLabel(t(lang, lv.label)),
+              icon: lv.icon,
+            }))}
+          />
         </div>
 
         {wordPacks.length > 0 && (

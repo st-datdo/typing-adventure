@@ -167,3 +167,86 @@
     transform: rotate(var(--a)) translateY(-90px) scale(1);
   }
 }
+
+.choice-cards {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.choice-cards--1 {
+  grid-template-columns: 1fr;
+}
+
+.choice-card {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 72px;
+  min-width: 44px;
+  padding: 10px 12px;
+  border: var(--kr-border-w) solid var(--kr-edge);
+  border-radius: var(--kr-radius-lg);
+  background: var(--kr-card);
+  color: var(--kr-fg);
+  font: inherit;
+  font-weight: 700;
+  text-align: left;
+  cursor: pointer;
+  box-shadow: var(--kr-shadow-sm);
+  transition:
+    transform 150ms ease-out,
+    box-shadow 150ms ease-out;
+}
+
+.choice-cards--1 .choice-card {
+  min-height: 52px;
+}
+
+.choice-card:active {
+  transform: translateY(2px);
+  box-shadow: none;
+}
+
+.choice-card--on {
+  border-color: var(--kr-primary);
+  background: var(--kr-card-soft);
+}
+
+.choice-icon {
+  display: inline-flex;
+  flex-shrink: 0;
+  color: var(--kr-primary);
+}
+
+.choice-label {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.choice-check {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--kr-primary);
+  color: var(--kr-on-primary);
+  animation: check-pop 200ms var(--kr-ease-back) both;
+}
+
+@keyframes check-pop {
+  from {
+    transform: scale(0);
+  }
+  to {
+    transform: scale(1);
+  }
+}
