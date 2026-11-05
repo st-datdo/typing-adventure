@@ -76,18 +76,20 @@
   align-items: center;
   justify-content: center;
   gap: 6px;
-  border: none;
-  border-radius: 18px;
-  background: var(--surface);
-  color: var(--ink);
-  box-shadow: 0 4px 0 var(--surface-edge);
+  border: var(--kr-border-w) solid var(--kr-edge);
+  border-radius: var(--kr-radius-md);
+  background: var(--kr-card);
+  color: var(--kr-fg);
+  box-shadow: var(--kr-shadow-sm);
   font-family: inherit;
   font-size: 1.4rem;
   font-weight: 700;
   padding: 0 12px;
   text-decoration: none;
   cursor: pointer;
-  transition: transform var(--duration-fast) ease, box-shadow var(--duration-fast) ease;
+  transition:
+    transform var(--kr-dur-press) var(--kr-ease-out),
+    box-shadow var(--kr-dur-press) var(--kr-ease-out);
 }
 
 .ui-chip--text {
@@ -95,13 +97,19 @@
   padding: 0 16px;
 }
 
-.ui-chip:hover {
-  transform: translateY(-1px);
+.ui-chip:active,
+.ui-chip.is-pressed {
+  transform: translateY(3px);
+  box-shadow: var(--kr-shadow-pressed);
 }
 
-.ui-chip:active {
-  transform: translateY(3px);
-  box-shadow: 0 1px 0 var(--surface-edge);
+.ui-chip:disabled,
+.ui-chip:disabled:hover,
+.ui-chip:disabled:active {
+  opacity: 0.6;
+  box-shadow: var(--kr-shadow-sm);
+  cursor: not-allowed;
+  transform: none;
 }
 
 .ui-btn {
@@ -110,98 +118,114 @@
   align-items: center;
   justify-content: center;
   gap: 8px;
-  border: none;
-  border-radius: var(--radius-pill);
+  border: var(--kr-border-w) solid var(--kr-edge);
+  border-radius: var(--kr-radius-pill);
   padding: 0 24px;
-  background: var(--surface);
-  color: var(--ink);
-  box-shadow: 0 5px 0 var(--surface-edge);
+  background: var(--kr-card);
+  color: var(--kr-fg);
+  box-shadow: var(--kr-shadow-md);
   font-family: inherit;
   font-size: 1.1rem;
   font-weight: 800;
   text-decoration: none;
   cursor: pointer;
-  transition: transform var(--duration-fast) ease, box-shadow var(--duration-fast) ease, filter var(--duration-fast) ease;
+  transition:
+    transform var(--kr-dur-press) var(--kr-ease-out),
+    box-shadow var(--kr-dur-press) var(--kr-ease-out),
+    filter var(--kr-dur-press) ease;
 }
 
-.ui-btn:hover {
-  filter: brightness(1.04);
-  transform: translateY(-1px);
-}
-
-.ui-btn:active {
-  transform: translateY(4px);
-  box-shadow: 0 1px 0 var(--surface-edge);
+.ui-btn:active,
+.ui-btn.is-pressed {
+  transform: translateY(3px);
+  box-shadow: var(--kr-shadow-pressed);
 }
 
 .ui-btn:disabled,
 .ui-btn:disabled:hover,
 .ui-btn:disabled:active {
-  background: var(--surface-2);
-  color: var(--ink-dim);
-  box-shadow: 0 3px 0 var(--surface-edge);
+  background: var(--kr-card-soft);
+  color: var(--kr-fg-muted);
+  box-shadow: var(--kr-shadow-sm);
   filter: none;
   cursor: not-allowed;
   transform: none;
 }
 
-.ui-btn--go {
-  background: var(--leaf);
-  color: #fff;
-  box-shadow: 0 5px 0 var(--leaf-deep);
+@media (hover: hover) {
+  .ui-chip:hover,
+  .ui-btn:hover {
+    transform: translateY(-2px);
+  }
+
+  .ui-chip:active,
+  .ui-btn:active {
+    transform: translateY(3px);
+  }
+
+  .ui-chip:disabled:hover,
+  .ui-btn:disabled:hover {
+    transform: none;
+  }
 }
 
-.ui-btn--go:active {
-  box-shadow: 0 1px 0 var(--leaf-deep);
+.ui-btn--go {
+  background: var(--kr-success);
+  border-color: var(--kr-success-deep);
+  color: var(--kr-on-success);
+  box-shadow:
+    0 5px 0 var(--kr-success-deep),
+    inset 0 3px 0 rgba(255, 255, 255, 0.25);
 }
 
 .ui-btn--primary {
-  background: var(--berry);
-  color: #fff;
-  box-shadow: 0 5px 0 var(--berry-deep);
-}
-
-.ui-btn--primary:active {
-  box-shadow: 0 1px 0 var(--berry-deep);
+  background: var(--kr-primary);
+  border-color: var(--kr-primary-deep);
+  color: var(--kr-on-primary);
+  box-shadow:
+    0 5px 0 var(--kr-primary-deep),
+    inset 0 3px 0 rgba(255, 255, 255, 0.25);
 }
 
 .ui-btn--sun {
-  background: var(--sun);
-  color: #3b3355;
-  box-shadow: 0 5px 0 var(--sun-deep);
+  background: var(--kr-play);
+  border-color: var(--kr-play-deep);
+  color: var(--kr-on-play);
+  box-shadow:
+    0 5px 0 var(--kr-play-deep),
+    inset 0 3px 0 rgba(255, 255, 255, 0.3);
+}
+
+.ui-btn--fun {
+  background: var(--kr-fun);
+  border-color: var(--kr-fun-deep);
+  color: var(--kr-on-fun);
+  box-shadow:
+    0 5px 0 var(--kr-fun-deep),
+    inset 0 3px 0 rgba(255, 255, 255, 0.25);
 }
 
 .ui-btn--danger {
-  background: var(--coral);
-  color: #fff;
-  box-shadow: 0 5px 0 var(--coral-deep);
+  background: var(--kr-danger);
+  border-color: var(--kr-danger-deep);
+  color: var(--kr-on-danger);
+  box-shadow:
+    0 5px 0 var(--kr-danger-deep),
+    inset 0 3px 0 rgba(255, 255, 255, 0.25);
+}
+
+.ui-btn--go:active,
+.ui-btn--primary:active,
+.ui-btn--sun:active,
+.ui-btn--fun:active,
+.ui-btn--danger:active {
+  box-shadow: var(--kr-shadow-pressed);
 }
 
 .ui-btn--sm {
-  min-height: 40px;
+  min-height: 44px;
   padding: 0 16px;
   font-size: 0.95rem;
-  box-shadow: 0 3px 0 var(--surface-edge);
-}
-
-.ui-btn--sm.ui-btn--go {
-  box-shadow: 0 3px 0 var(--leaf-deep);
-}
-
-.ui-btn--sm.ui-btn--primary {
-  box-shadow: 0 3px 0 var(--berry-deep);
-}
-
-.ui-btn--sm.ui-btn--sun {
-  box-shadow: 0 3px 0 var(--sun-deep);
-}
-
-.ui-btn--sm.ui-btn--danger {
-  box-shadow: 0 3px 0 var(--coral-deep);
-}
-
-.ui-btn--sm:active {
-  box-shadow: 0 1px 0 var(--surface-edge);
 }
 
 .ui-btn--lg {
@@ -215,15 +239,16 @@
 }
 
 .ui-card {
-  background: var(--surface);
-  color: var(--ink);
-  border-radius: var(--radius-lg);
-  box-shadow: 0 6px 0 var(--surface-edge);
+  background: var(--kr-card);
+  color: var(--kr-fg);
+  border: var(--kr-border-w) solid var(--kr-edge);
+  border-radius: var(--kr-radius-lg);
+  box-shadow: var(--kr-shadow-md);
   padding: 20px;
 }
 
 .ui-card--inset {
-  background: var(--surface-2);
+  background: var(--kr-card-soft);
   box-shadow: none;
 }
 
@@ -231,27 +256,27 @@
 .ui-select {
   width: 100%;
   min-height: var(--tap-min);
-  border: 2px solid var(--line);
-  border-radius: 16px;
-  background: var(--surface);
-  color: var(--ink);
+  border: var(--kr-border-w) solid var(--kr-edge);
+  border-radius: var(--kr-radius-md);
+  background: var(--kr-card);
+  color: var(--kr-fg);
   font-family: inherit;
   font-size: 1rem;
   font-weight: 600;
   padding: 0 14px;
-  outline: none;
-  transition: border-color var(--duration-fast) ease, box-shadow var(--duration-fast) ease;
+  box-shadow: inset 0 3px 0 var(--kr-inset-lo);
+  transition:
+    border-color var(--kr-dur-press) ease,
+    box-shadow var(--kr-dur-press) ease;
 }
 
 .ui-input::placeholder {
-  color: var(--ink-dim);
-  opacity: 0.7;
+  color: var(--kr-fg-muted);
 }
 
 .ui-input:focus,
 .ui-select:focus {
-  border-color: var(--berry);
-  box-shadow: 0 0 0 4px var(--color-accent-glow);
+  border-color: var(--kr-primary);
 }
 
 .ui-select {
@@ -260,18 +285,20 @@
   -webkit-appearance: none;
   padding-right: 40px;
   background-image:
-    linear-gradient(45deg, transparent 50%, var(--berry) 50%),
-    linear-gradient(135deg, var(--berry) 50%, transparent 50%);
+    linear-gradient(45deg, transparent 50%, var(--kr-primary) 50%),
+    linear-gradient(135deg, var(--kr-primary) 50%, transparent 50%);
   background-position:
     calc(100% - 20px) 50%,
     calc(100% - 14px) 50%;
-  background-size: 6px 6px, 6px 6px;
+  background-size:
+    6px 6px,
+    6px 6px;
   background-repeat: no-repeat;
 }
 
 .ui-select option {
-  background: var(--surface);
-  color: var(--ink);
+  background: var(--kr-card);
+  color: var(--kr-fg);
 }
 
 .ui-label {
@@ -279,40 +306,49 @@
   margin-bottom: 6px;
   font-size: 0.95rem;
   font-weight: 700;
-  color: var(--ink);
+  color: var(--kr-fg);
 }
 
 .ui-tabs {
   display: flex;
   gap: 6px;
   padding: 6px;
-  border-radius: var(--radius-pill);
-  background: var(--surface-2);
+  border-radius: var(--kr-radius-pill);
+  background: var(--kr-card-soft);
+  border: var(--kr-border-w) solid var(--kr-edge);
 }
 
 .ui-tab {
   flex: 1;
-  min-height: 42px;
+  min-height: 44px;
   border: none;
-  border-radius: var(--radius-pill);
+  border-radius: var(--kr-radius-pill);
   background: transparent;
-  color: var(--ink-dim);
+  color: var(--kr-fg-muted);
   font-family: inherit;
   font-size: 1rem;
   font-weight: 800;
   cursor: pointer;
-  transition: background var(--duration-fast) ease, color var(--duration-fast) ease;
+  transition:
+    background var(--kr-dur-press) ease,
+    color var(--kr-dur-press) ease,
+    transform var(--kr-dur-press) ease;
+}
+
+.ui-tab:active {
+  transform: scale(0.96);
 }
 
 .ui-tab--active {
-  background: var(--surface);
-  color: var(--ink);
-  box-shadow: 0 3px 0 var(--surface-edge);
+  background: var(--kr-card);
+  color: var(--kr-fg);
+  box-shadow: var(--kr-shadow-sm);
 }
 
 .ui-tab:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+  transform: none;
 }
 
 .ui-overlay {
@@ -323,19 +359,19 @@
   align-items: center;
   justify-content: center;
   padding: 20px;
-  background: var(--overlay);
-  backdrop-filter: blur(3px);
+  background: var(--kr-overlay);
 }
 
 .ui-modal {
   width: 100%;
   max-width: 560px;
-  max-height: calc(100vh - 40px);
+  max-height: calc(100dvh - 24px);
   overflow-y: auto;
-  background: var(--surface);
-  color: var(--ink);
-  border-radius: var(--radius-lg);
-  box-shadow: 0 8px 0 var(--surface-edge);
+  background: var(--kr-card);
+  color: var(--kr-fg);
+  border: var(--kr-border-w-lg) solid var(--kr-edge);
+  border-radius: var(--kr-radius-xl);
+  box-shadow: var(--kr-shadow-lg);
   padding: 24px;
 }
 
@@ -373,15 +409,34 @@
 }
 
 @keyframes ui-bob {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-8px); }
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
 }
 
-.ui-chip:focus-visible,
-.ui-btn:focus-visible,
-.ui-tab:focus-visible {
-  outline: 3px solid var(--berry);
+a:focus-visible,
+button:focus-visible,
+select:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+[role='radio']:focus-visible,
+[tabindex]:focus-visible {
+  outline: 3px solid var(--kr-ring);
   outline-offset: 3px;
+}
+
+.ui-card:focus-visible,
+.ui-modal:focus-visible {
+  outline-offset: 4px;
+}
+
+.hidden-input:focus,
+.hidden-input:focus-visible {
+  outline: none;
 }
 
 @media (max-width: 640px) {
@@ -394,8 +449,8 @@
   }
 
   .ui-chip {
-    min-width: 46px;
-    min-height: 46px;
+    min-width: 44px;
+    min-height: 44px;
     font-size: 1.2rem;
   }
 }
