@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useCallback, useState, useRef } from 'react'
+import { useEffect, useCallback, useState, useRef, type CSSProperties } from 'react'
 import { useSession, signOut } from 'next-auth/react'
 import { useGameEngine } from '@/hooks/useGameEngine'
 import { useGameStore } from '@/stores/game-store'
@@ -18,6 +18,9 @@ import { CustomTextModal } from './CustomTextModal'
 import { GuestBanner } from '@/components/auth/GuestBanner'
 import { SyncIndicator } from '@/components/auth/SyncIndicator'
 import { TopBar } from '@/components/ui/TopBar'
+import { Icon } from '@/components/ui/icons/Icon'
+import { SceneBackdrop } from '@/components/decor/SceneBackdrop'
+import { GameOwl } from './GameOwl'
 
 import { saveSession, getStats, getHistory } from '@/lib/api/sessions'
 import { useRecordsStore } from '@/stores/records-store'
@@ -25,17 +28,13 @@ import { t } from '@typing-adventure/i18n'
 import { isModeAllowed } from '@typing-adventure/game-engine'
 import type { GameMode, Level } from '@typing-adventure/game-engine'
 
+const enter = (i: number) => ({ '--i': i }) as CSSProperties
+
 type Panel = 'none' | 'settings' | 'history' | 'achievements' | 'customText'
 
 export function GameEngine() {
-  const {
-    gameState,
-    result,
-    showCelebration,
-    handleKeypress,
-    resetGame,
-    hiddenInputRef,
-  } = useGameEngine()
+  const { gameState, result, showCelebration, handleKeypress, resetGame, hiddenInputRef } =
+    useGameEngine()
 
   const { data: session } = useSession()
   const gameStore = useGameStore()
@@ -46,10 +45,16 @@ export function GameEngine() {
   const [navOpen, setNavOpen] = useState(false)
   const closeNav = useCallback(() => setNavOpen(false), [])
   const flashIdRef = useRef(0)
-  const [lastKeyFlash, setLastKeyFlash] = useState<{ key: string; correct: boolean; id: number } | null>(null)
+  const [lastKeyFlash, setLastKeyFlash] = useState<{
+    key: string
+    correct: boolean
+    id: number
+  } | null>(null)
   const profileLoadedRef = useRef<string | null>(null)
   const [selectedWordPackId, setSelectedWordPackId] = useState<string | null>(null)
-  const [selectedWordPackWords, setSelectedWordPackWords] = useState<string[] | undefined>(undefined)
+  const [selectedWordPackWords, setSelectedWordPackWords] = useState<string[] | undefined>(
+    undefined,
+  )
 
   useEffect(() => {
     if (!session?.user) {
@@ -62,25 +67,23 @@ export function GameEngine() {
     profileLoadedRef.current = userId
 
     // Load records + history from DB
-    Promise.all([
-      getStats(),
-      getHistory(1, 100),
-    ]).then(([statsRes, historyRes]) => {
+    Promise.all([getStats(), getHistory(1, 100)]).then(([statsRes, historyRes]) => {
       if (!statsRes.success || !statsRes.data) return
-      const serverHistory = historyRes.success && historyRes.data
-        ? historyRes.data.map((s) => ({
-            date: new Date(s.createdAt).toISOString(),
-            level: s.level as Level,
-            wpm: s.wpm,
-            cps: s.cps,
-            accuracy: s.accuracy,
-            time: s.timeSeconds,
-            wordCount: s.wordCount,
-            score: s.score,
-            stars: s.stars,
-            maxCombo: s.maxCombo ?? 0,
-          }))
-        : []
+      const serverHistory =
+        historyRes.success && historyRes.data
+          ? historyRes.data.map((s) => ({
+              date: new Date(s.createdAt).toISOString(),
+              level: s.level as Level,
+              wpm: s.wpm,
+              cps: s.cps,
+              accuracy: s.accuracy,
+              time: s.timeSeconds,
+              wordCount: s.wordCount,
+              score: s.score,
+              stars: s.stars,
+              maxCombo: s.maxCombo ?? 0,
+            }))
+          : []
       recordsStore.loadFromServer(statsRes.data, serverHistory)
     })
   }, [session])
@@ -109,11 +112,13 @@ export function GameEngine() {
       wordCount: result.wordCount,
       maxCombo: result.maxCombo,
       mistakeMap: result.mistakeMap,
-    }).then((res) => {
-      setSyncStatus(res.success ? 'saved' : 'offline')
-    }).catch(() => {
-      setSyncStatus('offline')
     })
+      .then((res) => {
+        setSyncStatus(res.success ? 'saved' : 'offline')
+      })
+      .catch(() => {
+        setSyncStatus('offline')
+      })
   }, [result, showCelebration, session])
 
   // Flash key helper — reads fresh state from store
@@ -174,56 +179,142 @@ export function GameEngine() {
 
   useEffect(() => {
     if (!isModeAllowed(settings.ageGroup, gameState.gameMode)) {
-      gameStore.startGame('classic', settings.level, settings.wordCount, 0, 60, selectedWordPackWords)
+      gameStore.startGame(
+        'classic',
+        settings.level,
+        settings.wordCount,
+        0,
+        60,
+        selectedWordPackWords,
+      )
     }
   }, [settings.ageGroup, gameState.gameMode])
 
-  const handleModeChange = useCallback((mode: GameMode) => {
-    gameStore.startGame(mode, settings.level, settings.wordCount, 0, 60, selectedWordPackWords)
-  }, [settings.level, settings.wordCount, selectedWordPackWords])
+  const handleModeChange = useCallback(
+    (mode: GameMode) => {
+      gameStore.startGame(mode, settings.level, settings.wordCount, 0, 60, selectedWordPackWords)
+    },
+    [settings.level, settings.wordCount, selectedWordPackWords],
+  )
 
-  const handleLevelChange = useCallback((level: Level) => {
-    settings.setLevel(level)
-    gameStore.startGame(gameState.gameMode, level, settings.wordCount, 0, gameState.timeAttackDuration, selectedWordPackWords)
-  }, [gameState.gameMode, settings.wordCount, gameState.timeAttackDuration, selectedWordPackWords])
+  const handleLevelChange = useCallback(
+    (level: Level) => {
+      settings.setLevel(level)
+      gameStore.startGame(
+        gameState.gameMode,
+        level,
+        settings.wordCount,
+        0,
+        gameState.timeAttackDuration,
+        selectedWordPackWords,
+      )
+    },
+    [gameState.gameMode, settings.wordCount, gameState.timeAttackDuration, selectedWordPackWords],
+  )
 
-  const handleLessonChange = useCallback((index: number) => {
-    gameStore.startGame('lesson', settings.level, settings.wordCount, index)
-  }, [settings.level, settings.wordCount])
+  const handleLessonChange = useCallback(
+    (index: number) => {
+      gameStore.startGame('lesson', settings.level, settings.wordCount, index)
+    },
+    [settings.level, settings.wordCount],
+  )
 
-  const handleTimeAttackChange = useCallback((duration: number) => {
-    gameStore.startGame('timeAttack', settings.level, settings.wordCount, 0, duration, selectedWordPackWords)
-  }, [settings.level, settings.wordCount, selectedWordPackWords])
+  const handleTimeAttackChange = useCallback(
+    (duration: number) => {
+      gameStore.startGame(
+        'timeAttack',
+        settings.level,
+        settings.wordCount,
+        0,
+        duration,
+        selectedWordPackWords,
+      )
+    },
+    [settings.level, settings.wordCount, selectedWordPackWords],
+  )
 
   const handlePlayAgain = useCallback(() => {
-    gameStore.startGame(gameState.gameMode, settings.level, settings.wordCount, gameState.lessonIndex, gameState.timeAttackDuration, selectedWordPackWords)
+    gameStore.startGame(
+      gameState.gameMode,
+      settings.level,
+      settings.wordCount,
+      gameState.lessonIndex,
+      gameState.timeAttackDuration,
+      selectedWordPackWords,
+    )
     focusInput()
-  }, [gameState.gameMode, settings.level, settings.wordCount, gameState.lessonIndex, gameState.timeAttackDuration, selectedWordPackWords, focusInput])
+  }, [
+    gameState.gameMode,
+    settings.level,
+    settings.wordCount,
+    gameState.lessonIndex,
+    gameState.timeAttackDuration,
+    selectedWordPackWords,
+    focusInput,
+  ])
 
-  const handleTryLevel = useCallback((level: string) => {
-    settings.setLevel(level as Level)
-    gameStore.startGame(gameState.gameMode, level as Level, settings.wordCount, 0, gameState.timeAttackDuration, selectedWordPackWords)
-    focusInput()
-  }, [gameState.gameMode, settings.wordCount, gameState.timeAttackDuration, selectedWordPackWords, focusInput])
+  const handleTryLevel = useCallback(
+    (level: string) => {
+      settings.setLevel(level as Level)
+      gameStore.startGame(
+        gameState.gameMode,
+        level as Level,
+        settings.wordCount,
+        0,
+        gameState.timeAttackDuration,
+        selectedWordPackWords,
+      )
+      focusInput()
+    },
+    [
+      gameState.gameMode,
+      settings.wordCount,
+      gameState.timeAttackDuration,
+      selectedWordPackWords,
+      focusInput,
+    ],
+  )
 
-  const handleWordPackChange = useCallback((packId: string | null, words: string[] | undefined) => {
-    setSelectedWordPackId(packId)
-    setSelectedWordPackWords(words)
-    gameStore.startGame(gameState.gameMode, settings.level, settings.wordCount, gameState.lessonIndex, gameState.timeAttackDuration, words)
-  }, [gameState.gameMode, settings.level, settings.wordCount, gameState.lessonIndex, gameState.timeAttackDuration])
+  const handleWordPackChange = useCallback(
+    (packId: string | null, words: string[] | undefined) => {
+      setSelectedWordPackId(packId)
+      setSelectedWordPackWords(words)
+      gameStore.startGame(
+        gameState.gameMode,
+        settings.level,
+        settings.wordCount,
+        gameState.lessonIndex,
+        gameState.timeAttackDuration,
+        words,
+      )
+    },
+    [
+      gameState.gameMode,
+      settings.level,
+      settings.wordCount,
+      gameState.lessonIndex,
+      gameState.timeAttackDuration,
+    ],
+  )
 
-  const handlePracticeWeak = useCallback((chars: string[]) => {
-    const allWords = ['cat', 'dog', 'sun', 'hat', 'big', 'run', 'fun', 'apple', 'happy', 'tiger']
-    const matching = allWords.filter(w => chars.some(ch => w.includes(ch)))
-    const text = (matching.length > 0 ? matching : allWords).slice(0, 10).join(' ')
-    gameStore.startCustomGame(text, settings.level)
-    focusInput()
-  }, [settings.level, focusInput])
+  const handlePracticeWeak = useCallback(
+    (chars: string[]) => {
+      const allWords = ['cat', 'dog', 'sun', 'hat', 'big', 'run', 'fun', 'apple', 'happy', 'tiger']
+      const matching = allWords.filter((w) => chars.some((ch) => w.includes(ch)))
+      const text = (matching.length > 0 ? matching : allWords).slice(0, 10).join(' ')
+      gameStore.startCustomGame(text, settings.level)
+      focusInput()
+    },
+    [settings.level, focusInput],
+  )
 
-  const handleKeyClick = useCallback((key: string) => {
-    handleKeypress(key)
-    focusInput()
-  }, [handleKeypress, focusInput])
+  const handleKeyClick = useCallback(
+    (key: string) => {
+      handleKeypress(key)
+      focusInput()
+    },
+    [handleKeypress, focusInput],
+  )
 
   const lang = settings.lang
   const greetName = session?.user
@@ -233,12 +324,27 @@ export function GameEngine() {
     ? settings.playerAvatar || session.user.image || '🧒'
     : settings.playerAvatar
 
+  const playing = gameState.startTime !== null && !gameState.isFinished
+
   return (
-    <div className="ta-screen" onClick={(e) => {
-      const target = e.target as HTMLElement
-      if (target.closest('.side-nav') || target.closest('.ui-topbar') || target.closest('.ui-overlay') || target.closest('.guest-banner') || target.tagName === 'SELECT' || target.tagName === 'BUTTON' || target.tagName === 'INPUT') return
-      focusInput()
-    }}>
+    <div
+      className="ta-screen"
+      data-playing={playing ? 'true' : 'false'}
+      onClick={(e) => {
+        const target = e.target as HTMLElement
+        if (
+          target.closest('.side-nav') ||
+          target.closest('.ui-topbar') ||
+          target.closest('.ui-overlay') ||
+          target.closest('.guest-banner') ||
+          target.tagName === 'SELECT' ||
+          target.tagName === 'BUTTON' ||
+          target.tagName === 'INPUT'
+        )
+          return
+        focusInput()
+      }}
+    >
       <SideNav
         open={navOpen}
         onClose={closeNav}
@@ -255,7 +361,7 @@ export function GameEngine() {
         onOpenHistory={() => setPanel('history')}
       />
 
-      <div className="ta-head">
+      <div className="ta-head kr-enter" style={enter(0)}>
         <TopBar
           start={
             <button
@@ -267,15 +373,22 @@ export function GameEngine() {
               aria-controls="side-nav"
               onClick={() => setNavOpen((o) => !o)}
             >
-              ☰
+              <Icon name="menu" />
             </button>
           }
-          title="🦉 Typing Adventure"
+          title={
+            <>
+              <GameOwl playing={playing} /> Typing Adventure
+            </>
+          }
           subtitle={t(lang, 'subtitle')}
           end={
             <>
               {greetName && (
-                <span className="ui-chip ui-chip--text ta-profile" title={`${t(lang, 'greetHi')}, ${greetName}!`}>
+                <span
+                  className="ui-chip ui-chip--text ta-profile"
+                  title={`${t(lang, 'greetHi')}, ${greetName}!`}
+                >
                   <span aria-hidden>{greetAvatar}</span>
                   <span className="ta-profile-name">{greetName}</span>
                 </span>
@@ -288,7 +401,7 @@ export function GameEngine() {
                   title={t(lang, 'btnSignOut')}
                   onClick={handleSignOut}
                 >
-                  🚪
+                  <Icon name="logout" />
                 </button>
               )}
               <button
@@ -298,7 +411,7 @@ export function GameEngine() {
                 title={t(lang, 'tipRestart')}
                 onClick={handlePlayAgain}
               >
-                🔃
+                <Icon name="restart" />
               </button>
               <button
                 type="button"
@@ -308,7 +421,7 @@ export function GameEngine() {
                 aria-pressed={settings.soundEnabled}
                 onClick={() => settings.setSoundEnabled(!settings.soundEnabled)}
               >
-                {settings.soundEnabled ? '🔊' : '🔇'}
+                <Icon name={settings.soundEnabled ? 'soundOn' : 'soundOff'} />
               </button>
             </>
           }
@@ -316,10 +429,18 @@ export function GameEngine() {
       </div>
 
       <main className="main">
-        <StatsBar gameState={gameState} />
-        <WordDisplay gameState={gameState} onCustomText={() => setPanel('customText')} />
-        <Keyboard gameState={gameState} onKeyClick={handleKeyClick} lastKeyFlash={lastKeyFlash} />
-        <HandGuide gameState={gameState} />
+        <div className="kr-enter" style={enter(1)}>
+          <StatsBar gameState={gameState} />
+        </div>
+        <div className="kr-enter" style={enter(2)}>
+          <WordDisplay gameState={gameState} onCustomText={() => setPanel('customText')} />
+        </div>
+        <div className="kr-enter" style={enter(3)}>
+          <Keyboard gameState={gameState} onKeyClick={handleKeyClick} lastKeyFlash={lastKeyFlash} />
+        </div>
+        <div className="kr-enter" style={enter(4)}>
+          <HandGuide gameState={gameState} />
+        </div>
         <GuestBanner />
       </main>
 
@@ -335,17 +456,29 @@ export function GameEngine() {
 
       {panel === 'settings' && (
         <SettingsPanel
-          onClose={() => { setPanel('none'); focusInput() }}
+          onClose={() => {
+            setPanel('none')
+            focusInput()
+          }}
           onOpenAchievements={() => setPanel('achievements')}
         />
       )}
 
       {panel === 'history' && (
-        <HistoryPanel onClose={() => { setPanel('none'); focusInput() }} />
+        <HistoryPanel
+          onClose={() => {
+            setPanel('none')
+            focusInput()
+          }}
+        />
       )}
 
       {panel === 'achievements' && (
-        <AchievementGrid onClose={() => { setPanel('settings'); }} />
+        <AchievementGrid
+          onClose={() => {
+            setPanel('settings')
+          }}
+        />
       )}
 
       {panel === 'customText' && (
@@ -355,7 +488,10 @@ export function GameEngine() {
             setPanel('none')
             focusInput()
           }}
-          onClose={() => { setPanel('none'); focusInput() }}
+          onClose={() => {
+            setPanel('none')
+            focusInput()
+          }}
         />
       )}
 

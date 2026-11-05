@@ -35,7 +35,9 @@
   font-size: 0.95rem;
   font-weight: 800;
   cursor: pointer;
-  transition: transform var(--duration-fast) ease, box-shadow var(--duration-fast) ease;
+  transition:
+    transform var(--duration-fast) ease,
+    box-shadow var(--duration-fast) ease;
 }
 
 .btn:hover {
@@ -50,6 +52,17 @@
 .ta-screen {
   min-height: 100vh;
   overflow-x: clip;
+}
+
+.ta-head,
+.main {
+  position: relative;
+  z-index: 1;
+}
+
+.game-owl {
+  vertical-align: middle;
+  margin-right: 4px;
 }
 
 .ta-head {
@@ -101,13 +114,17 @@
   box-shadow: 0 6px 0 var(--surface-edge);
   transform: translateX(calc(-100% - 24px));
   visibility: hidden;
-  transition: transform 0.3s var(--ease-out), visibility 0s linear 0.3s;
+  transition:
+    transform 0.3s var(--ease-out),
+    visibility 0s linear 0.3s;
 }
 
 .side-nav--open {
   transform: translateX(0);
   visibility: visible;
-  transition: transform 0.3s var(--ease-out), visibility 0s;
+  transition:
+    transform 0.3s var(--ease-out),
+    visibility 0s;
 }
 
 .side-nav-head {
@@ -213,7 +230,10 @@
 }
 
 .stat-icon {
-  font-size: 1.6rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--kr-primary);
   line-height: 1;
 }
 
@@ -247,10 +267,18 @@
 }
 
 .stat-time .stat-value,
-.stat-score .stat-value { color: var(--ocean); }
-.stat-accuracy .stat-value { color: var(--leaf); }
-.stat-streak .stat-value { color: var(--coral); }
-.stat-best .stat-value { color: var(--berry); }
+.stat-score .stat-value {
+  color: var(--ocean);
+}
+.stat-accuracy .stat-value {
+  color: var(--leaf);
+}
+.stat-streak .stat-value {
+  color: var(--coral);
+}
+.stat-best .stat-value {
+  color: var(--berry);
+}
 
 .word-display-section {
   position: relative;
@@ -284,9 +312,12 @@
 .char {
   position: relative;
   display: inline-block;
-  padding: 0 0.04em;
+  padding: 0.12em 0.04em 0;
   border-radius: 10px;
-  transition: color var(--duration-fast) ease, transform var(--duration-fast) var(--ease-bounce);
+  transform-origin: 50% 100%;
+  transition:
+    color var(--duration-fast) ease,
+    transform var(--duration-fast) var(--ease-bounce);
 }
 
 .char--space {
@@ -300,9 +331,9 @@
 
 .char--active {
   padding: 0 0.12em;
-  background: var(--sun);
-  color: #3b3355;
-  box-shadow: 0 3px 0 var(--sun-deep);
+  background: var(--kr-play);
+  color: var(--kr-on-play);
+  box-shadow: 0 3px 0 var(--kr-play-deep);
   transform: translateY(-2px);
 }
 
@@ -311,7 +342,9 @@
 }
 
 .char--correct {
-  color: var(--leaf);
+  color: var(--kr-success);
+  text-decoration: underline 3px;
+  text-underline-offset: 6px;
 }
 
 .char--pop {
@@ -320,10 +353,18 @@
 }
 
 @keyframes charPop {
-  0% { transform: scale(1); }
-  30% { transform: scale(1.6) rotate(-5deg); }
-  60% { transform: scale(1.2) rotate(3deg); }
-  100% { transform: scale(1) rotate(0deg); }
+  0% {
+    transform: scale(1);
+  }
+  30% {
+    transform: scale(1.6) rotate(-5deg);
+  }
+  60% {
+    transform: scale(1.2) rotate(3deg);
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+  }
 }
 
 .char--word-burst {
@@ -332,10 +373,18 @@
 }
 
 @keyframes wordBurst {
-  0% { transform: scale(1) translateY(0); }
-  25% { transform: scale(1.4) translateY(-12px); }
-  50% { transform: scale(1.15) translateY(-6px); }
-  100% { transform: scale(1) translateY(0); }
+  0% {
+    transform: scale(1) translateY(0);
+  }
+  25% {
+    transform: scale(1.4) translateY(-12px);
+  }
+  50% {
+    transform: scale(1.15) translateY(-6px);
+  }
+  100% {
+    transform: scale(1) translateY(0);
+  }
 }
 
 .char--wrong {
@@ -344,11 +393,22 @@
 }
 
 @keyframes shake {
-  0%, 100% { transform: translateX(0); }
-  20% { transform: translateX(-4px); }
-  40% { transform: translateX(4px); }
-  60% { transform: translateX(-3px); }
-  80% { transform: translateX(3px); }
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  20% {
+    transform: translateX(-4px);
+  }
+  40% {
+    transform: translateX(4px);
+  }
+  60% {
+    transform: translateX(-3px);
+  }
+  80% {
+    transform: translateX(3px);
+  }
 }
 
 .word-foot {
@@ -393,14 +453,20 @@
   font-weight: 800;
   pointer-events: none;
   opacity: 0;
-  transition: opacity var(--duration-fast) ease, transform var(--duration-fast) var(--ease-bounce);
+  transition:
+    opacity var(--duration-fast) ease,
+    transform var(--duration-fast) var(--ease-bounce);
 }
 
 .combo-display {
   right: 24px;
-  background: var(--sun);
-  color: #3b3355;
-  box-shadow: 0 3px 0 var(--sun-deep);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--kr-play);
+  color: var(--kr-on-play);
+  border: var(--kr-border-w) solid var(--kr-play-deep);
+  box-shadow: 0 3px 0 var(--kr-play-deep);
   transform: scale(0.8);
 }
 
@@ -411,6 +477,10 @@
 
 .lives-display {
   left: 24px;
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  color: var(--kr-danger);
   background: var(--surface);
   box-shadow: 0 3px 0 var(--surface-edge);
   letter-spacing: 2px;
@@ -455,12 +525,17 @@
   background: var(--surface);
   color: var(--ink);
   border-radius: 12px;
-  box-shadow: inset 0 -4px 0 var(--finger), 0 4px 0 var(--surface-edge);
+  box-shadow:
+    inset 0 -4px 0 var(--finger),
+    0 4px 0 var(--surface-edge);
   font-size: 0.95rem;
   font-weight: 700;
   cursor: pointer;
   user-select: none;
-  transition: transform var(--duration-fast) var(--ease-bounce), background var(--duration-fast) ease, box-shadow var(--duration-fast) ease;
+  transition:
+    transform var(--duration-fast) var(--ease-bounce),
+    background var(--duration-fast) ease,
+    box-shadow var(--duration-fast) ease;
 }
 
 .key:hover {
@@ -469,19 +544,28 @@
 
 .key--pressed {
   transform: translateY(3px) !important;
-  box-shadow: inset 0 -4px 0 var(--finger), 0 1px 0 var(--surface-edge) !important;
+  box-shadow:
+    inset 0 -4px 0 var(--finger),
+    0 1px 0 var(--surface-edge) !important;
 }
 
 .key--highlight {
   background: var(--sun);
   color: #3b3355;
-  box-shadow: inset 0 -4px 0 var(--finger), 0 4px 0 var(--sun-deep);
+  box-shadow:
+    inset 0 -4px 0 var(--finger),
+    0 4px 0 var(--sun-deep);
   animation: keyPulse 1.2s ease-in-out infinite;
 }
 
 @keyframes keyPulse {
-  0%, 100% { transform: translateY(0) scale(1); }
-  50% { transform: translateY(-2px) scale(1.06); }
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(-2px) scale(1.06);
+  }
 }
 
 .key--correct {
@@ -521,14 +605,26 @@
 }
 
 .key--finger-left-pinky,
-.key--finger-right-pinky { --finger: #ef5350; }
+.key--finger-right-pinky {
+  --finger: #ef5350;
+}
 .key--finger-left-ring,
-.key--finger-right-ring { --finger: #ab47bc; }
+.key--finger-right-ring {
+  --finger: #ab47bc;
+}
 .key--finger-left-middle,
-.key--finger-right-middle { --finger: #42a5f5; }
-.key--finger-left-index { --finger: #66bb6a; }
-.key--finger-right-index { --finger: #ffa726; }
-.key--finger-thumb { --finger: #90a4ae; }
+.key--finger-right-middle {
+  --finger: #42a5f5;
+}
+.key--finger-left-index {
+  --finger: #66bb6a;
+}
+.key--finger-right-index {
+  --finger: #ffa726;
+}
+.key--finger-thumb {
+  --finger: #90a4ae;
+}
 
 .keyboard--hide-fingers .key {
   --finger: transparent;
@@ -565,7 +661,9 @@
   fill: var(--surface-2);
   stroke: var(--line);
   stroke-width: 2.5;
-  transition: fill 150ms ease, stroke 150ms ease;
+  transition:
+    fill 150ms ease,
+    stroke 150ms ease;
 }
 
 .finger-path.finger--active,
@@ -576,26 +674,44 @@
 #finger-left-pinky.finger--active,
 #finger-left-pinky.finger--active + .fingertip,
 #finger-right-pinky.finger--active,
-#finger-right-pinky.finger--active + .fingertip { fill: #ef5350; stroke: #c62828; }
+#finger-right-pinky.finger--active + .fingertip {
+  fill: #ef5350;
+  stroke: #c62828;
+}
 
 #finger-left-ring.finger--active,
 #finger-left-ring.finger--active + .fingertip,
 #finger-right-ring.finger--active,
-#finger-right-ring.finger--active + .fingertip { fill: #ab47bc; stroke: #7b1fa2; }
+#finger-right-ring.finger--active + .fingertip {
+  fill: #ab47bc;
+  stroke: #7b1fa2;
+}
 
 #finger-left-middle.finger--active,
 #finger-left-middle.finger--active + .fingertip,
 #finger-right-middle.finger--active,
-#finger-right-middle.finger--active + .fingertip { fill: #42a5f5; stroke: #1565c0; }
+#finger-right-middle.finger--active + .fingertip {
+  fill: #42a5f5;
+  stroke: #1565c0;
+}
 
 #finger-left-index.finger--active,
-#finger-left-index.finger--active + .fingertip { fill: #66bb6a; stroke: #2e7d32; }
+#finger-left-index.finger--active + .fingertip {
+  fill: #66bb6a;
+  stroke: #2e7d32;
+}
 
 #finger-right-index.finger--active,
-#finger-right-index.finger--active + .fingertip { fill: #ffa726; stroke: #e65100; }
+#finger-right-index.finger--active + .fingertip {
+  fill: #ffa726;
+  stroke: #e65100;
+}
 
 #finger-thumb-left.finger--active,
-#finger-thumb-right.finger--active { fill: #90a4ae; stroke: #546e7a; }
+#finger-thumb-right.finger--active {
+  fill: #90a4ae;
+  stroke: #546e7a;
+}
 
 .finger-label {
   position: absolute;
@@ -826,9 +942,15 @@
   font-weight: 700;
 }
 
-.trend--up { color: var(--leaf); }
-.trend--down { color: var(--coral); }
-.trend--stable { color: var(--ocean); }
+.trend--up {
+  color: var(--leaf);
+}
+.trend--down {
+  color: var(--coral);
+}
+.trend--stable {
+  color: var(--ocean);
+}
 
 .trend-icon {
   font-size: 1.1em;
@@ -883,7 +1005,9 @@
 
 .ach--unlocked {
   background: var(--surface);
-  box-shadow: inset 0 0 0 3px var(--sun), 0 4px 0 var(--sun-deep);
+  box-shadow:
+    inset 0 0 0 3px var(--sun),
+    0 4px 0 var(--sun-deep);
 }
 
 .ach--locked {
@@ -924,8 +1048,12 @@
 }
 
 @keyframes bounce {
-  from { transform: translateY(0); }
-  to { transform: translateY(-6px); }
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(-6px);
+  }
 }
 
 .celebration-title {
@@ -945,9 +1073,17 @@
 }
 
 @keyframes starsReveal {
-  0% { transform: scale(0); opacity: 0; }
-  50% { transform: scale(1.3); }
-  100% { transform: scale(1); opacity: 1; }
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.3);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
 
 .celebration-score {
@@ -1080,13 +1216,23 @@
 }
 
 @keyframes popIn {
-  from { transform: scale(0.85); opacity: 0; }
-  to { transform: scale(1); opacity: 1; }
+  from {
+    transform: scale(0.85);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
 
 @keyframes ta-fade {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 @media (max-width: 860px) {
@@ -1111,11 +1257,23 @@
   }
 
   .key--backspace,
-  .key--tab { flex-grow: 1.6; min-width: 0; }
+  .key--tab {
+    flex-grow: 1.6;
+    min-width: 0;
+  }
   .key--caps,
-  .key--enter { flex-grow: 1.8; min-width: 0; }
-  .key--shift { flex-grow: 2.3; min-width: 0; }
-  .key--space { flex: 0 1 60%; min-width: 0; }
+  .key--enter {
+    flex-grow: 1.8;
+    min-width: 0;
+  }
+  .key--shift {
+    flex-grow: 2.3;
+    min-width: 0;
+  }
+  .key--space {
+    flex: 0 1 60%;
+    min-width: 0;
+  }
 
   .keyboard {
     padding: 12px 8px;
@@ -1190,9 +1348,12 @@
     padding: 6px 2px;
   }
 
-  .stat-icon { font-size: 1.2rem; }
-  .stat-value { font-size: 1.05rem; }
-  .stat-label { font-size: 0.68rem; }
+  .stat-value {
+    font-size: 1.05rem;
+  }
+  .stat-label {
+    font-size: 0.68rem;
+  }
 
   .word-display-section {
     padding: 22px 16px 14px;

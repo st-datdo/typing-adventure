@@ -3,7 +3,8 @@
 import { useEffect, useRef } from 'react'
 import type { GameState } from '@typing-adventure/game-engine'
 import { useSettingsStore } from '@/stores/settings-store'
-import { t } from '@typing-adventure/i18n'
+import { t, tReplace } from '@typing-adventure/i18n'
+import { Icon } from '@/components/ui/icons/Icon'
 
 interface WordDisplayProps {
   gameState: GameState
@@ -11,17 +12,15 @@ interface WordDisplayProps {
 }
 
 export function WordDisplay({ gameState, onCustomText }: WordDisplayProps) {
-  const keyboardCase = useSettingsStore(s => s.keyboardCase)
-  const soundMode = useSettingsStore(s => s.soundMode)
-  const lang = useSettingsStore(s => s.lang)
+  const keyboardCase = useSettingsStore((s) => s.keyboardCase)
+  const soundMode = useSettingsStore((s) => s.soundMode)
+  const lang = useSettingsStore((s) => s.lang)
   const { text, currentIndex } = gameState
   const progress = text.length > 0 ? (currentIndex / text.length) * 100 : 0
   const prevIndexRef = useRef(currentIndex)
 
   // Track which char just became correct this render
-  const justTypedIndex = currentIndex > prevIndexRef.current
-    ? prevIndexRef.current
-    : -1
+  const justTypedIndex = currentIndex > prevIndexRef.current ? prevIndexRef.current : -1
 
   useEffect(() => {
     prevIndexRef.current = currentIndex
@@ -62,11 +61,8 @@ export function WordDisplay({ gameState, onCustomText }: WordDisplayProps) {
       className += ' char--pending'
     }
 
-    const displayChar = char === ' '
-      ? '\u00A0'
-      : keyboardCase === 'upper'
-        ? char.toUpperCase()
-        : char
+    const displayChar =
+      char === ' ' ? '\u00A0' : keyboardCase === 'upper' ? char.toUpperCase() : char
 
     return (
       <span
@@ -98,42 +94,55 @@ export function WordDisplay({ gameState, onCustomText }: WordDisplayProps) {
     <section className="word-display-section">
       {gameState.combo >= 2 && (
         <div className="combo-display combo--visible">
-          x{gameState.combo}
+          <Icon name="flame" size={20} />x{gameState.combo}
         </div>
       )}
 
       {gameState.gameMode === 'challenge' && (
-        <div className="lives-display lives--visible">
-          {'❤️'.repeat(gameState.lives)}
-          {'🖤'.repeat(3 - gameState.lives)}
+        <div
+          className="lives-display lives--visible"
+          role="img"
+          aria-label={tReplace(lang, 'livesLabel', gameState.lives)}
+        >
+          {[0, 1, 2].map((i) => (
+            <Icon
+              key={i}
+              name={i < gameState.lives ? 'heart' : 'heartOutline'}
+              size={22}
+              className={i < gameState.lives ? 'life life--on' : 'life life--off'}
+            />
+          ))}
         </div>
       )}
 
       <div className="word-display">
-        {groups.map((g) => g.space
-          ? renderChar(g.chars[0], g.start)
-          : (
+        {groups.map((g) =>
+          g.space ? (
+            renderChar(g.chars[0], g.start)
+          ) : (
             <span key={`w${g.start}`} className="word">
               {g.chars.map((c, j) => renderChar(c, g.start + j))}
             </span>
-          ))}
+          ),
+        )}
       </div>
 
       <div className="word-foot">
         <div className="progress-bar">
-          <div
-            className="progress-fill"
-            style={{ width: `${progress}%` }}
-          />
+          <div className="progress-fill" style={{ width: `${progress}%` }} />
         </div>
         {onCustomText && (
           <button
             className="ui-chip ui-chip--text btn-custom-text"
-            onClick={(e) => { e.stopPropagation(); onCustomText() }}
+            onClick={(e) => {
+              e.stopPropagation()
+              onCustomText()
+            }}
             type="button"
             title={t(lang, 'tipCustomText')}
           >
-            ✏️ <span className="btn-custom-label">{t(lang, 'tipCustomText')}</span>
+            <Icon name="pencil" size={20} />{' '}
+            <span className="btn-custom-label">{t(lang, 'tipCustomText')}</span>
           </button>
         )}
       </div>

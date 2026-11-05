@@ -17,7 +17,7 @@
 
 .ta-screen[data-playing='true'] .kr-loop,
 [data-playing='true'] .kr-loop {
-  animation-play-state: paused;
+  animation-play-state: paused !important;
 }
 
 .owl {
