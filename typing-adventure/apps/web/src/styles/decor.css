@@ -280,3 +280,9 @@
     transform: translate(var(--drift), 100vh) rotate(var(--rot));
   }
 }
+
+@media (prefers-reduced-motion: reduce) {
+  .combo-burst {
+    animation: none;
+  }
+}
