@@ -29,10 +29,11 @@ describe('ComboLabel', () => {
     const html = render(label())
     const roots = html.match(/<div[^>]*class="[^"]*\bfx-combo-label\b[^"]*"[^>]*>/g) ?? []
     expect(roots).toHaveLength(1)
-    expect(roots[0]).toContain('aria-hidden="true"')
-    expect(roots[0]).toContain('data-tier="10"')
-    const style = roots[0].match(/data-style="([^"]+)"/)![1]
-    expect(LABEL_STYLES).toContain(style)
+    const root = roots[0] ?? ''
+    expect(root).toContain('aria-hidden="true"')
+    expect(root).toContain('data-tier="10"')
+    const style = root.match(/data-style="([^"]+)"/)?.[1]
+    expect(LABEL_STYLES as readonly (string | undefined)[]).toContain(style)
     expect(html).toContain('x10')
     expect(html).toContain(viDict.fxPraise2)
   })
