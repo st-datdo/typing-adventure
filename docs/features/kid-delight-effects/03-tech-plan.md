@@ -98,6 +98,7 @@ Giả định cho câu hỏi còn mở:
 - `typing-adventure/apps/web/src/lib/__tests__/fx-sound.test.ts` (thêm)
 - `typing-adventure/apps/web/src/lib/__tests__/fx-i18n.test.ts` (thêm)
 - `typing-adventure/apps/web/src/lib/__tests__/fx-confetti.test.ts` (thêm)
+- `typing-adventure/apps/web/src/lib/__tests__/fx-node-cap.test.ts` (thêm) — vòng 3, trần node dùng chung giữa sticker và spark/confetti.
 - `typing-adventure/apps/web/src/lib/hf/fireworks.ts` (xoá)
 - `typing-adventure/apps/web/src/lib/__tests__/hf-fireworks.test.ts` (xoá)
 - `typing-adventure/apps/web/src/lib/audio/sound-engine.ts` (sửa) — `playStep(step)`.
@@ -703,6 +704,7 @@ bash ../scripts/ci/check-tdd-commits.sh main HEAD
 ## Lịch sử
 - v1 2026-11-06 18:45: bản đầu.
 - 2026-11-06 23:34: approved by user
+- Vòng 3 (QC FX-17): thêm `typing-adventure/apps/web/src/lib/__tests__/fx-node-cap.test.ts` vào `## File thay đổi` để chứng minh mưa sticker không được tính vào trần 60 node `.fx-p`.
 
 ## Thực tế
 - File đã sửa khớp `## File thay đổi`. `git diff origin/main` còn thêm `HandGuide.tsx`, `HandGuide.test.tsx`, `hf-layout.test.ts`, `e2e/helpers/hf.ts`: đó là commit HF có sẵn trên nhánh nền (HF chưa vào `origin/main`), FX không sửa. Các file HF bị thay (`ComboFireworks.tsx`, `lib/hf/fireworks.ts`, `hf-*.spec.ts`, `hf-fireworks.test.ts`, `hf-decor.test.ts`) được thêm rồi xoá ngay trong nhánh nên không hiện trong diff.
@@ -714,3 +716,5 @@ bash ../scripts/ci/check-tdd-commits.sh main HEAD
 - Bundle (FX-17): First Load JS `/` 157 kB ở `8b09368` → 169 kB ở HEAD, +12 kB ≤ 15 KB.
 - Verify: `pnpm lint` 0 error (40 warning cũ), `pnpm typecheck` 4/4, `pnpm test` engine 255 + web 352 pass, `pnpm build` OK, e2e toàn bộ 162/162 trên `next dev` (PORT=3107, không có `.wt-env`), `KR_PERF=1` `fx-perf`/`kr-perf` 6/6 trên `next start`, `check-tdd-commits` OK.
 - Vòng 2 (QC FX-17, âm bật): `SoundEngine.prepare()` tách phần tạo `AudioContext` khỏi `init()` (init chỉ còn `resume()`); `useSound` gọi `prepare()` qua `requestIdleCallback` (timeout 1500, fallback `setTimeout` 300) khi `soundEnabled`. Context tạo ở trạng thái `suspended`, phím đầu (user activation) mới `resume()`, nên vẫn đúng autoplay. File: `lib/audio/sound-engine.ts`, `hooks/useSound.ts`, test `lib/__tests__/fx-sound.test.ts` (đều trong `## File thay đổi`). `KR_PERF=1` trên `next start`: `fx-qc-sound-perf` + `fx-perf` + `kr-perf` 15/15 (`--repeat-each 5`); một lần chạy `--repeat-each 3` trước đó có 1 lần `fx-perf` (âm tắt, đường code không đổi) đỏ ở kiểm `issues`, chạy lại không tái hiện.
+
+- Vòng 3 (QC FX-17, 67 node `.fx-p`): sticker rain trong `FxBackdrop.tsx` không cộng vào `liveTotal`. Thêm `reserveParticles(n)` trong `lib/fx/dom-particles.ts` (trả hàm nhả, idempotent); `FxBackdrop` tính sticker bằng `useMemo` theo `[rain, suppressed]` (không tính lại khi đổi `sky`) và giữ chỗ bằng `useLayoutEffect`, nhả khi `rain` hết TTL/unmount. Test `fx-node-cap.test.ts` (ee1088c đỏ: thiếu `reserveParticles`), fix 843d0f2. Verify: lint 0 error, typecheck 4/4, test engine 255 + web 354, build OK, `KR_PERF=1` `fx-perf` + `fx-qc-sound-perf` trên `next start` `--repeat-each 6` ×3 = 36/36.
