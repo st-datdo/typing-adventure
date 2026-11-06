@@ -15,12 +15,10 @@ describe('Game chrome', () => {
     expect((html.match(/<svg/g) ?? []).length).toBe(cards)
   })
 
-  it('KR-05 WordDisplay combo pill shows an SVG and x7', () => {
+  it('FX-06 WordDisplay no longer renders the combo pill (moved to ComboMeter)', () => {
     const html = renderToStaticMarkup(<WordDisplay gameState={gameState} onCustomText={() => {}} />)
-    const pill = html.match(/<div class="combo-display[^"]*"[^>]*>[\s\S]*?<\/div>/)
-    expect(pill).toBeTruthy()
-    expect(pill![0]).toContain('<svg')
-    expect(pill![0]).toContain('x7')
+    expect(html).not.toContain('combo-display')
+    expect(html).not.toContain('x7')
   })
 
   it('KR-05 WordDisplay lives use heart icons with an accessible label', () => {
