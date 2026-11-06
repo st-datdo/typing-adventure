@@ -1,9 +1,10 @@
 import Link from 'next/link'
 import type { ReactNode } from 'react'
+import { Icon } from './icons/Icon'
 
 type BackAction =
-  | { href: string; onClick?: never; label: string; icon?: string }
-  | { onClick: () => void; href?: never; label: string; icon?: string }
+  | { href: string; onClick?: never; label: string; icon?: ReactNode }
+  | { onClick: () => void; href?: never; label: string; icon?: ReactNode }
 
 interface TopBarProps {
   title?: ReactNode
@@ -14,7 +15,7 @@ interface TopBarProps {
 }
 
 export function TopBar({ title, subtitle, back, start, end }: TopBarProps) {
-  const icon = back?.icon ?? (back?.href === '/' ? '🏠' : '⬅️')
+  const icon = back?.icon ?? <Icon name={back?.href === '/' ? 'home' : 'arrowLeft'} />
   return (
     <header className="ui-topbar">
       <div className="ui-topbar-start">
@@ -24,7 +25,13 @@ export function TopBar({ title, subtitle, back, start, end }: TopBarProps) {
           </Link>
         )}
         {back && back.onClick && (
-          <button type="button" className="ui-chip" aria-label={back.label} title={back.label} onClick={back.onClick}>
+          <button
+            type="button"
+            className="ui-chip"
+            aria-label={back.label}
+            title={back.label}
+            onClick={back.onClick}
+          >
             {icon}
           </button>
         )}

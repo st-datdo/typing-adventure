@@ -1,0 +1,197 @@
+@keyframes kr-pop-in {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.92);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.kr-enter {
+  --i: 0;
+  animation: kr-pop-in var(--kr-dur-enter) var(--kr-ease-back) backwards;
+  animation-delay: calc(var(--i) * var(--kr-stagger));
+}
+
+.ta-screen[data-playing='true'] .kr-loop,
+[data-playing='true'] .kr-loop {
+  animation-play-state: paused !important;
+}
+
+.owl {
+  display: inline-block;
+  flex-shrink: 0;
+  overflow: visible;
+}
+
+[data-theme='dark'] .owl .owl-line {
+  stroke: #bfdbfe;
+}
+
+.owl-body,
+.owl-eyes,
+.owl-wing,
+.owl-zzz,
+.owl-sparkles {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+}
+
+.owl-eyes {
+  transform-origin: 50% 50%;
+}
+
+.owl--idle .owl-body.kr-loop {
+  animation: owl-breathe 3s ease-in-out infinite;
+}
+
+.owl--idle .owl-eyes--blink.kr-loop {
+  animation: owl-blink 4.5s linear infinite;
+}
+
+.owl--wave .owl-wing--r {
+  transform-origin: 0% 100%;
+  animation: owl-wave 600ms ease-in-out 2;
+}
+
+.owl--happy .owl-body {
+  animation: owl-hop 500ms var(--kr-ease-back) both;
+}
+
+.owl--cheer .owl-body {
+  animation: owl-hop 450ms var(--kr-ease-back) 2;
+}
+
+.owl--cheer .owl-sparkles,
+.owl--happy .owl-sparkles {
+  transform-origin: 50% 50%;
+  animation: sparkle-pop 600ms var(--kr-ease-back) both;
+}
+
+.owl--encourage .owl-body {
+  animation: owl-nod 600ms ease-out both;
+}
+
+.owl--sad .owl-body {
+  animation: owl-droop 500ms ease-out both;
+}
+
+.owl--thinking .owl-body {
+  animation: owl-tilt 600ms ease-out both;
+}
+
+.owl--sleep .owl-zzz.kr-loop {
+  animation: zzz-float 2.4s ease-in-out infinite;
+}
+
+.owl--still .kr-loop {
+  animation: none;
+}
+
+@keyframes owl-breathe {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.03);
+  }
+}
+
+@keyframes owl-blink {
+  0%,
+  94%,
+  100% {
+    transform: scaleY(1);
+  }
+  97% {
+    transform: scaleY(0.1);
+  }
+}
+
+@keyframes owl-wave {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(-25deg);
+  }
+}
+
+@keyframes owl-hop {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes owl-nod {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  33% {
+    transform: rotate(-4deg);
+  }
+  66% {
+    transform: rotate(4deg);
+  }
+}
+
+@keyframes owl-droop {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(4px);
+  }
+}
+
+@keyframes owl-tilt {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(-6deg);
+  }
+}
+
+@keyframes sparkle-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.4);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes zzz-float {
+  0% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-12px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    animation-delay: 0s !important;
+    transition-duration: 0.01ms !important;
+    transition-delay: 0s !important;
+  }
+}

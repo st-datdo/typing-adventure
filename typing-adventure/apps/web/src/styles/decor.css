@@ -1,0 +1,288 @@
+.kr-scene {
+  position: fixed;
+  left: 0;
+  right: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+.kr-scene--top {
+  top: 0;
+  height: 240px;
+  background-image: url('/illustrations/scene-day-top.svg');
+  background-position: center top;
+  animation: cloud-drift 40s linear infinite alternate;
+}
+
+.kr-scene--bottom {
+  bottom: 0;
+  height: 200px;
+  background-image: url('/illustrations/scene-day-bottom.svg');
+  background-position: center bottom;
+}
+
+[data-theme='colorful'] .kr-scene--top {
+  background-image: url('/illustrations/scene-candy-top.svg');
+}
+
+[data-theme='colorful'] .kr-scene--bottom {
+  background-image: url('/illustrations/scene-candy-bottom.svg');
+}
+
+[data-theme='dark'] .kr-scene--top {
+  background-image: url('/illustrations/scene-night-top.svg');
+  animation: twinkle 3s ease-in-out infinite;
+}
+
+[data-theme='dark'] .kr-scene--bottom {
+  background-image: url('/illustrations/scene-night-bottom.svg');
+}
+
+.kr-scene--game.kr-scene--bottom {
+  opacity: 0.8;
+}
+
+@keyframes cloud-drift {
+  from {
+    transform: translateX(-24px);
+  }
+  to {
+    transform: translateX(24px);
+  }
+}
+
+@keyframes twinkle {
+  0%,
+  100% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  .kr-scene--game.kr-scene--top {
+    height: 144px;
+    opacity: 0.5;
+  }
+}
+
+@media (max-width: 767px) {
+  .kr-scene--top {
+    display: none;
+  }
+  .kr-scene--bottom {
+    height: 96px;
+    opacity: 0.7;
+  }
+}
+
+.word-stage {
+  position: relative;
+}
+
+.combo-burst {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+  animation:
+    combo-pop 280ms var(--kr-ease-back) both,
+    combo-out 300ms ease-in 900ms forwards;
+}
+
+.combo-burst-value {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 18px;
+  border: var(--kr-border-w-lg) solid var(--kr-play-deep);
+  border-radius: var(--kr-radius-pill);
+  background: var(--kr-play);
+  color: var(--kr-on-play);
+  font-size: 2.4rem;
+  font-weight: 800;
+  box-shadow: var(--kr-shadow-md);
+}
+
+.combo-burst-praise {
+  padding: 2px 12px;
+  border-radius: var(--kr-radius-pill);
+  background: var(--kr-card);
+  color: var(--kr-fg);
+  font-size: 1.2rem;
+  font-weight: 800;
+}
+
+.combo-spark {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 12px;
+  height: 12px;
+  margin: -6px 0 0 -6px;
+  border-radius: 50%;
+  background: var(--kr-fun);
+  animation: combo-spark 700ms ease-out both;
+}
+
+.combo-spark:nth-child(even) {
+  background: var(--kr-play);
+}
+
+@keyframes combo-pop {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.6);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+@keyframes combo-out {
+  to {
+    opacity: 0;
+    transform: translate(-50%, -70%) scale(0.9);
+  }
+}
+
+@keyframes combo-spark {
+  from {
+    opacity: 1;
+    transform: rotate(var(--a)) translateY(0) scale(0.5);
+  }
+  to {
+    opacity: 0;
+    transform: rotate(var(--a)) translateY(-90px) scale(1);
+  }
+}
+
+.choice-cards {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.choice-cards--1 {
+  grid-template-columns: 1fr;
+}
+
+.choice-card {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 72px;
+  min-width: 44px;
+  padding: 10px 12px;
+  border: var(--kr-border-w) solid var(--kr-edge);
+  border-radius: var(--kr-radius-lg);
+  background: var(--kr-card);
+  color: var(--kr-fg);
+  font: inherit;
+  font-weight: 700;
+  text-align: left;
+  cursor: pointer;
+  box-shadow: var(--kr-shadow-sm);
+  transition:
+    transform 150ms ease-out,
+    box-shadow 150ms ease-out;
+}
+
+.choice-cards--1 .choice-card {
+  min-height: 52px;
+}
+
+.choice-card:active {
+  transform: translateY(2px);
+  box-shadow: none;
+}
+
+.choice-card--on {
+  border-color: var(--kr-primary);
+  background: var(--kr-card-soft);
+}
+
+.choice-icon {
+  display: inline-flex;
+  flex-shrink: 0;
+  color: var(--kr-primary);
+}
+
+.choice-label {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.choice-check {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--kr-primary);
+  color: var(--kr-on-primary);
+  animation: check-pop 200ms var(--kr-ease-back) both;
+}
+
+@keyframes check-pop {
+  from {
+    transform: scale(0);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+
+.confetti {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.confetti-piece {
+  position: absolute;
+  top: -16px;
+  width: 10px;
+  height: 14px;
+  border-radius: 3px;
+  animation-name: confetti-fall;
+  animation-timing-function: cubic-bezier(0.25, 0.6, 0.5, 1);
+  animation-fill-mode: both;
+}
+
+@keyframes confetti-fall {
+  from {
+    opacity: 1;
+    transform: translate(0, 0) rotate(0);
+  }
+  to {
+    opacity: 0;
+    transform: translate(var(--drift), 100vh) rotate(var(--rot));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .combo-burst {
+    animation: none;
+  }
+}

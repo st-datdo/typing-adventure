@@ -85,6 +85,9 @@
 }
 
 .auth-link a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
   color: var(--berry);
   font-weight: 800;
   text-decoration: none;
@@ -113,7 +116,9 @@
   background: var(--surface-2);
   box-shadow: 0 3px 0 var(--surface-edge);
   cursor: pointer;
-  transition: transform var(--duration-fast) var(--ease-bounce), border-color var(--duration-fast) ease;
+  transition:
+    transform var(--duration-fast) var(--ease-bounce),
+    border-color var(--duration-fast) ease;
 }
 
 .avatar-option:hover {
@@ -151,12 +156,23 @@
 }
 
 .guest-banner a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  min-width: 44px;
+  justify-content: center;
+  padding: 0 4px;
   color: var(--berry);
   font-weight: 800;
   text-decoration: none;
 }
 
 .guest-banner-close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  min-height: 44px;
   background: none;
   border: none;
   color: var(--ink-dim);
