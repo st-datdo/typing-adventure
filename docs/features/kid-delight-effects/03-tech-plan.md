@@ -703,3 +703,13 @@ bash ../scripts/ci/check-tdd-commits.sh main HEAD
 ## Lịch sử
 - v1 2026-11-06 18:45: bản đầu.
 - 2026-11-06 23:34: approved by user
+
+## Thực tế
+- File đã sửa khớp `## File thay đổi`. `git diff origin/main` còn thêm `HandGuide.tsx`, `HandGuide.test.tsx`, `hf-layout.test.ts`, `e2e/helpers/hf.ts`: đó là commit HF có sẵn trên nhánh nền (HF chưa vào `origin/main`), FX không sửa. Các file HF bị thay (`ComboFireworks.tsx`, `lib/hf/fireworks.ts`, `hf-*.spec.ts`, `hf-fireworks.test.ts`, `hf-decor.test.ts`) được thêm rồi xoá ngay trong nhánh nên không hiện trong diff.
+- T15: `TierRunner` gắn qua prop `runnerSlot` của `WordDisplay` (không dùng portal). Mưa sticker kéo dài từ lúc tạo DOM tới lúc gỡ khoảng 2.85s khi TTL 2500, nên e2e "mất ≤ 2500ms" đỏ. Đã hạ `FX_TTL.rain` 2500 → 2200, mỗi sticker rơi 1500–1900ms + trễ ≤ 300ms (vẫn khớp `fx-css` ≤ 2200 + 300). E2E sửa riêng trong commit `test(FX)`: chỉ đếm `.fx-p--spark` ở mức `some` (pháo giấy DOM `confetti-pop` của mức `some` là hợp lệ), chờ 700ms trước phím 40 để `flashGate` không chặn mưa.
+- T16: `lib/fx/confetti.ts` có thêm `setLevel`, `setColors`, `active()`, `dispose()`, `schedule`/`rng` inject. `data-active` do controller set trực tiếp trên canvas (không re-render React), tắt sau `CANVAS_LIFE_MS` (confetti 1000, fireworks 2400). Màu đọc từ `--kr-play/fun/primary/success` của canvas. Prefetch: `whenIdle` gọi `import('./fx/TierConfetti')` rồi `prefetchCanvas()`. `shapeFromPath` được cache theo tên hình, không truyền matrix tính sẵn (matrix cần `DOMMatrix`, chỉ có ở trình duyệt).
+- T17: test hồi quy xanh ngay, không cần `feat`.
+- T18: `fx-layout` đỏ vì `.owl-body.fx-loop`/`.owl-eyes.fx-loop` (T14) chưa có `pointer-events: none` → thêm `.fx-loop { pointer-events: none }`. `KR_PERF=1` trên `next start` đỏ (118–123ms ở `fx-perf` lẫn `kr-perf`) ở phím đầu: profile CPU cho thấy ~65ms là `new AudioContext()` trong `SoundEngine.init()`, được gọi kể cả khi tắt âm (có từ trước FX, FX đẩy tổng qua ngưỡng). Sửa `useSound`: bỏ qua `init()` khi `!enabled`. Sau sửa `fx-perf` + `kr-perf` 6/6 pass (`--repeat-each 3`). Với âm bật, phím đầu vẫn tốn chi phí tạo `AudioContext` như trước.
+- E11 (375px, bấm phím ảo): `.key--highlight` có animation nên `locator.click()` chờ "stable" mãi; test dùng `page.mouse.click` tại tâm phím (vẫn hit-test qua mọi lớp FX).
+- Bundle (FX-17): First Load JS `/` 157 kB ở `8b09368` → 169 kB ở HEAD, +12 kB ≤ 15 KB.
+- Verify: `pnpm lint` 0 error (40 warning cũ), `pnpm typecheck` 4/4, `pnpm test` engine 255 + web 352 pass, `pnpm build` OK, e2e toàn bộ 162/162 trên `next dev` (PORT=3107, không có `.wt-env`), `KR_PERF=1` `fx-perf`/`kr-perf` 6/6 trên `next start`, `check-tdd-commits` OK.
