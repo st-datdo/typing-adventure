@@ -1,6 +1,6 @@
 # HF · Tay gợi ý hai bên bàn phím, lời khen chuỗi ra hai bên kèm pháo hoa — Tech plan
 
-Trạng thái: draft
+Trạng thái: approved
 Nguồn: 01-requirements.md, 02-design.md
 
 ## Hướng tiếp cận
@@ -280,3 +280,4 @@ bash ../scripts/ci/check-tdd-commits.sh main HEAD
 
 ## Lịch sử
 - v1 2026-11-06 11:00: bản đầu.
+- 2026-11-06 15:45: approved by user.

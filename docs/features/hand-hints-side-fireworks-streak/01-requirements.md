@@ -1,6 +1,6 @@
 # HF · Tay gợi ý hai bên bàn phím, lời khen chuỗi ra hai bên kèm pháo hoa — Requirements
 
-Trạng thái: draft
+Trạng thái: approved
 Slug: hand-hints-side-fireworks-streak
 
 ## Bối cảnh
@@ -160,3 +160,4 @@ Trên màn chơi `GameEngine`, hai bàn tay gợi ý ngón nằm dưới bàn ph
 
 ## Lịch sử
 - v1 2026-11-06 10:00: bản đầu.
+- 2026-11-06 15:45: approved by user.

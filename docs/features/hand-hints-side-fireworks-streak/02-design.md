@@ -1,6 +1,6 @@
 # HF · Tay gợi ý hai bên bàn phím, lời khen chuỗi ra hai bên kèm pháo hoa — Design
 
-Trạng thái: draft
+Trạng thái: approved
 Nguồn: 01-requirements.md
 
 Kế thừa hệ thiết kế KR (`docs/features/kid-friendly-ui-redesign/02-design.md`, `styles/tokens.css`). Không thêm màu, font, ảnh, âm thanh hay thư viện mới. Chỉ dùng token `--kr-*` sẵn có.
@@ -212,3 +212,4 @@ Pháo hoa và nhãn trực quan đều `aria-hidden`, nên không cần chuỗi 
 
 ## Lịch sử
 - v1 2026-11-06 10:30: bản đầu.
+- 2026-11-06 15:45: approved by user.
