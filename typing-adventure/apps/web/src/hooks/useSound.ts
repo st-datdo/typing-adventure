@@ -20,6 +20,7 @@ export function useSound() {
   const play = useCallback(
     (type: SoundType) => {
       const engine = getEngine()
+      if (!engine.enabled) return
       engine.init()
       engine.play(type)
     },
@@ -29,6 +30,7 @@ export function useSound() {
   const playStep = useCallback(
     (step: number) => {
       const engine = getEngine()
+      if (!engine.enabled) return
       engine.init()
       engine.playStep(step)
     },
