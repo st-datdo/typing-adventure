@@ -82,7 +82,7 @@
 
 .word-stage {
   position: relative;
-  --hf-gutter: clamp(140px, 13vw, 180px);
+  --hf-gutter: clamp(132px, 10vw, 180px);
 }
 
 .combo-burst {

@@ -446,12 +446,13 @@ export function GameEngine() {
         </div>
         <div className="kr-enter word-stage" style={enter(2)}>
           <WordDisplay gameState={gameState} onCustomText={() => setPanel('customText')} />
-          <ComboBurst />
+          <ComboBurst suppressed={showCelebration || panel !== 'none' || navOpen} />
         </div>
-        <div className="kr-enter" style={enter(3)}>
+        <div
+          className={`kr-enter kb-stage${settings.fingerGuide ? ' kb-stage--hands' : ''}`}
+          style={enter(3)}
+        >
           <Keyboard gameState={gameState} onKeyClick={handleKeyClick} lastKeyFlash={lastKeyFlash} />
-        </div>
-        <div className="kr-enter" style={enter(4)}>
           <HandGuide gameState={gameState} />
         </div>
         <GuestBanner />

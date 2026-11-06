@@ -179,6 +179,12 @@
   gap: 16px;
 }
 
+.kb-stage {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
 .stats-bar {
   display: grid;
   gap: 12px;
@@ -1393,5 +1399,71 @@
   .char--pop,
   .char--word-burst {
     animation: none;
+  }
+}
+
+@media (min-width: 1024px) {
+  .main {
+    max-width: 1240px;
+  }
+  .word-stage {
+    padding-inline: calc(var(--hf-gutter) + 12px);
+  }
+  .kb-stage--hands {
+    display: grid;
+    grid-template-columns: minmax(84px, 160px) minmax(772px, 820px) minmax(84px, 160px);
+    grid-template-rows: auto auto;
+    column-gap: 12px;
+    row-gap: 8px;
+    justify-content: center;
+  }
+  .kb-stage--hands .keyboard-section {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+  }
+  .kb-stage--hands .hands-guide {
+    display: contents;
+  }
+  .kb-stage--hands .hand-left,
+  .kb-stage--hands .hand-right {
+    grid-row: 1;
+    align-self: end;
+    width: 100%;
+    height: auto;
+    pointer-events: none;
+  }
+  .kb-stage--hands .hand-left {
+    grid-column: 1;
+  }
+  .kb-stage--hands .hand-right {
+    grid-column: 3;
+  }
+  .kb-stage--hands .finger-label {
+    position: static;
+    grid-row: 2;
+    align-self: start;
+    justify-self: center;
+    max-width: 100%;
+    min-height: 2.6em;
+    padding: 4px 10px;
+    transform: none;
+    white-space: normal;
+    text-align: center;
+    line-height: 1.2;
+  }
+  .kb-stage--hands .finger-label[data-side='left'] {
+    grid-column: 1;
+  }
+  .kb-stage--hands .finger-label[data-side='right'] {
+    grid-column: 3;
+  }
+}
+
+@media (min-width: 1024px) and (max-width: 1279px) {
+  .main {
+    padding-inline: 12px;
+  }
+  .kb-stage--hands .keyboard {
+    padding: 12px;
   }
 }
