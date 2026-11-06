@@ -25,13 +25,19 @@ export class SoundEngine {
   enabled: boolean = true
   private ctx: AudioContext | null = null
 
-  init(): void {
+  prepare(): AudioContext {
     if (!this.ctx) {
       this.ctx = new (
         window.AudioContext ||
         (window as Window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext
       )()
     }
+    return this.ctx
+  }
+
+  init(): void {
+    this.prepare()
+    if (!this.ctx) return
     if (this.ctx.state === 'suspended') {
       this.ctx.resume().catch(() => {})
     }

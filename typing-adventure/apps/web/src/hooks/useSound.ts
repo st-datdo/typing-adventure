@@ -1,6 +1,6 @@
 'use client'
 
-import { useRef, useCallback } from 'react'
+import { useRef, useCallback, useEffect } from 'react'
 import { SoundEngine } from '@/lib/audio/sound-engine'
 import type { SoundType } from '@/lib/audio/sound-engine'
 import { useSettingsStore } from '@/stores/settings-store'
@@ -16,6 +16,25 @@ export function useSound() {
     engineRef.current.enabled = soundEnabled
     return engineRef.current
   }, [soundEnabled])
+
+  useEffect(() => {
+    if (!soundEnabled) return
+    const w = window as Window & {
+      requestIdleCallback?: (cb: () => void, opts?: { timeout: number }) => number
+      cancelIdleCallback?: (id: number) => void
+    }
+    const warm = () => {
+      try {
+        getEngine().prepare()
+      } catch {}
+    }
+    if (w.requestIdleCallback) {
+      const id = w.requestIdleCallback(warm, { timeout: 1500 })
+      return () => w.cancelIdleCallback?.(id)
+    }
+    const id = window.setTimeout(warm, 300)
+    return () => window.clearTimeout(id)
+  }, [soundEnabled, getEngine])
 
   const play = useCallback(
     (type: SoundType) => {
