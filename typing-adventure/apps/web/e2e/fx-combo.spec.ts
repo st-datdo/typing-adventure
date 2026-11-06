@@ -334,4 +334,59 @@ test.describe('FX combo label', () => {
     expect(await runner.getAttribute('data-character')).toBe(ch)
     await expect(runner).toHaveCount(0, { timeout: 2500 })
   })
+
+  test('FX-04 FX-17 tier 10 fires one confetti canvas', async ({ page }) => {
+    await setup(page)
+    await typeText(page, TEXT.slice(0, 9))
+    await page.waitForTimeout(1000)
+    await typeText(page, TEXT.slice(9, 10))
+    await expect(page.locator('canvas.fx-canvas[data-active="true"]')).toHaveCount(1)
+  })
+
+  test('FX-17 tier 75 keeps at most one active canvas', async ({ page }) => {
+    await setup(page)
+    await typeText(page, TEXT.slice(0, 74))
+    await page.waitForTimeout(1000)
+    await typeText(page, TEXT.slice(74, 75))
+    let max = 0
+    let seen = 0
+    const end = Date.now() + 3000
+    while (Date.now() < end) {
+      const n = (await fxCounts(page)).canvases
+      max = Math.max(max, n)
+      seen += n
+      await page.waitForTimeout(50)
+    }
+    expect(max).toBe(1)
+    expect(seen).toBeGreaterThan(0)
+  })
+
+  test('FX-17 a hidden tab stops every canvas', async ({ page }) => {
+    await setup(page)
+    await typeText(page, TEXT.slice(0, 9))
+    await page.waitForTimeout(1000)
+    await typeText(page, TEXT.slice(9, 10))
+    await expect(page.locator('canvas.fx-canvas[data-active="true"]')).toHaveCount(1)
+    await page.evaluate(() => {
+      Object.defineProperty(document, 'visibilityState', {
+        configurable: true,
+        get: () => 'hidden',
+      })
+      document.dispatchEvent(new Event('visibilitychange'))
+    })
+    await expect(page.locator('canvas.fx-canvas[data-active="true"]')).toHaveCount(0)
+  })
+
+  test('FX-14 level some never fires background fireworks at 75', async ({ page }) => {
+    await setup(page, { effectsLevel: 'some' })
+    await typeText(page, TEXT.slice(0, 74))
+    await page.waitForTimeout(1000)
+    await typeText(page, TEXT.slice(74, 75))
+    await expect(page.locator('.fx-combo-label')).toContainText('x75')
+    const end = Date.now() + 1500
+    while (Date.now() < end) {
+      expect((await fxCounts(page)).canvases).toBe(0)
+      await page.waitForTimeout(50)
+    }
+  })
 })
