@@ -42,3 +42,26 @@ describe('ChoiceCards', () => {
     expect((html.match(/class="choice-check"/g) ?? []).length).toBe(1)
   })
 })
+
+describe('ChoiceCards columns and description', () => {
+  it('FX-14 columns 3 and describedBy', () => {
+    const out = renderToStaticMarkup(
+      <ChoiceCards
+        labelId="lbl-fx"
+        describedBy="fx-hint"
+        columns={3}
+        value="some"
+        onChange={() => {}}
+        options={[
+          { value: 'lots', label: 'Nhiều', icon: 'rainbow' },
+          { value: 'some', label: 'Vừa', icon: 'sparkle' },
+          { value: 'few', label: 'Ít', icon: 'star' },
+        ]}
+      />,
+    )
+    const group = out.match(/<div[^>]*role="radiogroup"[^>]*>/)![0]
+    expect(group).toContain('choice-cards--3')
+    expect(group).toContain('aria-describedby="fx-hint"')
+    expect(html).not.toContain('aria-describedby')
+  })
+})
