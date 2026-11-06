@@ -82,89 +82,164 @@
 
 .word-stage {
   position: relative;
+  --hf-gutter: clamp(140px, 13vw, 180px);
 }
 
 .combo-burst {
   position: absolute;
-  top: 50%;
-  left: 50%;
+  inset: 0;
   z-index: 5;
+  pointer-events: none;
+}
+
+.combo-side {
+  position: absolute;
+  bottom: calc(100% + 4px);
+  height: 92px;
+  width: calc(50% - 4px);
+  container-type: size;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   gap: 2px;
-  pointer-events: none;
-  transform: translate(-50%, -50%);
   animation:
     combo-pop 280ms var(--kr-ease-back) both,
     combo-out 300ms ease-in 900ms forwards;
 }
 
+.combo-side--left {
+  left: 0;
+}
+
+.combo-side--right {
+  right: 0;
+}
+
 .combo-burst-value {
+  position: relative;
+  z-index: 1;
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  padding: 4px 18px;
+  padding: 2px 12px;
   border: var(--kr-border-w-lg) solid var(--kr-play-deep);
   border-radius: var(--kr-radius-pill);
   background: var(--kr-play);
   color: var(--kr-on-play);
-  font-size: 2.4rem;
+  font-size: 1.5rem;
   font-weight: 800;
+  line-height: 1.1;
   box-shadow: var(--kr-shadow-md);
 }
 
 .combo-burst-praise {
-  padding: 2px 12px;
+  position: relative;
+  z-index: 1;
+  max-width: 100%;
+  padding: 1px 10px;
+  border: var(--kr-border-w) solid var(--kr-fun);
   border-radius: var(--kr-radius-pill);
   background: var(--kr-card);
   color: var(--kr-fg);
-  font-size: 1.2rem;
+  font-size: 0.95rem;
   font-weight: 800;
+  line-height: 1.15;
+  text-align: center;
+  white-space: normal;
 }
 
-.combo-spark {
+.fw-layer {
   position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 12px;
-  height: 12px;
-  margin: -6px 0 0 -6px;
-  border-radius: 50%;
-  background: var(--kr-fun);
-  animation: combo-spark 700ms ease-out both;
+  inset: 0;
+  z-index: 0;
 }
 
-.combo-spark:nth-child(even) {
+.fw-burst {
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+  width: 0;
+  height: 0;
+  --fw-r: min(22cqw, 22cqh, 56px);
+}
+
+.fw-rocket {
+  position: absolute;
+  left: -2px;
+  top: -7px;
+  width: 4px;
+  height: 14px;
+  border-radius: 2px;
   background: var(--kr-play);
+  animation: fw-rise 250ms ease-out var(--d) both;
+}
+
+.fw-spark {
+  position: absolute;
+  left: -4px;
+  top: -4px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--c);
+  animation: fw-pop 600ms var(--kr-ease-out) calc(var(--d) + 250ms) both;
 }
 
 @keyframes combo-pop {
   from {
     opacity: 0;
-    transform: translate(-50%, -50%) scale(0.6);
+    transform: scale(0.6);
   }
   to {
     opacity: 1;
-    transform: translate(-50%, -50%) scale(1);
+    transform: scale(1);
   }
 }
 
 @keyframes combo-out {
   to {
     opacity: 0;
-    transform: translate(-50%, -70%) scale(0.9);
+    transform: translateY(-8px) scale(0.9);
   }
 }
 
-@keyframes combo-spark {
+@keyframes fw-rise {
   from {
     opacity: 1;
-    transform: rotate(var(--a)) translateY(0) scale(0.5);
+    transform: translateY(30cqh);
   }
   to {
     opacity: 0;
-    transform: rotate(var(--a)) translateY(-90px) scale(1);
+    transform: translateY(0);
+  }
+}
+
+@keyframes fw-pop {
+  from {
+    opacity: 1;
+    transform: rotate(var(--a)) translateY(0) scale(0.4);
+  }
+  to {
+    opacity: 0;
+    transform: rotate(var(--a)) translateY(calc(-1 * var(--fw-r))) scale(1);
+  }
+}
+
+@media (min-width: 1024px) {
+  .combo-side {
+    top: 0;
+    bottom: 0;
+    height: auto;
+    width: var(--hf-gutter);
+  }
+  .combo-burst-value {
+    padding: 4px 14px;
+    font-size: 2rem;
+  }
+  .combo-burst-praise {
+    font-size: 1.1rem;
   }
 }
 
@@ -282,7 +357,10 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .combo-burst {
+  .combo-side {
     animation: none;
+  }
+  .fw-burst {
+    display: none;
   }
 }
