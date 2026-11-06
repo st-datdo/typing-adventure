@@ -99,3 +99,32 @@ describe('FX sound', () => {
     expect(log.oscillators).toBe(0)
   })
 })
+
+describe('FX-17 prepare', () => {
+  it('FX-17 prepare creates the context off the key path and init reuses it', () => {
+    let made = 0
+    let resumed = 0
+    const Base = fakeContext(log)
+    g.window = {
+      AudioContext: class extends Base {
+        state = 'suspended'
+        constructor() {
+          super()
+          made++
+        }
+        resume() {
+          resumed++
+          return Promise.resolve()
+        }
+      },
+    }
+    const e = new SoundEngine()
+    e.prepare()
+    e.prepare()
+    expect(made).toBe(1)
+    expect(resumed).toBe(0)
+    e.init()
+    expect(made).toBe(1)
+    expect(resumed).toBe(1)
+  })
+})
