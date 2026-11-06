@@ -1,6 +1,37 @@
 # FX · Kid delight effects — QC report
 
-Kết luận: FAIL (vòng 2, 2026-11-07 01:20, HEAD 581088a)
+Kết luận: PASS (vòng 3, 2026-11-07 02:10, HEAD 1d1f6ef)
+
+## Vòng 3
+### Gate
+| Lệnh | Kết quả |
+|---|---|
+| `pnpm lint` | ✅ 0 errors, 40 warnings (cũ) |
+| `pnpm typecheck` | ✅ 4/4 tasks successful |
+| `pnpm test` | ✅ engine 255 passed, web 354 passed (53 files) |
+| `pnpm build` | ✅ `/` 22.4 kB, First Load JS 169 kB |
+| `bash ../scripts/ci/check-tdd-commits.sh origin/main HEAD` | ✅ OK (75 commits) |
+| `PORT=3107 pnpm exec playwright test` (next dev, toàn bộ) | ✅ 163 passed (6.9m) |
+| `PORT=3107 playwright test e2e/hf-layout.spec.ts --repeat-each 3` | ✅ 36 passed |
+| `KR_PERF=1 E2E_SERVER_CMD="pnpm exec next start -p 3107" playwright test e2e/fx-perf.spec.ts e2e/fx-qc-sound-perf.spec.ts --repeat-each 8` ×3 | ✅ 16/16, 16/16, 16/16 (48/48; vòng 2 fail ≈1/20) |
+
+### Acceptance criteria
+| AC | Kết quả | Bằng chứng | Ghi chú |
+|---|---|---|---|
+| FX-01..FX-13, FX-15, FX-16, FX-18..FX-20 | PASS | Unit 354 + e2e 163 xanh | Không đổi |
+| FX-14 | PASS (review) | Như vòng 1 | Bước thủ công 2 trình duyệt vẫn cần chạy |
+| FX-17 | PASS | `src/lib/__tests__/fx-node-cap.test.ts` (DEV, ee1088c) ✅; `fx-perf` + `fx-qc-sound-perf` 48/48 trên `next start` CPU 4x, không `particles` > 60, không long task > 100ms | Fix 843d0f2: sticker rain đặt trước node qua `reserveParticles` |
+
+### Edge cases & hồi quy
+| Mục | Kết quả | Bằng chứng |
+|---|---|---|
+| E1 | PASS | 48 lượt perf không vượt trần 60 node |
+| E9 (CPU 4x) | PASS | Không long task > 100ms, âm bật/tắt |
+| E4, E11, E12, E14 | PASS | Như vòng 1 |
+| HF-01..04, KR-10/14/15/16/20, ComboAnnouncer | PASS | e2e toàn bộ 163 xanh; HF-01 không flake lần này, hf-layout lặp 36/36 |
+
+### Test QC thêm
+- Không thêm test mới.
 
 ## Vòng 2
 ### Gate
