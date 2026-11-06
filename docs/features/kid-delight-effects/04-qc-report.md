@@ -1,6 +1,42 @@
 # FX · Kid delight effects — QC report
 
-Kết luận: FAIL (vòng 1, 2026-11-07 10:30, HEAD a56e735)
+Kết luận: FAIL (vòng 2, 2026-11-07 01:20, HEAD 581088a)
+
+## Vòng 2
+### Gate
+| Lệnh | Kết quả |
+|---|---|
+| `pnpm lint` | ✅ 0 errors, 40 warnings (cũ) |
+| `pnpm typecheck` | ✅ 4/4 tasks successful |
+| `pnpm test` | ✅ engine 255 passed, web 353 passed (52 files) |
+| `pnpm build` | ✅ `/` 22.4 kB, First Load JS 169 kB (+12 kB ≤ 15) |
+| `bash ../scripts/ci/check-tdd-commits.sh origin/main HEAD` | ✅ OK (71 commits) |
+| `PORT=3107 pnpm exec playwright test` (next dev, toàn bộ) | ⚠️ 162 passed, 1 failed `hf-layout.spec.ts:35` "HF-01 hands beside keyboard at 1280"; chạy riêng `hf-layout --repeat-each 3` ×2 → 36/36 + 36/36 xanh (flake do tải, không phải hồi quy) |
+| `KR_PERF=1 E2E_SERVER_CMD="pnpm exec next start -p 3107" playwright test fx-qc-sound-perf fx-perf kr-perf --repeat-each 5` | ❌ 14/15, fail `fx-perf` |
+| `KR_PERF=1 ... fx-qc-sound-perf fx-perf --repeat-each 5` ×2, `--repeat-each 6` ×4 | ❌ 4 lần fail / 6 lượt chạy (≈ 4/80 test): 1 lần ở `fx-qc-sound-perf` (âm bật), 3 lần ở `fx-perf` (âm tắt); tất cả fail ở `expect([...new Set(issues)]).toEqual([])` dòng 80, giá trị bắt được: `"particles 67"` |
+
+Long task: không lần nào vượt 100ms, cả âm bật lẫn tắt (fix `SoundEngine.prepare()` có hiệu quả). Flake "issues" DEV thấy đã tái hiện được: số node `.fx-p` vượt trần 60.
+
+### Acceptance criteria
+| AC | Kết quả | Bằng chứng | Ghi chú |
+|---|---|---|---|
+| FX-01..FX-13, FX-15, FX-16, FX-18..FX-20 | PASS | Unit 353 + e2e 162 xanh, cùng các test như vòng 1 | Không đổi |
+| FX-14 | PASS (review) | Như vòng 1 | Bước thủ công 2 trình duyệt vẫn cần chạy |
+| FX-17 | FAIL | `e2e/fx-perf.spec.ts` "FX-17 a 110 key run…" và `e2e/fx-qc-sound-perf.spec.ts`, chạy lặp: `Received: ["particles 67"]` | Long task ≤ 100ms ✅ (âm bật/tắt), canvas ≤ 1 ✅, bundle ✅; trần 60 node DOM bị vượt ngắt quãng |
+
+### Edge cases & hồi quy
+| Mục | Kết quả | Bằng chứng |
+|---|---|---|
+| E1 | FAIL (ngắt quãng) | Gõ nhanh, nhiều chùm chồng nhau → 67 node `.fx-p` |
+| E9 (CPU 4x) | PASS về long task | Không lần nào > 100ms trong ~80 lượt |
+| E4, E11, E12, E14 | PASS | Như vòng 1 |
+| HF-01..04, KR-10/14/15/16/20, ComboAnnouncer | PASS | e2e xanh; HF-01 flake 1 lần lúc chạy toàn bộ, chạy riêng 6/6 xanh; `kr-perf` 5/5 |
+
+### Test QC thêm
+- Không thêm test mới. `e2e/fx-qc-sound-perf.spec.ts` (vòng 1) vẫn chưa commit theo yêu cầu điều phối.
+
+### Việc DEV cần làm (chỉ khi FAIL)
+1. FX-17: trên `next start` CPU 4x, số node `.fx-p` đôi khi lên 67 (> trần 60), cả khi âm tắt. Nghi ngờ: sticker rain trong `apps/web/src/components/game/fx/FxBackdrop.tsx:81,100` dùng class `fx-p` và được cấp theo `liveParticleCount()` lúc render, nhưng không cộng vào `liveTotal` của `apps/web/src/lib/fx/dom-particles.ts:24,48`, nên spark/confetti phát sau đó (khi sticker còn sống ~1.5–1.9s) không tính sticker vào trần. Tái hiện: `pnpm build && cd apps/web && PORT=3107 KR_PERF=1 E2E_SERVER_CMD="pnpm exec next start -p 3107" pnpm exec playwright test e2e/fx-perf.spec.ts e2e/fx-qc-sound-perf.spec.ts --repeat-each 6` (lặp 2–3 lần, fail khoảng 1/20).
 
 ## Vòng 1
 ### Gate
