@@ -36,6 +36,7 @@ test.describe('HF combo celebration', () => {
     await expect(page.locator('.combo-side')).toHaveCount(2)
     await expect(page.locator('.combo-burst')).toContainText('x5')
     await expect(page.locator('.combo-burst')).toContainText('Giỏi lắm!')
+    await expect(page.locator('[aria-live="polite"].sr-only')).toContainText('Chuỗi 5! Giỏi lắm!')
     const s = await sideSparks(page)
     expect(s.left).toBe(s.right)
     expect(s.left).toBeGreaterThan(0)
@@ -43,7 +44,6 @@ test.describe('HF combo celebration', () => {
     expect(
       await page.evaluate(() => document.activeElement?.classList.contains('hidden-input')),
     ).toBe(true)
-    await expect(page.locator('[aria-live="polite"].sr-only')).toContainText('Chuỗi 5! Giỏi lắm!')
     await expect(page.locator('.combo-burst')).toHaveCount(0, {
       timeout: 1500 - (Date.now() - t0) + 200,
     })
