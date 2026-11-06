@@ -348,6 +348,8 @@
 
 .fx-combo-label--sticker .fx-combo-label-value {
   border-color: var(--kr-card);
+  transform: rotate(var(--fx-tilt, 4deg));
+  animation: fx-label-tilt 220ms var(--kr-ease-back) both;
 }
 
 .fx-combo-label--badge {
@@ -389,6 +391,7 @@
   animation: none;
 }
 
+.fx-combo-label--static .fx-combo-label-value,
 .fx-combo-label--static .fx-combo-label-value::before {
   animation: none;
 }
@@ -419,7 +422,7 @@
 @keyframes fx-label-ribbon {
   0% {
     opacity: 0;
-    transform: translateY(12px) scaleX(0.7);
+    transform: scaleX(0.7);
   }
   25.6% {
     opacity: 1;
@@ -438,19 +441,28 @@
 @keyframes fx-label-sticker {
   0% {
     opacity: 0;
-    transform: rotate(-20deg) scale(0.5);
+    transform: scale(0.5);
   }
   25.6% {
     opacity: 1;
-    transform: rotate(var(--fx-tilt, 4deg)) scale(1);
+    transform: scale(1);
   }
   74.4% {
     opacity: 1;
-    transform: translateY(-8px) rotate(var(--fx-tilt, 4deg));
+    transform: translateY(-8px);
   }
   100% {
     opacity: 0;
-    transform: translateY(var(--fx-rise, -32px)) rotate(var(--fx-tilt, 4deg));
+    transform: translateY(var(--fx-rise, -32px));
+  }
+}
+
+@keyframes fx-label-tilt {
+  from {
+    transform: rotate(-20deg);
+  }
+  to {
+    transform: rotate(var(--fx-tilt, 4deg));
   }
 }
 
@@ -498,6 +510,7 @@
 
 @media (prefers-reduced-motion: reduce) {
   .fx-combo-label,
+  .fx-combo-label-value,
   .fx-combo-label-value::before {
     animation: none;
   }
