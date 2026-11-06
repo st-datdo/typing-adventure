@@ -405,6 +405,7 @@ export function GameEngine() {
               playing={playing}
               combo={gameState.isFinished ? 0 : gameState.combo}
               suppressed={fxSuppressed}
+              keyStamp={gameState.totalKeystrokes}
             />
           }
           subtitle={t(lang, 'subtitle')}

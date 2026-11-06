@@ -837,3 +837,173 @@
     display: none;
   }
 }
+
+.owl--still .fx-loop {
+  animation: none;
+}
+
+.owl--idle .owl-body.fx-loop {
+  animation: owl-breathe 3s ease-in-out infinite;
+}
+
+.owl--idle .owl-eyes--blink.fx-loop {
+  animation: owl-blink 4.5s linear infinite;
+}
+
+.owl--wave .owl-wing--r.fx-loop {
+  transform-origin: 0% 100%;
+  animation: fx-owl-wave 3s ease-in-out infinite;
+}
+
+.owl--sleep .owl-zzz.fx-loop {
+  animation: zzz-float 2.4s ease-in-out infinite;
+}
+
+.owl-acc,
+.owl-evolve {
+  transform-box: view-box;
+  transform-origin: 50% 50%;
+}
+
+.owl-acc {
+  animation: fx-acc-drop 300ms var(--kr-ease-back) both;
+}
+
+.owl-evolve {
+  animation: fx-evolve-aura 1600ms ease-out both;
+}
+
+.game-owl[data-evolve] {
+  animation: fx-owl-evolve 1600ms var(--kr-ease-back);
+}
+
+.fx-owl-bubble {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  z-index: 6;
+  width: max-content;
+  max-width: 240px;
+  padding: 6px 12px;
+  border: var(--kr-border-w) solid var(--kr-primary);
+  border-radius: var(--kr-radius-md);
+  background: var(--kr-card);
+  color: var(--kr-fg);
+  font-size: 0.95rem;
+  font-weight: 800;
+  line-height: 1.25;
+  text-align: left;
+  white-space: normal;
+  pointer-events: none;
+  box-shadow: var(--kr-shadow-sm);
+  transform-origin: 20px 0;
+  animation: fx-bubble 1400ms ease-out forwards;
+}
+
+.fx-owl-bubble::before {
+  content: '';
+  position: absolute;
+  top: -9px;
+  left: 16px;
+  width: 12px;
+  height: 12px;
+  border-top: var(--kr-border-w) solid var(--kr-primary);
+  border-left: var(--kr-border-w) solid var(--kr-primary);
+  background: var(--kr-card);
+  transform: rotate(45deg);
+}
+
+@keyframes fx-owl-wave {
+  0%,
+  40%,
+  100% {
+    transform: rotate(0deg);
+  }
+  10%,
+  30% {
+    transform: rotate(-25deg);
+  }
+  20% {
+    transform: rotate(0deg);
+  }
+}
+
+@keyframes fx-acc-drop {
+  from {
+    opacity: 0;
+    transform: translateY(-16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fx-evolve-aura {
+  0% {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+  30% {
+    opacity: 1;
+    transform: scale(1.1);
+  }
+  80% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1);
+  }
+}
+
+@keyframes fx-owl-evolve {
+  0% {
+    transform: scale(1);
+  }
+  30% {
+    transform: scale(1.5);
+  }
+  60% {
+    transform: scale(1.25);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes fx-bubble {
+  0% {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+  14% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  86% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1);
+  }
+}
+
+@media (max-width: 640px) {
+  .fx-owl-bubble {
+    max-width: min(240px, 70vw);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .owl .fx-loop,
+  .owl-acc,
+  .owl-evolve,
+  .game-owl[data-evolve],
+  .fx-owl-bubble {
+    animation: none;
+  }
+}

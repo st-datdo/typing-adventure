@@ -49,3 +49,95 @@ export function CheckStamp({ size = 28 }: { size?: number }) {
     </svg>
   )
 }
+
+export type OwlAccessoryKind = 'sunglasses' | 'party-hat' | 'crown' | 'headphones' | 'bowtie'
+export type OwlEvolveKind = 'phoenix' | 'star' | 'hero'
+
+export function OwlAccessory({ kind }: { kind: OwlAccessoryKind }) {
+  return (
+    <g className={`owl-acc owl-acc--${kind}`} stroke={LINE} strokeWidth={3} strokeLinejoin="round">
+      {kind === 'sunglasses' && (
+        <>
+          <path d="M26 40h68" fill="none" strokeLinecap="round" />
+          <rect x={28} y={38} width={28} height={18} rx={8} fill="#0F172A" />
+          <rect x={64} y={38} width={28} height={18} rx={8} fill="#0F172A" />
+          <path d="M34 43l6-2M70 43l6-2" stroke="#fff" strokeWidth={2} strokeLinecap="round" />
+        </>
+      )}
+      {kind === 'party-hat' && (
+        <>
+          <path d="M44 22L58 -10 72 22z" fill="#EC4899" />
+          <path d="M50 10l14 4M47 17l20 4" stroke="#FDE68A" strokeWidth={3} strokeLinecap="round" />
+          <circle cx={58} cy={-12} r={5} fill="#FDE68A" />
+        </>
+      )}
+      {kind === 'crown' && (
+        <>
+          <path d="M38 24l4-22 12 12 6-16 6 16 12-12 4 22z" fill="#FBBF24" />
+          <circle cx={60} cy={16} r={3} fill="#EC4899" stroke="none" />
+        </>
+      )}
+      {kind === 'headphones' && (
+        <>
+          <path d="M20 50c0-34 80-34 80 0" fill="none" strokeWidth={6} strokeLinecap="round" />
+          <rect x={12} y={44} width={16} height={24} rx={7} fill="#EC4899" />
+          <rect x={92} y={44} width={16} height={24} rx={7} fill="#EC4899" />
+        </>
+      )}
+      {kind === 'bowtie' && (
+        <>
+          <path d="M60 76l-16-9v18zM60 76l16-9v18z" fill="#EC4899" />
+          <circle cx={60} cy={76} r={4} fill="#FDE68A" />
+        </>
+      )}
+    </g>
+  )
+}
+
+export function OwlEvolve({ kind }: { kind: OwlEvolveKind }) {
+  return (
+    <g className={`owl-evolve owl-evolve--${kind}`}>
+      <circle
+        className="owl-evolve-aura"
+        cx={60}
+        cy={64}
+        r={56}
+        fill="var(--kr-tint-yellow)"
+        opacity={0.6}
+      />
+      {kind === 'phoenix' && (
+        <g stroke={LINE} strokeWidth={3} strokeLinejoin="round">
+          <path d="M26 60C6 50 0 26 4 10c8 14 18 22 30 26z" fill="#F59E0B" />
+          <path d="M94 60c20-10 26-34 22-50-8 14-18 22-30 26z" fill="#F59E0B" />
+          <path d="M24 66C10 64 4 50 6 40c6 8 12 12 22 14z" fill="#EC4899" />
+          <path d="M96 66c14-2 20-16 18-26-6 8-12 12-22 14z" fill="#EC4899" />
+        </g>
+      )}
+      {kind === 'star' && (
+        <g fill="#FBBF24" stroke={LINE} strokeWidth={2} strokeLinejoin="round">
+          {[
+            [14, 22],
+            [106, 22],
+            [6, 74],
+            [114, 74],
+            [60, 2],
+          ].map(([x, y]) => (
+            <path
+              key={`${x}-${y}`}
+              d={`M${x} ${y - 8}l2.4 5.2 5.6.6-4.2 3.8 1.2 5.6-5-2.8-5 2.8 1.2-5.6-4.2-3.8 5.6-.6z`}
+            />
+          ))}
+        </g>
+      )}
+      {kind === 'hero' && (
+        <path
+          d="M30 40c-10 30-14 54-20 72 16-6 30-4 50 0 20-4 34-6 50 0-6-18-10-42-20-72z"
+          fill="#EC4899"
+          stroke={LINE}
+          strokeWidth={3}
+          strokeLinejoin="round"
+        />
+      )}
+    </g>
+  )
+}

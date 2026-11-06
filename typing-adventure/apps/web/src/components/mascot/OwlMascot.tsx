@@ -1,3 +1,10 @@
+import {
+  OwlAccessory,
+  OwlEvolve,
+  type OwlAccessoryKind,
+  type OwlEvolveKind,
+} from '../game/fx/sprites'
+
 export const OWL_MOODS = [
   'idle',
   'wave',
@@ -29,6 +36,9 @@ interface OwlMascotProps {
   size?: OwlSize
   still?: boolean
   className?: string
+  accessory?: OwlAccessoryKind
+  evolve?: OwlEvolveKind
+  live?: boolean
 }
 
 const WING_L = 'M24 58c-12 10-12 28 2 38 5-12 5-26-2-38z'
@@ -39,7 +49,7 @@ const WING_L_OPEN = 'M24 60c-14 4-18 18-12 30 8-6 12-16 12-30z'
 const WING_R_OPEN = 'M96 60c14 4 18 18 12 30-8-6-12-16-12-30z'
 const WING_L_CHIN = 'M28 60c-6 8-2 18 10 18 6 0 10-2 12-6-8 0-16-4-22-12z'
 
-function Eyes({ mood }: { mood: OwlMood }) {
+function Eyes({ mood, loop }: { mood: OwlMood; loop: string }) {
   if (mood === 'wave' || mood === 'happy') {
     return (
       <g className="owl-eyes" fill="none" stroke={INK} strokeWidth={4} strokeLinecap="round">
@@ -59,7 +69,7 @@ function Eyes({ mood }: { mood: OwlMood }) {
   const dx = mood === 'thinking' ? 4 : 0
   const dy = mood === 'thinking' ? -4 : 0
   return (
-    <g className={mood === 'idle' ? 'owl-eyes owl-eyes--blink kr-loop' : 'owl-eyes'}>
+    <g className={mood === 'idle' ? `owl-eyes owl-eyes--blink ${loop}` : 'owl-eyes'}>
       <circle
         cx={43}
         cy={46}
@@ -116,7 +126,7 @@ function Eyes({ mood }: { mood: OwlMood }) {
   )
 }
 
-function Wings({ mood }: { mood: OwlMood }) {
+function Wings({ mood, live }: { mood: OwlMood; live: boolean }) {
   let left = WING_L
   let right = WING_R
   if (mood === 'wave' || mood === 'encourage') right = WING_R_UP
@@ -132,12 +142,17 @@ function Wings({ mood }: { mood: OwlMood }) {
   return (
     <g fill={WING} stroke={LINE} strokeWidth={3} strokeLinejoin="round" className="owl-line">
       <path className="owl-wing owl-wing--l" d={left} />
-      <path className="owl-wing owl-wing--r" d={right} />
+      <path
+        className={
+          live && mood === 'wave' ? 'owl-wing owl-wing--r fx-loop' : 'owl-wing owl-wing--r'
+        }
+        d={right}
+      />
     </g>
   )
 }
 
-function Extras({ mood }: { mood: OwlMood }) {
+function Extras({ mood, loop }: { mood: OwlMood; loop: string }) {
   if (mood === 'happy' || mood === 'cheer') {
     const spots =
       mood === 'cheer'
@@ -180,7 +195,7 @@ function Extras({ mood }: { mood: OwlMood }) {
   if (mood === 'sleep') {
     return (
       <g
-        className="owl-zzz kr-loop"
+        className={`owl-zzz ${loop}`}
         fill="none"
         stroke={LINE}
         strokeWidth={3}
@@ -200,7 +215,11 @@ export function OwlMascot({
   size = 'md',
   still = false,
   className,
+  accessory,
+  evolve,
+  live = false,
 }: OwlMascotProps) {
+  const loop = live ? 'fx-loop' : 'kr-loop'
   const px = SIZES[size]
   const cls = ['owl', `owl--${mood}`, still ? 'owl--still' : '', className ?? '']
     .filter(Boolean)
@@ -214,11 +233,14 @@ export function OwlMascot({
       height={px}
       className={cls}
       data-mood={mood}
+      data-accessory={accessory}
+      data-evolve={evolve}
       aria-hidden="true"
       focusable="false"
     >
       <ellipse cx={60} cy={113} rx={30} ry={5} fill="rgba(15,23,42,.15)" />
-      <g className={mood === 'idle' ? 'owl-body kr-loop' : 'owl-body'}>
+      {evolve && <OwlEvolve kind={evolve} />}
+      <g className={mood === 'idle' ? `owl-body ${loop}` : 'owl-body'}>
         <path
           d="M30 30l-4-18 18 10zM90 30l4-18-18 10z"
           fill={BODY}
@@ -241,8 +263,8 @@ export function OwlMascot({
         <g fill="none" stroke={SCALE} strokeWidth={3} strokeLinecap="round">
           <path d="M50 76l4 4 4-4M62 76l4 4 4-4M56 88l4 4 4-4" />
         </g>
-        <Wings mood={mood} />
-        <Eyes mood={mood} />
+        <Wings mood={mood} live={live} />
+        <Eyes mood={mood} loop={loop} />
         <circle cx={30} cy={62} r={5} fill={CHEEK} opacity={0.8} />
         <circle cx={90} cy={62} r={5} fill={CHEEK} opacity={0.8} />
         <path
@@ -265,7 +287,8 @@ export function OwlMascot({
           <path d="M46 104l-4 6h10zM74 104l-4 6h10z" />
         </g>
       </g>
-      <Extras mood={mood} />
+      <Extras mood={mood} loop={loop} />
+      {accessory && <OwlAccessory kind={accessory} />}
     </svg>
   )
 }
