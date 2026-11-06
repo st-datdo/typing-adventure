@@ -1,6 +1,6 @@
 # FX · Hiệu ứng "đã mắt" cho trẻ: juice từng phím, combo leo thang, ít lặp lại — Design
 
-Trạng thái: draft
+Trạng thái: approved
 Nguồn: 01-requirements.md (FX-01..FX-20), 00-research.md
 
 Kế thừa hệ thiết kế KR/HF (`styles/tokens.css`: `--kr-*`, `--kr-ease-back`, `--kr-ease-out`). Không thêm màu ngoài token có sẵn. Hình mới (hạt, sticker, nhân vật chạy, phụ kiện owl) là SVG nội tuyến cùng nét vẽ với `OwlMascot` (viền `#1E3A8A` 3px, bo tròn, màu phẳng). Không dùng emoji hệ điều hành cho hiệu ứng (FX-08).
@@ -572,3 +572,4 @@ Câu dài nhất ở pool hiển thị: vi "Thử lại nhé, con làm được!
 
 ## Lịch sử
 - v1 2026-11-06 18:10: bản đầu.
+- 2026-11-06 23:34: approved by user

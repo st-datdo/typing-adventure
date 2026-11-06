@@ -1,6 +1,6 @@
 # FX · Hiệu ứng "đã mắt" cho trẻ: juice từng phím, combo leo thang, ít lặp lại — Tech plan
 
-Trạng thái: draft
+Trạng thái: approved
 Nguồn: 01-requirements.md (FX-01..FX-20), 02-design.md, 00-research.md
 
 ## Hướng tiếp cận
@@ -702,3 +702,4 @@ bash ../scripts/ci/check-tdd-commits.sh main HEAD
 
 ## Lịch sử
 - v1 2026-11-06 18:45: bản đầu.
+- 2026-11-06 23:34: approved by user

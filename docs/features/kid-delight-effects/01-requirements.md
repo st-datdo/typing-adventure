@@ -1,6 +1,6 @@
 # FX · Hiệu ứng "đã mắt" cho trẻ: juice từng phím, combo leo thang, ít lặp lại — Requirements
 
-Trạng thái: draft
+Trạng thái: approved
 Slug: kid-delight-effects
 
 ## Bối cảnh
@@ -259,3 +259,4 @@ Trên màn chơi chính (`GameEngine`), hiệu ứng hiện tại đơn điệu:
 
 ## Lịch sử
 - v1 2026-11-06 17:30: bản đầu, dựa trên `00-research.md`. Thay thế HF-05..HF-11 (nhãn/pháo hai bên), giữ HF-01..HF-04 và mở rộng HF-12/HF-13.
+- 2026-11-06 23:34: approved by user
