@@ -27,14 +27,25 @@ export class SoundEngine {
 
   init(): void {
     if (!this.ctx) {
-      this.ctx = new (window.AudioContext || (window as Window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext)()
+      this.ctx = new (
+        window.AudioContext ||
+        (window as Window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext
+      )()
     }
     if (this.ctx.state === 'suspended') {
       this.ctx.resume().catch(() => {})
     }
   }
 
-  private tone({ freq, start = 0, duration, type = 'sine', gain = 0.1, endFreq, attack = 0.005 }: ToneOptions): void {
+  private tone({
+    freq,
+    start = 0,
+    duration,
+    type = 'sine',
+    gain = 0.1,
+    endFreq,
+    attack = 0.005,
+  }: ToneOptions): void {
     if (!this.ctx) return
     const t0 = this.ctx.currentTime + start
     const osc = this.ctx.createOscillator()
@@ -58,6 +69,14 @@ export class SoundEngine {
     const freq = PENTATONIC[code % PENTATONIC.length]
     this.tone({ freq, duration: 0.4, type: 'triangle', gain: 0.14, attack: 0.01 })
     this.tone({ freq: freq * 2, duration: 0.25, type: 'sine', gain: 0.03, attack: 0.01 })
+  }
+
+  playStep(step: number): void {
+    if (!this.enabled || !this.ctx) return
+    const i = Math.min(PENTATONIC.length - 1, Math.max(0, Math.floor(step)))
+    const freq = PENTATONIC[i]
+    this.tone({ freq, duration: 0.25, type: 'triangle', gain: 0.12, attack: 0.01 })
+    this.tone({ freq: freq * 2, duration: 0.18, type: 'sine', gain: 0.03, attack: 0.01 })
   }
 
   play(type: SoundType): void {

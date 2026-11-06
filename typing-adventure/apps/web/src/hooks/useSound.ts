@@ -7,7 +7,7 @@ import { useSettingsStore } from '@/stores/settings-store'
 
 export function useSound() {
   const engineRef = useRef<SoundEngine | null>(null)
-  const soundEnabled = useSettingsStore(s => s.soundEnabled)
+  const soundEnabled = useSettingsStore((s) => s.soundEnabled)
 
   const getEngine = useCallback(() => {
     if (!engineRef.current) {
@@ -17,16 +17,28 @@ export function useSound() {
     return engineRef.current
   }, [soundEnabled])
 
-  const play = useCallback((type: SoundType) => {
-    const engine = getEngine()
-    engine.init()
-    engine.play(type)
-  }, [getEngine])
+  const play = useCallback(
+    (type: SoundType) => {
+      const engine = getEngine()
+      engine.init()
+      engine.play(type)
+    },
+    [getEngine],
+  )
+
+  const playStep = useCallback(
+    (step: number) => {
+      const engine = getEngine()
+      engine.init()
+      engine.playStep(step)
+    },
+    [getEngine],
+  )
 
   const playCorrect = useCallback(() => play('correct'), [play])
   const playWrong = useCallback(() => play('wrong'), [play])
   const playComplete = useCallback(() => play('complete'), [play])
   const playClick = useCallback(() => play('click'), [play])
 
-  return { play, playCorrect, playWrong, playComplete, playClick }
+  return { play, playStep, playCorrect, playWrong, playComplete, playClick }
 }
