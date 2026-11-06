@@ -60,6 +60,10 @@
   z-index: 1;
 }
 
+.ta-head {
+  z-index: 2;
+}
+
 .game-owl {
   vertical-align: middle;
   margin-right: 4px;
@@ -448,7 +452,6 @@
   box-shadow: 0 3px 0 var(--surface-edge);
 }
 
-.combo-display,
 .lives-display {
   position: absolute;
   top: -14px;
@@ -462,23 +465,6 @@
   transition:
     opacity var(--duration-fast) ease,
     transform var(--duration-fast) var(--ease-bounce);
-}
-
-.combo-display {
-  right: 24px;
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  background: var(--kr-play);
-  color: var(--kr-on-play);
-  border: var(--kr-border-w) solid var(--kr-play-deep);
-  box-shadow: 0 3px 0 var(--kr-play-deep);
-  transform: scale(0.8);
-}
-
-.combo-display.combo--visible {
-  opacity: 1;
-  transform: scale(1);
 }
 
 .lives-display {

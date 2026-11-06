@@ -92,12 +92,6 @@ export function WordDisplay({ gameState, onCustomText }: WordDisplayProps) {
 
   return (
     <section className="word-display-section">
-      {gameState.combo >= 2 && (
-        <div className="combo-display combo--visible">
-          <Icon name="flame" size={20} />x{gameState.combo}
-        </div>
-      )}
-
       {gameState.gameMode === 'challenge' && (
         <div
           className="lives-display lives--visible"

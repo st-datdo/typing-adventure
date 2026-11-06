@@ -20,7 +20,8 @@ import { SyncIndicator } from '@/components/auth/SyncIndicator'
 import { TopBar } from '@/components/ui/TopBar'
 import { Icon } from '@/components/ui/icons/Icon'
 import { SceneBackdrop } from '@/components/decor/SceneBackdrop'
-import { GameOwl } from './GameOwl'
+import { OwlDock } from './fx/OwlDock'
+import { useFxStore } from '@/stores/fx-store'
 import { ComboBurst } from './ComboBurst'
 import { ComboAnnouncer } from './ComboAnnouncer'
 import { shouldCaptureSpace } from '@/lib/game-input'
@@ -328,6 +329,12 @@ export function GameEngine() {
     [handleKeypress, focusInput],
   )
 
+  useEffect(() => {
+    useFxStore
+      .getState()
+      .dispatch({ type: 'suppress', value: showCelebration || panel !== 'none' || navOpen })
+  }, [showCelebration, panel, navOpen])
+
   const lang = settings.lang
   const greetName = session?.user
     ? settings.playerName || session.user.name || session.user.email
@@ -337,6 +344,8 @@ export function GameEngine() {
     : settings.playerAvatar
 
   const playing = gameState.startTime !== null && !gameState.isFinished
+  const overlayOpen = showCelebration || panel !== 'none' || navOpen
+  const fxSuppressed = overlayOpen || gameState.startTime === null || gameState.isFinished
 
   return (
     <div
@@ -389,9 +398,11 @@ export function GameEngine() {
             </button>
           }
           title={
-            <>
-              <GameOwl playing={playing} /> Typing Adventure
-            </>
+            <OwlDock
+              playing={playing}
+              combo={gameState.isFinished ? 0 : gameState.combo}
+              suppressed={fxSuppressed}
+            />
           }
           subtitle={t(lang, 'subtitle')}
           end={
