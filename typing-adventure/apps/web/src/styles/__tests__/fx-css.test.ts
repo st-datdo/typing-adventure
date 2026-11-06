@@ -279,4 +279,49 @@ describe('FX css', () => {
     expect(hidden).toContain('.fx-runner')
     expect(hidden).toContain('.fx-sticker')
   })
+
+  it('FX-15 reduced motion hides the canvases', () => {
+    const hidden = cssBlocks(reduced).flatMap((b) =>
+      cssDecls(b.body).display === 'none' ? b.selectors : [],
+    )
+    expect(hidden).toContain('.fx-canvas')
+  })
+
+  it('FX-16 every repeating keyframe that fades or filters cycles no faster than 334ms', () => {
+    const names = new Set(allKeyframeNames(fx))
+    for (const r of cssBlocks(fx)) {
+      const d = cssDecls(r.body)
+      const anim = d.animation ?? ''
+      const name = d['animation-name'] ?? anim.split(/\s+/)[0]
+      if (!name || !names.has(name)) continue
+      const count =
+        d['animation-iteration-count'] ??
+        anim.match(/\binfinite\b|\s(\d+(?:\.\d+)?)(?=\s|$)/)?.[0] ??
+        '1'
+      const repeats = /infinite/.test(count) || Number(count.trim()) > 1
+      if (!repeats) continue
+      const fades = keyframeProps(name).some((p) => p === 'opacity' || p === 'filter')
+      if (!fades) continue
+      const dur = d['animation-duration'] ? toMs(d['animation-duration']) : animationEnd(anim)
+      expect(dur, r.selectors.join()).toBeGreaterThanOrEqual(334)
+    }
+  })
+
+  it('FX-16 no full-screen fixed layer animates opacity or filter outside a static dim backdrop', () => {
+    for (const r of cssBlocks(base)) {
+      const d = cssDecls(r.body)
+      if (d.position !== 'fixed' || d.inset !== '0') continue
+      const anim = d.animation ?? d['animation-name'] ?? 'none'
+      const name = anim.split(/\s+/)[0]
+      const animates =
+        name !== 'none' && keyframeProps(name).some((p) => p === 'opacity' || p === 'filter')
+      expect(animates, r.selectors.join()).toBe(false)
+      expect(d.transition ?? '', r.selectors.join()).not.toMatch(/opacity|filter/)
+      if (r.selectors.includes('.fx-backdrop')) {
+        expect(Number(d.opacity)).toBeLessThanOrEqual(0.6)
+      } else if (d.opacity !== undefined) {
+        expect(Number(d.opacity), r.selectors.join()).toBe(1)
+      }
+    }
+  })
 })
