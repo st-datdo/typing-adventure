@@ -46,7 +46,7 @@ test.describe('KR game screen', () => {
   test('KR-09 a 5-combo shows a burst without stealing focus', async ({ page }) => {
     const text = await textToType(page)
     await typeText(page, text.slice(0, 5))
-    const burst = page.locator('.combo-burst')
+    const burst = page.locator('.fx-combo-label')
     await expect(burst).toBeVisible()
     await expect(burst).toContainText('x5')
     await expect(page.locator('[aria-live="polite"].sr-only')).toContainText('Giỏi lắm!')
@@ -55,7 +55,7 @@ test.describe('KR game screen', () => {
       await page.evaluate(() => document.activeElement?.classList.contains('hidden-input')),
     ).toBe(true)
     await expect(page.locator('.game-owl')).toHaveAttribute('data-mood', 'happy')
-    await page.waitForTimeout(1500)
-    await expect(page.locator('.combo-burst')).toHaveCount(0)
+    await page.waitForTimeout(1000)
+    await expect(page.locator('.fx-combo-label')).toHaveCount(0)
   })
 })

@@ -139,6 +139,6 @@ test.describe('HF layout', () => {
     await open(page, { width: 1280, height: 720 })
     await openSettings(page)
     await expect(page.getByRole('dialog')).toBeVisible()
-    await expect(page.locator('.combo-burst')).toHaveCount(0)
+    await expect(page.locator('.fx-combo-label')).toHaveCount(0)
   })
 })

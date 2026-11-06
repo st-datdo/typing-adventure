@@ -19,8 +19,8 @@ test('KR-14 reduced motion: every screen settles with no running animation', asy
 
   const text = await textToType(page)
   await typeText(page, text.slice(0, 5))
-  await expect(page.locator('.combo-burst')).toContainText('x5')
-  await expect(page.locator('.fw-spark, .fw-rocket')).toHaveCount(0)
+  await expect(page.locator('.fx-combo-label')).toContainText('x5')
+  await expect(page.locator('.fx-p, canvas.fx-canvas[data-active="true"]')).toHaveCount(0)
   await settled(page)
 
   await typeText(page, text.slice(5))
