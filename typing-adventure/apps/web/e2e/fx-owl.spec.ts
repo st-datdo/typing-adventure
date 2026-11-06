@@ -105,6 +105,7 @@ test.describe('FX owl', () => {
       const end = TEXT.indexOf(' ', i)
       if (end < 0) break
       await typeText(page, TEXT.slice(i, end))
+      await page.waitForTimeout(60)
       const bubble = page.locator('.fx-owl-bubble[data-kind="praise"]')
       if ((await bubble.count()) > 0) {
         seen++
@@ -121,6 +122,7 @@ test.describe('FX owl', () => {
       }
       await page.keyboard.type('z')
       await typeText(page, ' ')
+      await page.keyboard.type('z')
       i = end + 1
     }
     expect(seen).toBeGreaterThanOrEqual(1)
@@ -133,9 +135,11 @@ test.describe('FX owl', () => {
     for (let w = 0; w < 20; w++) {
       const end = TEXT.indexOf(' ', i)
       await typeText(page, TEXT.slice(i, end))
+      await page.waitForTimeout(60)
       expect(await page.locator('.fx-owl-bubble[data-kind="praise"]').count()).toBe(0)
       await page.keyboard.type('z')
       await typeText(page, ' ')
+      await page.keyboard.type('z')
       i = end + 1
     }
   })
