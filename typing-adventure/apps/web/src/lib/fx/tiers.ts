@@ -1,4 +1,5 @@
 import type { SoundType } from '@/lib/audio/sound-engine'
+import type { EffectsLevel } from './levels'
 
 export const TIER_BASE = [3, 5, 10, 15, 20, 30, 40, 50, 75, 100] as const
 const TIER_STEP = 50
@@ -89,8 +90,12 @@ export const TIER_MATERIALS: Record<number, Material[]> = {
   75: ['label', 'cheer', 'fireworks'],
 }
 
-export function materialsFor(tier: number, level: 'lots' | 'some' | 'few' = 'lots'): Material[] {
-  void level
+const SOME_SKIPS: readonly Material[] = ['runner', 'super', 'rain', 'fireworks']
+
+export function materialsFor(tier: number, level: EffectsLevel = 'lots'): Material[] {
   const key = tier >= 75 ? 75 : tier
-  return [...(TIER_MATERIALS[key] ?? [])]
+  const all = TIER_MATERIALS[key] ?? []
+  if (level === 'few') return tier === 3 ? ['meterLit'] : all.length ? ['label'] : []
+  if (level === 'some') return all.filter((m) => !SOME_SKIPS.includes(m))
+  return [...all]
 }
