@@ -1007,3 +1007,287 @@
     animation: none;
   }
 }
+
+.word-foot {
+  position: relative;
+}
+
+.fx-runner-track {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  container-type: inline-size;
+}
+
+.fx-runner {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 48px;
+  height: 40px;
+  pointer-events: none;
+  animation: fx-run 2000ms linear forwards;
+}
+
+.fx-runner--rtl {
+  animation-direction: reverse;
+}
+
+.fx-runner svg {
+  display: block;
+  transform: scaleX(var(--fx-dir, 1));
+}
+
+.fx-runner--kitten .fx-runner-body,
+.fx-runner--bunny .fx-runner-body {
+  animation: fx-runner-bob 400ms ease-in-out 5;
+}
+
+.fx-runner--dino .fx-runner-body {
+  transform-origin: 50% 100%;
+  animation: fx-runner-stomp 400ms ease-in-out 5;
+}
+
+.fx-runner--turtle .fx-runner-body {
+  animation: fx-runner-bob 200ms linear 10;
+}
+
+@keyframes fx-run {
+  from {
+    transform: translateX(-56px);
+  }
+  to {
+    transform: translateX(calc(100cqw + 8px));
+  }
+}
+
+@keyframes fx-runner-bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+@keyframes fx-runner-stomp {
+  0%,
+  100% {
+    transform: rotate(-4deg);
+  }
+  50% {
+    transform: rotate(4deg);
+  }
+}
+
+.fx-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.fx-sky {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 240px;
+}
+
+.fx-sky-art {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.fx-sky--rainbow .fx-sky-art {
+  transform-origin: 50% 100%;
+  animation: fx-sky-rise 800ms var(--kr-ease-out) both;
+}
+
+.fx-sky-star {
+  position: absolute;
+  color: var(--kr-play);
+  animation: fx-sky-fade 800ms ease-out both;
+}
+
+.fx-sky-streak {
+  position: absolute;
+  width: 120px;
+  height: 3px;
+  border-radius: 3px;
+  background: linear-gradient(90deg, transparent, var(--kr-play));
+  animation: fx-sky-streak 800ms ease-out forwards;
+}
+
+.fx-sky-balloon {
+  position: absolute;
+  width: 36px;
+  height: 36px;
+  animation: fx-sky-float 900ms var(--kr-ease-out) both;
+}
+
+.fx-sticker {
+  top: 0;
+  margin: 0;
+  animation: fx-rain 2000ms linear both;
+}
+
+.fx-sticker svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+@keyframes fx-sky-rise {
+  from {
+    opacity: 0;
+    transform: scaleY(0.2);
+  }
+  to {
+    opacity: 1;
+    transform: scaleY(1);
+  }
+}
+
+@keyframes fx-sky-fade {
+  from {
+    opacity: 0;
+    transform: scale(0.4);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes fx-sky-streak {
+  0% {
+    opacity: 0;
+    transform: translate(-60px, -30px) rotate(25deg);
+  }
+  40% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(140px, 60px) rotate(25deg);
+  }
+}
+
+@keyframes fx-sky-float {
+  from {
+    opacity: 0;
+    transform: translateY(160px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fx-rain {
+  from {
+    transform: translateY(-10vh) rotate(0deg);
+  }
+  to {
+    transform: translateY(105vh) rotate(var(--fx-rot, 90deg));
+  }
+}
+
+.ta-screen[data-fx-sky] .kr-scene--top {
+  filter: saturate(1.25);
+  transition: filter 800ms ease-out;
+}
+
+.word-display[data-fx-super] {
+  --fx-super-a: var(--kr-play);
+  --fx-super-b: var(--kr-fun);
+}
+
+.word-display[data-fx-super='rainbow'] {
+  --fx-super-a: var(--kr-play);
+  --fx-super-b: var(--kr-primary);
+  --fx-super-c: var(--kr-success);
+}
+
+.word-display[data-fx-super='gold'] {
+  --fx-super-a: var(--kr-play);
+  --fx-super-b: var(--kr-play-deep);
+  --fx-super-c: var(--kr-play);
+}
+
+.word-display[data-fx-super='galaxy'] {
+  --fx-super-a: var(--kr-primary);
+  --fx-super-b: var(--kr-fun);
+  --fx-super-c: var(--kr-primary-deep);
+}
+
+.word-display[data-fx-super] .char--active {
+  box-shadow:
+    0 3px 0 var(--kr-play-deep),
+    0 0 0 4px var(--fx-super-b);
+  transition: box-shadow 300ms var(--kr-ease-back);
+}
+
+.word-display[data-fx-super] .char--correct {
+  text-decoration-color: transparent;
+  background-image: linear-gradient(
+    90deg,
+    var(--fx-super-a),
+    var(--fx-super-b),
+    var(--fx-super-c, var(--fx-super-a))
+  );
+  background-repeat: no-repeat;
+  background-position: 0 100%;
+  background-size: 100% 3px;
+}
+
+@media (max-width: 767px) {
+  .ta-screen[data-fx-sky] .word-display-section::before {
+    content: '';
+    position: absolute;
+    left: 16px;
+    right: 16px;
+    top: 0;
+    height: 4px;
+    border-radius: 4px;
+    background: linear-gradient(
+      90deg,
+      var(--kr-play),
+      var(--kr-fun),
+      var(--kr-primary),
+      var(--kr-success)
+    );
+    transform-origin: 50% 50%;
+    animation: fx-sky-strip 800ms var(--kr-ease-out) both;
+    pointer-events: none;
+  }
+}
+
+@keyframes fx-sky-strip {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fx-runner,
+  .fx-sticker {
+    display: none;
+  }
+
+  .fx-sky *,
+  .ta-screen[data-fx-sky] .word-display-section::before {
+    animation: none;
+  }
+}

@@ -107,7 +107,7 @@ export const FX_TTL = {
   word: 700,
   confetti: 1000,
   runner: 2200,
-  rain: 2500,
+  rain: 2200,
   fireworks: 2500,
   evolve: 1600,
   bubble: 1400,

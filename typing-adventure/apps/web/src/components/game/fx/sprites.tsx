@@ -141,3 +141,111 @@ export function OwlEvolve({ kind }: { kind: OwlEvolveKind }) {
     </g>
   )
 }
+
+export type RunnerKind = 'kitten' | 'dino' | 'rocket' | 'turtle' | 'bunny'
+export type StickerKind = 'star' | 'candy' | 'heart' | 'balloon' | 'flower' | 'moon' | 'cloud'
+
+export function RunnerSprite({ kind }: { kind: RunnerKind }) {
+  return (
+    <svg
+      viewBox="0 0 48 40"
+      width={48}
+      height={40}
+      aria-hidden="true"
+      focusable="false"
+      stroke={LINE}
+      strokeWidth={2.5}
+      strokeLinejoin="round"
+      strokeLinecap="round"
+    >
+      {kind === 'kitten' && (
+        <g className="fx-runner-body">
+          <path d="M10 30c0-9 6-14 16-14s14 5 14 14z" fill="#FDBA74" />
+          <path d="M30 16l2-8 5 6M40 18l3-7 2 9" fill="#FDBA74" />
+          <circle cx={38} cy={21} r={8} fill="#FDBA74" />
+          <circle cx={36} cy={20} r={1.4} fill={LINE} stroke="none" />
+          <circle cx={41} cy={20} r={1.4} fill={LINE} stroke="none" />
+          <path d="M10 26c-5-2-7-8-4-12" fill="none" />
+          <path d="M16 30v6M24 30v6M32 30v6" />
+        </g>
+      )}
+      {kind === 'dino' && (
+        <g className="fx-runner-body">
+          <path d="M6 30c4-12 14-16 24-14l6-8c6 0 8 4 8 8s-4 6-8 6l-2 8z" fill="#86EFAC" />
+          <circle cx={39} cy={12} r={1.4} fill={LINE} stroke="none" />
+          <path d="M14 18l2-4 3 3 2-4 3 3" fill="none" />
+          <path d="M16 30v6M28 30v6" />
+        </g>
+      )}
+      {kind === 'rocket' && (
+        <g className="fx-runner-body">
+          <path d="M8 20c8-8 22-10 34 0-12 10-26 8-34 0z" fill="#E2E8F0" />
+          <circle cx={30} cy={20} r={4} fill="#60A5FA" />
+          <path d="M14 14l-6-6v8M14 26l-6 6v-8" fill="#EC4899" />
+          <path d="M8 20H2" stroke="#F59E0B" strokeWidth={4} />
+          <circle className="fx-runner-puff" cx={0} cy={20} r={2.5} fill="#CBD5E1" stroke="none" />
+        </g>
+      )}
+      {kind === 'turtle' && (
+        <g className="fx-runner-body">
+          <path d="M8 34h34" stroke="#B45309" strokeWidth={4} />
+          <path d="M10 30c0-10 6-14 14-14s14 4 14 14z" fill="#4ADE80" />
+          <path d="M16 22h16M24 16v14" fill="none" />
+          <circle cx={42} cy={24} r={5} fill="#BBF7D0" />
+          <circle cx={43} cy={23} r={1.2} fill={LINE} stroke="none" />
+          <circle cx={14} cy={37} r={2} fill="#F8FAFC" />
+          <circle cx={36} cy={37} r={2} fill="#F8FAFC" />
+        </g>
+      )}
+      {kind === 'bunny' && (
+        <g className="fx-runner-body">
+          <ellipse cx={24} cy={28} rx={12} ry={8} fill="#F8FAFC" />
+          <circle cx={35} cy={20} r={7} fill="#F8FAFC" />
+          <path d="M33 13l-2-11 5 2 1 9M38 14l2-10 4 3-3 8" fill="#F9A8D4" />
+          <circle cx={37} cy={19} r={1.3} fill={LINE} stroke="none" />
+          <circle cx={12} cy={26} r={3} fill="#F8FAFC" />
+          <path d="M18 35l-3 3M30 35l3 3" />
+        </g>
+      )}
+    </svg>
+  )
+}
+
+const STICKER_PATHS: Record<StickerKind, { d: string; fill: string }> = {
+  star: {
+    d: 'M16 3l4 8.5 9.3 1.2-6.8 6.4 1.7 9.2L16 23.8 7.8 28.3l1.7-9.2-6.8-6.4L12 11.5z',
+    fill: '#FBBF24',
+  },
+  candy: {
+    d: 'M10 16a6 6 0 1 0 12 0 6 6 0 1 0-12 0zM10 16L3 11v10zM22 16l7-5v10z',
+    fill: '#F472B6',
+  },
+  heart: {
+    d: 'M16 28S4 21 4 12a6.5 6.5 0 0 1 12-3.4A6.5 6.5 0 0 1 28 12c0 9-12 16-12 16z',
+    fill: '#FB7185',
+  },
+  balloon: {
+    d: 'M16 3c6 0 10 5 10 11s-5 11-10 11S6 20 6 14 10 3 16 3zM16 25l-2 4h4z',
+    fill: '#60A5FA',
+  },
+  flower: {
+    d: 'M16 10a4 4 0 1 1 6 3.5 4 4 0 1 1-3.5 6 4 4 0 1 1-5 0 4 4 0 1 1-3.5-6A4 4 0 1 1 16 10z',
+    fill: '#C084FC',
+  },
+  moon: { d: 'M22 4A12 12 0 1 0 28 22 10 10 0 1 1 22 4z', fill: '#FDE68A' },
+  cloud: { d: 'M9 25a6 6 0 0 1 0-12 8 8 0 0 1 15 2 5 5 0 0 1-1 10z', fill: '#E0F2FE' },
+}
+
+export function stickerSvg(kind: StickerKind): string {
+  const p = STICKER_PATHS[kind]
+  return `<svg viewBox="0 0 32 32" aria-hidden="true" focusable="false"><path d="${p.d}" fill="${p.fill}" stroke="${LINE}" stroke-width="2" stroke-linejoin="round"/></svg>`
+}
+
+export function StickerSprite({ kind }: { kind: StickerKind }) {
+  const p = STICKER_PATHS[kind]
+  return (
+    <svg viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+      <path d={p.d} fill={p.fill} stroke={LINE} strokeWidth={2} strokeLinejoin="round" />
+    </svg>
+  )
+}

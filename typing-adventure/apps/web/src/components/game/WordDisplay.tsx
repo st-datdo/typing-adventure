@@ -1,6 +1,6 @@
 'use client'
 
-import { useRef, type CSSProperties } from 'react'
+import { useRef, type CSSProperties, type ReactNode } from 'react'
 import type { GameState } from '@typing-adventure/game-engine'
 import { useSettingsStore } from '@/stores/settings-store'
 import { t, tReplace } from '@typing-adventure/i18n'
@@ -16,6 +16,7 @@ interface WordDisplayProps {
   word?: FxState['word']
   superMode?: string | null
   fxSuppressed?: boolean
+  runnerSlot?: ReactNode
 }
 
 const WAVE_KINDS = ['domino', 'rainbow-wave']
@@ -28,6 +29,7 @@ export function WordDisplay({
   word = null,
   superMode = null,
   fxSuppressed = false,
+  runnerSlot = null,
 }: WordDisplayProps) {
   const keyboardCase = useSettingsStore((s) => s.keyboardCase)
   const lang = useSettingsStore((s) => s.lang)
@@ -129,7 +131,9 @@ export function WordDisplay({
       </div>
 
       <div className="word-foot">
-        <div className="fx-runner-track" aria-hidden="true" />
+        <div className="fx-runner-track" aria-hidden="true">
+          {runnerSlot}
+        </div>
         <div className="progress-bar">
           <div className="progress-fill" style={{ width: `${progress}%` }} />
         </div>

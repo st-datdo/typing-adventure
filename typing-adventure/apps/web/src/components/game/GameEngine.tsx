@@ -2,6 +2,7 @@
 
 import { useEffect, useCallback, useState, useRef, type CSSProperties } from 'react'
 import { useSession, signOut } from 'next-auth/react'
+import dynamic from 'next/dynamic'
 import { useGameEngine } from '@/hooks/useGameEngine'
 import { useGameStore } from '@/stores/game-store'
 import { useSettingsStore } from '@/stores/settings-store'
@@ -32,6 +33,24 @@ import { t } from '@typing-adventure/i18n'
 import { isModeAllowed } from '@typing-adventure/game-engine'
 import type { GameMode, Level } from '@typing-adventure/game-engine'
 
+const loadTierRunner = () => import('./fx/TierRunner')
+const loadFxBackdrop = () => import('./fx/FxBackdrop')
+const TierRunner = dynamic(() => loadTierRunner().then((m) => m.TierRunner), { ssr: false })
+const FxBackdrop = dynamic(() => loadFxBackdrop().then((m) => m.FxBackdrop), { ssr: false })
+
+function whenIdle(cb: () => void): () => void {
+  const w = window as Window & {
+    requestIdleCallback?: (cb: () => void, opts?: { timeout: number }) => number
+    cancelIdleCallback?: (id: number) => void
+  }
+  if (w.requestIdleCallback) {
+    const id = w.requestIdleCallback(cb, { timeout: 1500 })
+    return () => w.cancelIdleCallback?.(id)
+  }
+  const t = setTimeout(cb, 300)
+  return () => clearTimeout(t)
+}
+
 const enter = (i: number) => ({ '--i': i }) as CSSProperties
 
 type Panel = 'none' | 'settings' | 'history' | 'achievements' | 'customText'
@@ -50,6 +69,16 @@ export function GameEngine() {
   const fxPop = useFxStore((s) => s.pop)
   const fxWord = useFxStore((s) => s.word)
   const fxSuper = useFxStore((s) => s.superMode)
+  const fxSky = useFxStore((s) => s.sky)
+
+  useEffect(
+    () =>
+      whenIdle(() => {
+        loadTierRunner()
+        loadFxBackdrop()
+      }),
+    [],
+  )
   const flashIdRef = useRef(0)
   const [lastKeyFlash, setLastKeyFlash] = useState<{
     key: string
@@ -354,6 +383,7 @@ export function GameEngine() {
     <div
       className="ta-screen"
       data-playing={playing ? 'true' : 'false'}
+      data-fx-sky={fxSky ?? undefined}
       onClick={(e) => {
         const target = e.target as HTMLElement
         if (
@@ -384,6 +414,8 @@ export function GameEngine() {
         onOpenSettings={() => setPanel('settings')}
         onOpenHistory={() => setPanel('history')}
       />
+
+      <FxBackdrop suppressed={fxSuppressed} />
 
       <div className="ta-head kr-enter" style={enter(0)}>
         <TopBar
@@ -467,6 +499,7 @@ export function GameEngine() {
             word={fxWord}
             superMode={fxSuper}
             fxSuppressed={fxSuppressed}
+            runnerSlot={<TierRunner suppressed={fxSuppressed} />}
           />
           <ComboLabel suppressed={fxSuppressed} />
         </div>
