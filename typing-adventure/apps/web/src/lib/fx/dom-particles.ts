@@ -27,6 +27,15 @@ export function liveParticleCount(): number {
   return liveTotal
 }
 
+export function reserveParticles(n: number): () => void {
+  let held = Math.max(0, n)
+  liveTotal += held
+  return () => {
+    liveTotal = Math.max(0, liveTotal - held)
+    held = 0
+  }
+}
+
 export function createParticlePool(
   container: HTMLElement,
   svgFor: (shape: ParticleShape) => string,

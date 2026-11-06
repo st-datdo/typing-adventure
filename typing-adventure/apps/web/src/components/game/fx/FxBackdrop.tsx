@@ -1,10 +1,18 @@
 'use client'
 
-import { memo, useEffect, useRef, type CSSProperties, type ReactNode } from 'react'
+import {
+  memo,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  type CSSProperties,
+  type ReactNode,
+} from 'react'
 import { fxCanvas } from '@/lib/fx/confetti'
 import type { FxState } from '@/lib/fx/director'
 import { allocateNodes } from '@/lib/fx/budget'
-import { liveParticleCount } from '@/lib/fx/dom-particles'
+import { liveParticleCount, reserveParticles } from '@/lib/fx/dom-particles'
 import { mulberry32 } from '@/lib/fx/rng'
 import { useFxStore } from '@/stores/fx-store'
 import { ParticleSprite, StickerSprite } from './sprites'
@@ -68,27 +76,38 @@ function Sky({ sky }: { sky: NonNullable<FxState['sky']> }) {
   )
 }
 
-export function FxBackdropView({ sky, rain, alive, suppressed, children }: FxBackdropViewProps) {
-  let stickers: {
-    left: number
-    size: number
-    delay: number
-    dur: number
-    rot: number
-    kind: string
-  }[] = []
-  if (rain && !suppressed) {
-    const n = allocateNodes(alive, rain.count)
-    const rng = mulberry32(rain.seed)
-    stickers = Array.from({ length: n }, (_, i) => ({
-      left: Math.round(rng() * 96 * 10) / 10,
-      size: Math.round(28 + rng() * 16),
-      delay: Math.round(rng() * 300),
-      dur: Math.round(1500 + rng() * 400),
-      rot: Math.round(rng() * 180 - 90),
-      kind: rain.stickers[i % rain.stickers.length],
-    }))
-  }
+type StickerDrop = {
+  left: number
+  size: number
+  delay: number
+  dur: number
+  rot: number
+  kind: string
+}
+
+function planStickers(rain: FxState['rain'], alive: number, suppressed: boolean): StickerDrop[] {
+  if (!rain || suppressed) return []
+  const n = allocateNodes(alive, rain.count)
+  const rng = mulberry32(rain.seed)
+  return Array.from({ length: n }, (_, i) => ({
+    left: Math.round(rng() * 96 * 10) / 10,
+    size: Math.round(28 + rng() * 16),
+    delay: Math.round(rng() * 300),
+    dur: Math.round(1500 + rng() * 400),
+    rot: Math.round(rng() * 180 - 90),
+    kind: rain.stickers[i % rain.stickers.length],
+  }))
+}
+
+export function FxBackdropView({
+  sky,
+  rain,
+  alive,
+  suppressed,
+  children,
+  stickers: planned,
+}: FxBackdropViewProps & { stickers?: StickerDrop[] }) {
+  const stickers = planned ?? planStickers(rain, alive, suppressed)
   return (
     <div className="fx-backdrop" aria-hidden="true">
       {children}
@@ -119,8 +138,16 @@ export function FxBackdropView({ sky, rain, alive, suppressed, children }: FxBac
 export const FxBackdrop = memo(function FxBackdrop({ suppressed }: { suppressed: boolean }) {
   const sky = useFxStore((s) => s.sky)
   const rain = useFxStore((s) => s.rain)
+  const stickers = useMemo(
+    () => planStickers(rain, liveParticleCount(), suppressed),
+    [rain, suppressed],
+  )
+  useLayoutEffect(() => {
+    if (stickers.length === 0) return
+    return reserveParticles(stickers.length)
+  }, [stickers])
   return (
-    <FxBackdropView sky={sky} rain={rain} alive={liveParticleCount()} suppressed={suppressed}>
+    <FxBackdropView sky={sky} rain={rain} alive={0} suppressed={suppressed} stickers={stickers}>
       <FireworksCanvas suppressed={suppressed} />
     </FxBackdropView>
   )
