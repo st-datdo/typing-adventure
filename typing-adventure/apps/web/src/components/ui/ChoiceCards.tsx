@@ -16,7 +16,8 @@ interface ChoiceCardsProps<T extends string | number> {
   options: ChoiceOption<T>[]
   value: T
   onChange: (value: T) => void
-  columns?: 1 | 2
+  columns?: 1 | 2 | 3
+  describedBy?: string
 }
 
 export function ChoiceCards<T extends string | number>({
@@ -25,6 +26,7 @@ export function ChoiceCards<T extends string | number>({
   value,
   onChange,
   columns = 2,
+  describedBy,
 }: ChoiceCardsProps<T>) {
   const refs = useRef<(HTMLButtonElement | null)[]>([])
   const selected = Math.max(
@@ -45,6 +47,7 @@ export function ChoiceCards<T extends string | number>({
     <div
       role="radiogroup"
       aria-labelledby={labelId}
+      aria-describedby={describedBy}
       className={`choice-cards choice-cards--${columns}`}
     >
       {options.map((o, i) => {

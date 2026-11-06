@@ -253,6 +253,10 @@
   grid-template-columns: 1fr;
 }
 
+.choice-cards--3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
 .choice-card {
   position: relative;
   display: flex;
