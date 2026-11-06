@@ -231,3 +231,274 @@
     opacity: 0.5;
   }
 }
+
+.fx-combo-label {
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% - 12px);
+  z-index: 5;
+  translate: -50% 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  width: max-content;
+  max-width: min(90%, 360px);
+  text-align: center;
+  pointer-events: none;
+  transform-origin: 50% 100%;
+  --fx-band: var(--kr-play);
+  --fx-band-deep: var(--kr-play-deep);
+  --fx-band-on: var(--kr-on-play);
+  --fx-band-edge: var(--kr-play);
+}
+
+.fx-combo-label--band-fun {
+  --fx-band: var(--kr-fun);
+  --fx-band-deep: var(--kr-fun-deep);
+  --fx-band-on: var(--kr-on-fun);
+  --fx-band-edge: var(--kr-fun);
+}
+
+.fx-combo-label--band-primary {
+  --fx-band: var(--kr-primary);
+  --fx-band-deep: var(--kr-primary-deep);
+  --fx-band-on: var(--kr-on-primary);
+  --fx-band-edge: var(--kr-primary);
+}
+
+.fx-combo-label--band-rainbow {
+  --fx-band-edge: var(--kr-fun);
+}
+
+.fx-combo-label-value {
+  position: relative;
+  display: inline-block;
+  padding: 2px 16px;
+  border: var(--kr-border-w-lg) solid var(--fx-band-deep);
+  border-radius: var(--kr-radius-pill);
+  background: var(--fx-band);
+  color: var(--fx-band-on);
+  font-size: 2rem;
+  font-weight: 800;
+  line-height: 1.1;
+  box-shadow: var(--kr-shadow-md);
+}
+
+.fx-combo-label--band-rainbow .fx-combo-label-value {
+  border-color: transparent;
+  background:
+    linear-gradient(var(--kr-play), var(--kr-play)) padding-box,
+    linear-gradient(90deg, var(--kr-play), var(--kr-fun), var(--kr-primary), var(--kr-success))
+      border-box;
+  color: var(--kr-on-play);
+}
+
+.fx-combo-label-praise {
+  display: block;
+  max-width: 100%;
+  padding: 2px 12px;
+  border: var(--kr-border-w) solid var(--fx-band-edge);
+  border-radius: var(--kr-radius-md);
+  background: var(--kr-card);
+  color: var(--kr-fg);
+  font-size: 1.05rem;
+  font-weight: 800;
+  line-height: 1.2;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+.fx-combo-label--bubble {
+  animation: fx-label-bubble 860ms linear forwards;
+}
+
+.fx-combo-label--ribbon {
+  animation: fx-label-ribbon 860ms linear forwards;
+}
+
+.fx-combo-label--ribbon .fx-combo-label-value {
+  border-radius: 10px;
+}
+
+.fx-combo-label--ribbon .fx-combo-label-value::before,
+.fx-combo-label--ribbon .fx-combo-label-value::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  width: 14px;
+  height: 14px;
+  margin-top: -7px;
+  background: var(--fx-band-deep);
+  transform: rotate(45deg);
+  z-index: -1;
+}
+
+.fx-combo-label--ribbon .fx-combo-label-value::before {
+  left: -9px;
+}
+
+.fx-combo-label--ribbon .fx-combo-label-value::after {
+  right: -9px;
+}
+
+.fx-combo-label--sticker {
+  animation: fx-label-sticker 860ms linear forwards;
+}
+
+.fx-combo-label--sticker .fx-combo-label-value {
+  border-color: var(--kr-card);
+}
+
+.fx-combo-label--badge {
+  animation: fx-label-badge 860ms linear forwards;
+}
+
+.fx-combo-label--badge .fx-combo-label-value::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 84px;
+  height: 84px;
+  margin: -42px 0 0 -42px;
+  background: var(--kr-tint-yellow);
+  clip-path: polygon(
+    50% 0%,
+    61% 25%,
+    85% 15%,
+    75% 39%,
+    100% 50%,
+    75% 61%,
+    85% 85%,
+    61% 75%,
+    50% 100%,
+    39% 75%,
+    15% 85%,
+    25% 61%,
+    0% 50%,
+    25% 39%,
+    15% 15%,
+    39% 25%
+  );
+  z-index: -1;
+  animation: fx-label-star 220ms ease-out both;
+}
+
+.fx-combo-label--static {
+  animation: none;
+}
+
+.fx-combo-label--static .fx-combo-label-value::before {
+  animation: none;
+}
+
+@keyframes fx-label-bubble {
+  0% {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+  15% {
+    opacity: 1;
+    transform: scale(1.08);
+  }
+  25.6% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  74.4% {
+    opacity: 1;
+    transform: translateY(-8px);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(var(--fx-rise, -32px));
+  }
+}
+
+@keyframes fx-label-ribbon {
+  0% {
+    opacity: 0;
+    transform: translateY(12px) scaleX(0.7);
+  }
+  25.6% {
+    opacity: 1;
+    transform: translateY(0) scaleX(1);
+  }
+  74.4% {
+    opacity: 1;
+    transform: translateY(-8px);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(var(--fx-rise, -32px));
+  }
+}
+
+@keyframes fx-label-sticker {
+  0% {
+    opacity: 0;
+    transform: rotate(-20deg) scale(0.5);
+  }
+  25.6% {
+    opacity: 1;
+    transform: rotate(var(--fx-tilt, 4deg)) scale(1);
+  }
+  74.4% {
+    opacity: 1;
+    transform: translateY(-8px) rotate(var(--fx-tilt, 4deg));
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(var(--fx-rise, -32px)) rotate(var(--fx-tilt, 4deg));
+  }
+}
+
+@keyframes fx-label-badge {
+  0% {
+    opacity: 0;
+    transform: scale(0.7);
+  }
+  18% {
+    opacity: 1;
+    transform: scale(1.1);
+  }
+  25.6% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  74.4% {
+    opacity: 1;
+    transform: translateY(-8px);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(var(--fx-rise, -32px));
+  }
+}
+
+@keyframes fx-label-star {
+  from {
+    transform: scale(0) rotate(0deg);
+  }
+  to {
+    transform: scale(1) rotate(45deg);
+  }
+}
+
+@media (max-width: 640px) {
+  .fx-combo-label-value {
+    font-size: 1.6rem;
+  }
+
+  .fx-combo-label-praise {
+    font-size: 0.95rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fx-combo-label,
+  .fx-combo-label-value::before {
+    animation: none;
+  }
+}

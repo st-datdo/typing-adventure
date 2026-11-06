@@ -22,7 +22,7 @@ import { Icon } from '@/components/ui/icons/Icon'
 import { SceneBackdrop } from '@/components/decor/SceneBackdrop'
 import { OwlDock } from './fx/OwlDock'
 import { useFxStore } from '@/stores/fx-store'
-import { ComboBurst } from './ComboBurst'
+import { ComboLabel } from './fx/ComboLabel'
 import { ComboAnnouncer } from './ComboAnnouncer'
 import { shouldCaptureSpace } from '@/lib/game-input'
 
@@ -457,7 +457,7 @@ export function GameEngine() {
         </div>
         <div className="kr-enter word-stage" style={enter(2)}>
           <WordDisplay gameState={gameState} onCustomText={() => setPanel('customText')} />
-          <ComboBurst suppressed={showCelebration || panel !== 'none' || navOpen} />
+          <ComboLabel suppressed={fxSuppressed} />
         </div>
         <div
           className={`kr-enter kb-stage${settings.fingerGuide ? ' kb-stage--hands' : ''}`}
