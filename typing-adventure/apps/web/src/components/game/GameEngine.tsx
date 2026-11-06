@@ -47,6 +47,9 @@ export function GameEngine() {
   const [syncStatus, setSyncStatus] = useState<'idle' | 'syncing' | 'saved' | 'offline'>('idle')
   const [panel, setPanel] = useState<Panel>('none')
   const [navOpen, setNavOpen] = useState(false)
+  const fxPop = useFxStore((s) => s.pop)
+  const fxWord = useFxStore((s) => s.word)
+  const fxSuper = useFxStore((s) => s.superMode)
   const flashIdRef = useRef(0)
   const [lastKeyFlash, setLastKeyFlash] = useState<{
     key: string
@@ -456,7 +459,14 @@ export function GameEngine() {
           <StatsBar gameState={gameState} />
         </div>
         <div className="kr-enter word-stage" style={enter(2)}>
-          <WordDisplay gameState={gameState} onCustomText={() => setPanel('customText')} />
+          <WordDisplay
+            gameState={gameState}
+            onCustomText={() => setPanel('customText')}
+            pop={fxPop}
+            word={fxWord}
+            superMode={fxSuper}
+            fxSuppressed={fxSuppressed}
+          />
           <ComboLabel suppressed={fxSuppressed} />
         </div>
         <div

@@ -1,64 +1,67 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
+import { useRef, type CSSProperties } from 'react'
 import type { GameState } from '@typing-adventure/game-engine'
 import { useSettingsStore } from '@/stores/settings-store'
 import { t, tReplace } from '@typing-adventure/i18n'
 import { Icon } from '@/components/ui/icons/Icon'
+import type { FxState } from '@/lib/fx/director'
+import { KeyParticles } from './fx/KeyParticles'
+import { WordCompleteFx } from './fx/WordCompleteFx'
 
 interface WordDisplayProps {
   gameState: GameState
   onCustomText?: () => void
+  pop?: { index: number; kind: string; id: number; amp?: number } | null
+  word?: FxState['word']
+  superMode?: string | null
+  fxSuppressed?: boolean
 }
 
-export function WordDisplay({ gameState, onCustomText }: WordDisplayProps) {
+const WAVE_KINDS = ['domino', 'rainbow-wave']
+const WORD_FX_MS = 700
+
+export function WordDisplay({
+  gameState,
+  onCustomText,
+  pop = null,
+  word = null,
+  superMode = null,
+  fxSuppressed = false,
+}: WordDisplayProps) {
   const keyboardCase = useSettingsStore((s) => s.keyboardCase)
-  const soundMode = useSettingsStore((s) => s.soundMode)
   const lang = useSettingsStore((s) => s.lang)
+  const layerRef = useRef<HTMLDivElement>(null)
   const { text, currentIndex } = gameState
   const progress = text.length > 0 ? (currentIndex / text.length) * 100 : 0
-  const prevIndexRef = useRef(currentIndex)
-
-  // Track which char just became correct this render
-  const justTypedIndex = currentIndex > prevIndexRef.current ? prevIndexRef.current : -1
-
-  useEffect(() => {
-    prevIndexRef.current = currentIndex
-  }, [currentIndex])
-
-  // Determine word-burst range when a word completes in word mode
-  let wordBurstStart = -1
-  let wordBurstEnd = -1
-  if (soundMode === 'word' && justTypedIndex >= 0) {
-    // Check if a word just completed (next char is space or end of text)
-    const nextChar = text[currentIndex]
-    if (nextChar === ' ' || nextChar === undefined) {
-      // Walk back to find word start
-      let start = justTypedIndex
-      while (start > 0 && text[start - 1] !== ' ') {
-        start--
-      }
-      wordBurstStart = start
-      wordBurstEnd = currentIndex
-    }
-  }
+  const wave = word && !fxSuppressed && WAVE_KINDS.includes(word.kind) ? word : null
+  const step = wave ? (wave.kind === 'domino' ? 35 : 30) : 0
+  const charMs = wave?.kind === 'domino' ? 280 : 300
 
   const renderChar = (char: string, i: number) => {
     let className = 'char'
     if (char === ' ') className += ' char--space'
 
+    const popped = !fxSuppressed && pop !== null && pop.index === i && i < currentIndex
+    const waved = !!wave && i >= wave.range[0] && i < wave.range[1]
+    let style: CSSProperties | undefined
     if (i < currentIndex) {
       className += ' char--correct'
-      if (i === justTypedIndex) {
-        className += ' char--pop'
-      }
-      if (i >= wordBurstStart && i < wordBurstEnd && wordBurstStart >= 0) {
-        className += ' char--word-burst'
-      }
     } else if (i === currentIndex) {
       className += ' char--active'
     } else {
       className += ' char--pending'
+    }
+    if (waved || popped) {
+      style = {
+        ...(popped && pop?.amp ? { '--fx-amp': pop.amp } : {}),
+        ...(waved
+          ? {
+              '--fx-d': `${Math.min((i - (wave?.range[0] ?? 0)) * step, WORD_FX_MS - charMs)}ms`,
+              '--fx-hue': `var(--kr-${['play', 'fun', 'primary'][(i - (wave?.range[0] ?? 0)) % 3]})`,
+            }
+          : {}),
+      } as CSSProperties
     }
 
     const displayChar =
@@ -66,13 +69,12 @@ export function WordDisplay({ gameState, onCustomText }: WordDisplayProps) {
 
     return (
       <span
-        key={i}
+        key={popped ? `${i}-p${pop?.id}` : waved ? `${i}-w${wave?.id}` : i}
         className={className}
-        style={
-          i >= wordBurstStart && i < wordBurstEnd && wordBurstStart >= 0
-            ? { animationDelay: `${(i - wordBurstStart) * 60}ms` }
-            : undefined
-        }
+        data-i={i}
+        data-pop={popped ? pop?.kind : undefined}
+        data-wfx={waved ? wave?.kind : undefined}
+        style={style}
       >
         {displayChar}
       </span>
@@ -109,7 +111,7 @@ export function WordDisplay({ gameState, onCustomText }: WordDisplayProps) {
         </div>
       )}
 
-      <div className="word-display">
+      <div className="word-display" data-fx-super={superMode ?? undefined}>
         {groups.map((g) =>
           g.space ? (
             renderChar(g.chars[0], g.start)
@@ -121,7 +123,13 @@ export function WordDisplay({ gameState, onCustomText }: WordDisplayProps) {
         )}
       </div>
 
+      <div className="fx-word-layer" aria-hidden="true" ref={layerRef}>
+        <KeyParticles layerRef={layerRef} suppressed={fxSuppressed} />
+        <WordCompleteFx layerRef={layerRef} suppressed={fxSuppressed} />
+      </div>
+
       <div className="word-foot">
+        <div className="fx-runner-track" aria-hidden="true" />
         <div className="progress-bar">
           <div className="progress-fill" style={{ width: `${progress}%` }} />
         </div>
