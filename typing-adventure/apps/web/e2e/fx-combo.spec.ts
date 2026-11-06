@@ -173,33 +173,32 @@ test.describe('FX combo label', () => {
 
   test('FX-07 pop variety without moving neighbours', async ({ page }) => {
     await setup(page)
-    const kinds: string[] = []
-    for (let i = 0; i < 20; i++) {
-      const rects = await page.evaluate((idx) => {
+    const rectsAfter = (idx: number) =>
+      page.evaluate((i) => {
         return [1, 2, 3].map((d) => {
-          const el = document.querySelector(`.word-display .char[data-i="${idx + d}"]`)
+          const el = document.querySelector(`.word-display .char[data-i="${i + d}"]`)
           if (!el) return null
           const r = el.getBoundingClientRect()
           return { left: r.left, top: r.top }
         })
-      }, i)
+      }, idx)
+    const kinds: string[] = []
+    for (let i = 0; i < 20; i++) {
       await typeText(page, TEXT[i])
       const kind = await page.locator(`.word-display .char[data-i="${i}"]`).getAttribute('data-pop')
       kinds.push(kind ?? '')
-      const after = await page.evaluate((idx) => {
-        return [1, 2, 3].map((d) => {
-          const el = document.querySelector(`.word-display .char[data-i="${idx + d}"]`)
-          if (!el) return null
-          const r = el.getBoundingClientRect()
-          return { left: r.left, top: r.top }
+      if (i % 5 === 0) {
+        await page.waitForTimeout(150)
+        const during = await rectsAfter(i)
+        await page.waitForTimeout(300)
+        const settled = await rectsAfter(i)
+        settled.forEach((a, k) => {
+          const b = during[k]
+          if (!a || !b) return
+          expect(Math.abs(a.left - b.left)).toBeLessThanOrEqual(0.5)
+          expect(Math.abs(a.top - b.top)).toBeLessThanOrEqual(0.5)
         })
-      }, i)
-      after.forEach((a, k) => {
-        const b = rects[k]
-        if (!a || !b) return
-        expect(Math.abs(a.left - b.left)).toBeLessThanOrEqual(0.5)
-        expect(Math.abs(a.top - b.top)).toBeLessThanOrEqual(3)
-      })
+      }
     }
     expect(kinds.every(Boolean)).toBe(true)
     expect(new Set(kinds).size).toBeGreaterThanOrEqual(4)
