@@ -838,6 +838,10 @@
   }
 }
 
+.fx-loop {
+  pointer-events: none;
+}
+
 .owl--still .fx-loop {
   animation: none;
 }
