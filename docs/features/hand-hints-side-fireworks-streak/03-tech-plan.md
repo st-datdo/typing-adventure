@@ -281,3 +281,13 @@ bash ../scripts/ci/check-tdd-commits.sh main HEAD
 ## Lịch sử
 - v1 2026-11-06 11:00: bản đầu.
 - 2026-11-06 15:45: approved by user.
+
+## Thực tế
+- File đã sửa đúng danh sách `## File thay đổi`, không thêm file ngoài danh sách. `Keyboard.tsx` có bọc `.keyboard-section` nên dùng selector đó cho grid.
+- `--hf-gutter` là `clamp(132px, 10vw, 180px)` thay vì `clamp(140px, 13vw, 180px)`: ở 1280×720, văn bản 10 từ xuống 2 dòng và đẩy bàn phím xuống 725px > 720 (HF-01). Đây là biện pháp giảm rủi ro đã ghi trong plan (min 132px). Sau khi đổi, vùng chữ rộng 864px, bàn phím bottom 664px.
+- `ComboFireworks` bọc các chùm trong `span.fw-layer` (absolute, inset 0, z-index 0) để nhãn nằm trên pháo hoa.
+- `.kb-stage--hands` thêm `row-gap: 8px`; `.finger-label` ở ≥1024px có `min-height: 2.6em`.
+- `e2e/helpers/hf.ts` có thêm `repeatText(len)` để tạo văn bản custom toàn ký tự gõ được.
+- Test e2e trong vòng 1 do DEV viết: thêm commit `test(HF)` sửa thứ tự assert announcer trong `hf-combo.spec.ts` (announcer đã xoá sau 1.3s lấy mẫu).
+- Đo: e2e `hf-layout`, `hf-combo`, `kr-layout`, `kr-game`, `kr-motion` 99/99 pass (dev:ws). `hf-perf` + `kr-perf` với `KR_PERF=1` trên `next start`: 10/10 pass (`--repeat-each 5`), một lần chạy riêng trước đó có long task 125ms. Trên `dev:ws` cả `kr-perf` (có sẵn) cũng đỏ long task 115–137ms, nên ngưỡng long task chỉ có ý nghĩa với build production.
+- First Load JS route `/`: main 20 kB / 157 kB, nhánh 20.4 kB / 157 kB (+0.4 KB, HF-09 ≤ 10 KB).
