@@ -117,4 +117,68 @@ describe('FX css', () => {
       if (b.selectors.includes('.fx-combo-label')) Object.assign(r, cssDecls(b.body))
     expect(r.animation).toBe('none')
   })
+
+  it('FX-07 six pop kinds only touch transform, opacity or color within 400ms', () => {
+    for (const kind of ['squash', 'wiggle', 'hop', 'flip', 'jelly', 'tint']) {
+      const r = baseRule(`.char[data-pop="${kind}"]`)
+      expect(r.animation, kind).toBeTruthy()
+      const name = r.animation.split(' ')[0]
+      expect(name).toBe(`fx-pop-${kind}`)
+      expect(animationEnd(r.animation), kind).toBeLessThanOrEqual(400)
+      expect(r.animation).not.toMatch(/infinite/)
+      for (const p of keyframeProps(name))
+        expect(['transform', 'opacity', 'color'], name).toContain(p)
+    }
+  })
+
+  it('FX-08 particles ignore the pointer and fade within 600ms', () => {
+    expect(baseRule('.fx-p')['pointer-events']).toBe('none')
+    expect(baseRule('.fx-word-layer')['pointer-events']).toBe('none')
+    const kf = keyframes(fx, 'fx-spark')
+    expect(kf).toBeTruthy()
+    const rules = rulesMatching(base, (s) => /\.fx-p/.test(s)).filter((r) =>
+      /fx-spark|fx-confetti-bit/.test(cssDecls(r.body).animation ?? ''),
+    )
+    expect(rules.length).toBeGreaterThan(0)
+    for (const r of rules) {
+      const a = cssDecls(r.body).animation
+      expect(a).not.toMatch(/infinite/)
+      expect(animationEnd(a)).toBeLessThanOrEqual(600)
+    }
+  })
+
+  it('FX-10 word effects finish within 700ms', () => {
+    const names = allKeyframeNames(fx).filter((n) => n.startsWith('fx-word-'))
+    expect(names.length).toBeGreaterThanOrEqual(3)
+    const rules = rulesMatching(base, (s) => /fx-word/.test(s))
+    let n = 0
+    for (const r of rules) {
+      const a = cssDecls(r.body).animation
+      if (!a || a === 'none') continue
+      n++
+      expect(a).not.toMatch(/infinite/)
+      expect(animationEnd(a), r.selectors.join()).toBeLessThanOrEqual(700)
+    }
+    expect(n).toBeGreaterThan(0)
+  })
+
+  it('FX-15 reduced motion removes pops, particles and word effects', () => {
+    const sels = cssBlocks(reduced).flatMap((b) => {
+      const d = cssDecls(b.body)
+      return d.animation === 'none' || d.display === 'none' ? b.selectors : []
+    })
+    expect(sels).toContain('.char[data-pop]')
+    expect(sels).toContain('.fx-p')
+    expect(sels).toContain('.fx-word')
+  })
+
+  it('KR-15 fx keyframes never animate layout properties', () => {
+    const names = allKeyframeNames(fx)
+    expect(names.length).toBeGreaterThan(0)
+    for (const name of names) {
+      for (const p of keyframeProps(name)) {
+        expect(p, name).not.toMatch(/^(width|height|top|left|right|bottom|margin.*|padding.*)$/)
+      }
+    }
+  })
 })
