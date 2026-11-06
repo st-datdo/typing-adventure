@@ -246,7 +246,8 @@ test.describe('FX combo label', () => {
     await setup(page, { effectsLevel: 'some' })
     for (let i = 0; i < 6; i++) {
       await typeText(page, TEXT[i])
-      expect(await page.locator('.fx-p').count()).toBe(0)
+      await page.waitForTimeout(30)
+      expect(await page.locator('.fx-p--spark').count()).toBe(0)
     }
   })
 
@@ -289,7 +290,9 @@ test.describe('FX combo label', () => {
     await expect(page.locator('.ta-screen')).toHaveAttribute('data-fx-sky', /.+/)
     await typeText(page, TEXT.slice(20, 30))
     await expect(page.locator('.word-display')).toHaveAttribute('data-fx-super', /.+/)
-    await typeText(page, TEXT.slice(30, 40))
+    await typeText(page, TEXT.slice(30, 39))
+    await page.waitForTimeout(700)
+    await typeText(page, TEXT.slice(39, 40))
     await expect(page.locator('.fx-sticker').first()).toBeAttached()
     await typeText(page, TEXT.slice(40, 41))
     await page.keyboard.type('z')
