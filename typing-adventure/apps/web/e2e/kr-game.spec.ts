@@ -54,7 +54,7 @@ test.describe('KR game screen', () => {
     expect(
       await page.evaluate(() => document.activeElement?.classList.contains('hidden-input')),
     ).toBe(true)
-    await expect(page.locator('.game-owl')).toHaveAttribute('data-mood', 'happy')
+    await expect(page.locator('.game-owl')).toHaveAttribute('data-mood', 'cheer')
     await page.waitForTimeout(1000)
     await expect(page.locator('.fx-combo-label')).toHaveCount(0)
   })

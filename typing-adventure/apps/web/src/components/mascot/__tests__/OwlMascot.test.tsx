@@ -38,4 +38,34 @@ describe('OwlMascot', () => {
     expect(renderToStaticMarkup(<OwlMascot size="lg" />)).toContain('width="140"')
     expect(renderToStaticMarkup(<OwlMascot />)).toContain('width="96"')
   })
+
+  it('FX-04 accessory renders a marked layer for each option', () => {
+    for (const acc of ['sunglasses', 'party-hat', 'crown', 'headphones', 'bowtie'] as const) {
+      const html = renderToStaticMarkup(<OwlMascot mood="cheer" accessory={acc} />)
+      expect(html).toContain(`data-accessory="${acc}"`)
+      expect(html).toMatch(new RegExp(`<g class="owl-acc owl-acc--${acc}"`))
+    }
+    const plain = renderToStaticMarkup(<OwlMascot mood="cheer" />)
+    expect(plain).not.toContain('data-accessory')
+    expect(plain).not.toContain('owl-acc')
+  })
+
+  it('FX-04 evolve renders a marked layer for each variant', () => {
+    for (const ev of ['phoenix', 'star', 'hero'] as const) {
+      const html = renderToStaticMarkup(<OwlMascot mood="cheer" evolve={ev} />)
+      expect(html).toContain(`data-evolve="${ev}"`)
+      expect(html).toContain(`owl-evolve--${ev}`)
+    }
+    expect(renderToStaticMarkup(<OwlMascot mood="cheer" />)).not.toContain('owl-evolve')
+  })
+
+  it('FX-12 live owls loop with fx-loop instead of kr-loop', () => {
+    for (const mood of ['idle', 'sleep', 'wave'] as const) {
+      const html = renderToStaticMarkup(<OwlMascot mood={mood} live />)
+      expect(html, mood).toContain('fx-loop')
+      expect(html, mood).not.toContain('kr-loop')
+    }
+    expect(renderToStaticMarkup(<OwlMascot mood="sleep" />)).toContain('kr-loop')
+    expect(renderToStaticMarkup(<OwlMascot mood="sleep" />)).not.toContain('fx-loop')
+  })
 })

@@ -181,4 +181,40 @@ describe('FX css', () => {
       }
     }
   })
+
+  it('FX-16 looping fx animations that fade cycle no faster than 334ms', () => {
+    const rules = rulesMatching(fx, (s) => /fx-loop/.test(s))
+    expect(rules.length).toBeGreaterThan(0)
+    for (const r of cssBlocks(fx)) {
+      const a = cssDecls(r.body).animation ?? ''
+      if (!/infinite/.test(a)) continue
+      const name = a.split(/\s+/)[0]
+      const fades = keyframeProps(name).some((p) => p === 'opacity' || p === 'filter')
+      if (!fades) continue
+      expect(animationEnd(a), r.selectors.join()).toBeGreaterThanOrEqual(334)
+    }
+  })
+
+  it('FX-12 fx-loop is never paused by the playing selector', () => {
+    const motion = readStyle('motion.css')
+    for (const css of [fx, motion]) {
+      const paused = rulesMatching(css, (s) => /\[data-playing/.test(s) && /fx-loop/.test(s))
+      expect(paused).toHaveLength(0)
+    }
+    const owl = rulesMatching(base, (s) => /\.owl--sleep .*\.fx-loop/.test(s))
+    expect(owl.length).toBeGreaterThan(0)
+    expect(cssDecls(owl[0].body).animation).toMatch(/infinite/)
+  })
+
+  it('FX-11 FX-12 owl bubble ignores the pointer and stays under 1500ms', () => {
+    const r = baseRule('.fx-owl-bubble')
+    expect(r['pointer-events']).toBe('none')
+    expect(r.position).toBe('absolute')
+    expect(animationEnd(r.animation ?? '')).toBeLessThanOrEqual(1500)
+    const ev = rulesMatching(base, (s) => /\.owl-evolve/.test(s) || /\[data-evolve\]/.test(s))
+    for (const b of ev) {
+      const a = cssDecls(b.body).animation
+      if (a && a !== 'none') expect(animationEnd(a)).toBeLessThanOrEqual(2000)
+    }
+  })
 })
