@@ -1282,7 +1282,8 @@
 
 @media (prefers-reduced-motion: reduce) {
   .fx-runner,
-  .fx-sticker {
+  .fx-sticker,
+  .fx-canvas {
     display: none;
   }
 
@@ -1290,4 +1291,23 @@
   .ta-screen[data-fx-sky] .word-display-section::before {
     animation: none;
   }
+}
+
+.fx-canvas {
+  pointer-events: none;
+}
+
+.fx-canvas--top {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 50;
+}
+
+.fx-canvas--bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
 }

@@ -35,8 +35,12 @@ import type { GameMode, Level } from '@typing-adventure/game-engine'
 
 const loadTierRunner = () => import('./fx/TierRunner')
 const loadFxBackdrop = () => import('./fx/FxBackdrop')
+const loadTierConfetti = () => import('./fx/TierConfetti')
 const TierRunner = dynamic(() => loadTierRunner().then((m) => m.TierRunner), { ssr: false })
 const FxBackdrop = dynamic(() => loadFxBackdrop().then((m) => m.FxBackdrop), { ssr: false })
+const TierConfetti = dynamic(() => loadTierConfetti().then((m) => m.TierConfetti), {
+  ssr: false,
+})
 
 function whenIdle(cb: () => void): () => void {
   const w = window as Window & {
@@ -76,6 +80,7 @@ export function GameEngine() {
       whenIdle(() => {
         loadTierRunner()
         loadFxBackdrop()
+        loadTierConfetti().then((m) => m.prefetchCanvas())
       }),
     [],
   )
@@ -576,6 +581,7 @@ export function GameEngine() {
 
       <ComboAnnouncer />
       <SyncIndicator status={syncStatus} />
+      <TierConfetti suppressed={fxSuppressed} />
     </div>
   )
 }

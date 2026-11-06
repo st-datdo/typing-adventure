@@ -1,18 +1,21 @@
 'use client'
 
-import { memo, type CSSProperties } from 'react'
+import { memo, useEffect, useRef, type CSSProperties, type ReactNode } from 'react'
+import { fxCanvas } from '@/lib/fx/confetti'
 import type { FxState } from '@/lib/fx/director'
 import { allocateNodes } from '@/lib/fx/budget'
 import { liveParticleCount } from '@/lib/fx/dom-particles'
 import { mulberry32 } from '@/lib/fx/rng'
 import { useFxStore } from '@/stores/fx-store'
 import { ParticleSprite, StickerSprite } from './sprites'
+import { themeColors, useCanvasSlot } from './TierConfetti'
 
 interface FxBackdropViewProps {
   sky: FxState['sky']
   rain: FxState['rain']
   alive: number
   suppressed: boolean
+  children?: ReactNode
 }
 
 const RAINBOW = ['--kr-fun', '--kr-play', '--kr-success', '--kr-primary', '--kr-fun-deep']
@@ -65,7 +68,7 @@ function Sky({ sky }: { sky: NonNullable<FxState['sky']> }) {
   )
 }
 
-export function FxBackdropView({ sky, rain, alive, suppressed }: FxBackdropViewProps) {
+export function FxBackdropView({ sky, rain, alive, suppressed, children }: FxBackdropViewProps) {
   let stickers: {
     left: number
     size: number
@@ -88,6 +91,7 @@ export function FxBackdropView({ sky, rain, alive, suppressed }: FxBackdropViewP
   }
   return (
     <div className="fx-backdrop" aria-hidden="true">
+      {children}
       {sky && <Sky sky={sky} />}
       {rain &&
         stickers.map((s, i) => (
@@ -116,6 +120,26 @@ export const FxBackdrop = memo(function FxBackdrop({ suppressed }: { suppressed:
   const sky = useFxStore((s) => s.sky)
   const rain = useFxStore((s) => s.rain)
   return (
-    <FxBackdropView sky={sky} rain={rain} alive={liveParticleCount()} suppressed={suppressed} />
+    <FxBackdropView sky={sky} rain={rain} alive={liveParticleCount()} suppressed={suppressed}>
+      <FireworksCanvas suppressed={suppressed} />
+    </FxBackdropView>
   )
 })
+
+function FireworksCanvas({ suppressed }: { suppressed: boolean }) {
+  const ref = useCanvasSlot('fireworks')
+  const fireworks = useFxStore((s) => s.fireworks)
+  const lastId = useRef<number | null>(null)
+  useEffect(() => {
+    if (!fireworks || fireworks.id === lastId.current) return
+    lastId.current = fireworks.id
+    const c = ref.current
+    if (!c || suppressed) return
+    const ctl = fxCanvas()
+    ctl.setColors(themeColors(c))
+    ctl.fire('fireworks', fireworks)
+  }, [fireworks, suppressed, ref])
+  return (
+    <canvas ref={ref} className="fx-canvas fx-canvas--bg" aria-hidden="true" data-active="false" />
+  )
+}
