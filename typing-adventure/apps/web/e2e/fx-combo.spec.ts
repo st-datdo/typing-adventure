@@ -279,4 +279,56 @@ test.describe('FX combo label', () => {
     for (let k = 1; k < kinds.length; k++) expect(kinds[k]).not.toBe(kinds[k - 1])
     expect(covered).toEqual([])
   })
+
+  test('FX-04 tier materials 15 to 40 and FX-13 a miss at 41', async ({ page }) => {
+    await setup(page)
+    await typeText(page, TEXT.slice(0, 15))
+    await expect(page.locator('.fx-runner')).toHaveCount(1)
+    await expect(page.locator('.fx-runner')).toHaveCount(0, { timeout: 2500 })
+    await typeText(page, TEXT.slice(15, 20))
+    await expect(page.locator('.ta-screen')).toHaveAttribute('data-fx-sky', /.+/)
+    await typeText(page, TEXT.slice(20, 30))
+    await expect(page.locator('.word-display')).toHaveAttribute('data-fx-super', /.+/)
+    await typeText(page, TEXT.slice(30, 40))
+    await expect(page.locator('.fx-sticker').first()).toBeAttached()
+    await typeText(page, TEXT.slice(40, 41))
+    await page.keyboard.type('z')
+    const t0 = Date.now()
+    await expect(page.locator('.combo-meter')).toHaveAttribute('data-smoke', 'true')
+    await expect(page.locator('.ta-screen')).not.toHaveAttribute('data-fx-sky', /.+/, {
+      timeout: 600,
+    })
+    await expect(page.locator('.word-display')).not.toHaveAttribute('data-fx-super', /.+/, {
+      timeout: 600,
+    })
+    expect(Date.now() - t0).toBeLessThanOrEqual(900)
+    await expect(page.locator('.fx-sticker')).toHaveCount(0, { timeout: 2500 })
+    await page.waitForTimeout(950)
+    await expect(page.locator('.fx-combo-label')).toHaveCount(0)
+  })
+
+  test('FX-14 level some keeps labels but drops runner and stickers', async ({ page }) => {
+    await setup(page, { effectsLevel: 'some' })
+    await typeText(page, TEXT.slice(0, 15))
+    await expect(page.locator('.fx-combo-label')).toContainText('x15')
+    expect(await page.locator('.fx-runner').count()).toBe(0)
+    await typeText(page, TEXT.slice(15, 40))
+    await expect(page.locator('.fx-combo-label')).toContainText('x40')
+    expect(await page.locator('.fx-sticker').count()).toBe(0)
+  })
+
+  test('FX-04 E4 a miss while the runner runs lets it finish without a new one', async ({
+    page,
+  }) => {
+    await setup(page)
+    await typeText(page, TEXT.slice(0, 15))
+    const runner = page.locator('.fx-runner')
+    await expect(runner).toHaveCount(1)
+    const ch = await runner.getAttribute('data-character')
+    await page.keyboard.type('z')
+    await page.waitForTimeout(300)
+    await expect(runner).toHaveCount(1)
+    expect(await runner.getAttribute('data-character')).toBe(ch)
+    await expect(runner).toHaveCount(0, { timeout: 2500 })
+  })
 })

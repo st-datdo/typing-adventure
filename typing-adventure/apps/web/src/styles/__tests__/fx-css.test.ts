@@ -217,4 +217,66 @@ describe('FX css', () => {
       if (a && a !== 'none') expect(animationEnd(a)).toBeLessThanOrEqual(2000)
     }
   })
+
+  it('FX-16 FX-01 backdrop sits behind content, dim and inert', () => {
+    const r = baseRule('.fx-backdrop')
+    expect(r.position).toBe('fixed')
+    expect(r['z-index']).toBe('0')
+    expect(parseFloat(r.opacity)).toBeLessThanOrEqual(0.6)
+    expect(r['pointer-events']).toBe('none')
+    expect(r.overflow).toBe('hidden')
+  })
+
+  it('FX-19 runner track clips and the run ends within 2500ms', () => {
+    expect(baseRule('.fx-runner-track').overflow).toBe('hidden')
+    expect(baseRule('.fx-runner-track')['pointer-events']).toBe('none')
+    const run = rulesMatching(base, (s) => /^\.fx-runner\b/.test(s)).find((r) =>
+      /fx-run\b/.test(cssDecls(r.body).animation ?? ''),
+    )
+    expect(run).toBeTruthy()
+    const a = cssDecls(run!.body).animation
+    expect(a).not.toMatch(/infinite/)
+    expect(animationEnd(a)).toBeLessThanOrEqual(2500)
+  })
+
+  it('FX-04 sticker rain falls within 2200ms', () => {
+    const r = baseRule('.fx-sticker')
+    expect(r.animation).toMatch(/fx-rain/)
+    expect(r.animation).not.toMatch(/infinite/)
+    expect(animationEnd(r.animation)).toBeLessThanOrEqual(2200)
+    expect(keyframes(fx, 'fx-rain')).toBeTruthy()
+  })
+
+  it('FX-16 sky transitions run once within 1000ms', () => {
+    const names = allKeyframeNames(fx).filter((n) => n.startsWith('fx-sky-'))
+    expect(names.length).toBeGreaterThanOrEqual(2)
+    const rules = rulesMatching(base, (s) => /fx-sky/.test(s))
+    let n = 0
+    for (const r of rules) {
+      const a = cssDecls(r.body).animation
+      if (!a || a === 'none') continue
+      n++
+      expect(a).not.toMatch(/infinite/)
+      expect(animationEnd(a)).toBeLessThanOrEqual(1000)
+    }
+    expect(n).toBeGreaterThan(0)
+  })
+
+  it('FX-16 super mode is static and fx never uses the danger colour', () => {
+    const sup = rulesMatching(fx, (s) => /\[data-fx-super/.test(s))
+    expect(sup.length).toBeGreaterThan(0)
+    for (const r of sup) {
+      const d = cssDecls(r.body)
+      expect(d.animation ?? 'none').toBe('none')
+    }
+    expect(fx).not.toMatch(/--kr-danger/)
+  })
+
+  it('FX-15 reduced motion hides runners and stickers', () => {
+    const hidden = cssBlocks(reduced).flatMap((b) =>
+      cssDecls(b.body).display === 'none' ? b.selectors : [],
+    )
+    expect(hidden).toContain('.fx-runner')
+    expect(hidden).toContain('.fx-sticker')
+  })
 })
