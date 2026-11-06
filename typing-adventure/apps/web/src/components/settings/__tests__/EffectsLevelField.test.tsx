@@ -39,7 +39,7 @@ describe('EffectsLevelField', () => {
     const on = render({ reduced: true })
     const note = on.match(/<div[^>]*role="note"[^>]*>([\s\S]*?)<\/div>/)
     expect(note).toBeTruthy()
-    expect(note![1]).toContain(viDict.fxReducedNote)
+    expect(note![1].replace(/&quot;/g, '"')).toContain(viDict.fxReducedNote)
     expect(render()).not.toContain('role="note"')
   })
 
