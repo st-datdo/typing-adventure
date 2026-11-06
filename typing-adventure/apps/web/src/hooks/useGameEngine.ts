@@ -5,6 +5,10 @@ import { useGameStore } from '@/stores/game-store'
 import { useSettingsStore } from '@/stores/settings-store'
 import { useRecordsStore } from '@/stores/records-store'
 import { useComboCelebrationStore } from '@/stores/combo-celebration-store'
+import { useFxStore } from '@/stores/fx-store'
+import { usePrefersReducedMotion } from '@/hooks/usePrefersReducedMotion'
+import { effectiveLevel } from '@/lib/fx/levels'
+import { soundCue } from '@/lib/fx/tiers'
 import { useSound } from '@/hooks/useSound'
 import { useSpeech } from '@/hooks/useSpeech'
 import { checkAchievements, formatTime } from '@typing-adventure/game-engine'
@@ -13,7 +17,8 @@ export function useGameEngine() {
   const gameStore = useGameStore()
   const settings = useSettingsStore()
   const recordsStore = useRecordsStore()
-  const { playCorrect, playWrong, playComplete, playClick } = useSound()
+  const { play, playStep, playWrong, playComplete, playClick } = useSound()
+  const reducedMotion = usePrefersReducedMotion()
   const { speakLetter, speakWord, cancel: cancelSpeech } = useSpeech()
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null)
   const hiddenInputRef = useRef<HTMLInputElement | null>(null)
@@ -40,8 +45,17 @@ export function useGameEngine() {
   }, [gameState.startTime, gameState.isFinished, gameState.gameMode, gameState.timeAttackDuration])
 
   useEffect(() => {
-    if (gameState.startTime === null) useComboCelebrationStore.getState().clear()
+    if (gameState.startTime === null) {
+      useComboCelebrationStore.getState().clear()
+      useFxStore.getState().reset()
+    }
   }, [gameState.startTime])
+
+  useEffect(() => {
+    useFxStore
+      .getState()
+      .dispatch({ type: 'level', value: effectiveLevel(settings.effectsLevel, reducedMotion) })
+  }, [settings.effectsLevel, reducedMotion])
 
   // Save result when game finishes
   useEffect(() => {
@@ -90,15 +104,38 @@ export function useGameEngine() {
         gameStore.setStartTime(Date.now())
       }
 
+      const before = useGameStore.getState().gameState
       const { isCorrect, completedWord, isMilestone } = gameStore.handleKeypress(char)
 
       const celebration = useComboCelebrationStore.getState()
+      const fx = useFxStore.getState()
       const after = useGameStore.getState().gameState
-      if (after.isFinished) celebration.finish()
-      else if (isMilestone) celebration.celebrate(after.combo)
+      if (after.isFinished) {
+        celebration.finish()
+        fx.reset()
+      } else {
+        if (isMilestone) celebration.celebrate(after.combo)
+        let word: [number, number] | null = null
+        if (completedWord && char !== ' ') {
+          let start = before.currentIndex
+          while (start > 0 && before.text[start - 1] !== ' ') start--
+          word = [start, before.currentIndex + 1]
+        }
+        fx.dispatch({
+          type: 'key',
+          correct: isCorrect,
+          combo: after.combo,
+          index: before.currentIndex,
+          char,
+          word,
+          now: Date.now(),
+        })
+      }
 
       if (isCorrect) {
-        playCorrect()
+        const cue = soundCue(after.combo)
+        if (cue.kind === 'tier') play(cue.sound)
+        else playStep(cue.step)
         if (settings.soundMode === 'character' && char !== ' ') {
           speakLetter(char)
         } else if (settings.soundMode === 'word' && completedWord && char !== ' ') {
