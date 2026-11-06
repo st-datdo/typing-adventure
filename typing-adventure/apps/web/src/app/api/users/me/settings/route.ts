@@ -3,19 +3,23 @@ import { z } from 'zod'
 import { prisma, Prisma } from '@typing-adventure/db'
 import { getSessionUser } from '@/lib/auth'
 import { ok, err, unauthorized } from '@/lib/api-response'
+import { EFFECTS_LEVELS } from '@/lib/fx/levels'
 
-const settingsSchema = z.object({
-  theme: z.enum(['dark', 'light', 'colorful']).optional(),
-  keyboardCase: z.enum(['lower', 'upper']).optional(),
-  level: z.enum(['easy', 'medium', 'hard']).optional(),
-  soundMode: z.enum(['default', 'character', 'word']).optional(),
-  soundEnabled: z.boolean().optional(),
-  speechRate: z.enum(['slow', 'normal', 'fast']).optional(),
-  wordCount: z.number().int().min(3).max(50).optional(),
-  fingerGuide: z.boolean().optional(),
-  lang: z.enum(['vi', 'en']).optional(),
-  ageGroup: z.enum(['little', 'kid', 'big']).nullable().optional(),
-}).passthrough()
+const settingsSchema = z
+  .object({
+    theme: z.enum(['dark', 'light', 'colorful']).optional(),
+    keyboardCase: z.enum(['lower', 'upper']).optional(),
+    level: z.enum(['easy', 'medium', 'hard']).optional(),
+    soundMode: z.enum(['default', 'character', 'word']).optional(),
+    soundEnabled: z.boolean().optional(),
+    speechRate: z.enum(['slow', 'normal', 'fast']).optional(),
+    wordCount: z.number().int().min(3).max(50).optional(),
+    fingerGuide: z.boolean().optional(),
+    lang: z.enum(['vi', 'en']).optional(),
+    ageGroup: z.enum(['little', 'kid', 'big']).nullable().optional(),
+    effectsLevel: z.enum(EFFECTS_LEVELS).optional(),
+  })
+  .passthrough()
 
 export async function PUT(req: NextRequest) {
   const user = await getSessionUser()
@@ -33,7 +37,7 @@ export async function PUT(req: NextRequest) {
       select: { settings: true },
     })
 
-    const merged = { ...(current?.settings as Record<string, unknown> ?? {}), ...parsed.data }
+    const merged = { ...((current?.settings as Record<string, unknown>) ?? {}), ...parsed.data }
 
     const updated = await prisma.user.update({
       where: { id: user.id },

@@ -2,8 +2,17 @@
 
 import { create } from 'zustand'
 import { persist, createJSONStorage } from 'zustand/middleware'
-import type { KeyboardCase, Level, SoundMode, SpeechRate, Theme, Lang, AgeGroup } from '@typing-adventure/game-engine'
+import type {
+  KeyboardCase,
+  Level,
+  SoundMode,
+  SpeechRate,
+  Theme,
+  Lang,
+  AgeGroup,
+} from '@typing-adventure/game-engine'
 import { updateProfile, updateSettings } from '@/lib/api/users'
+import { parseEffectsLevel, type EffectsLevel } from '@/lib/fx/levels'
 
 interface SettingsState {
   _hydrated: boolean
@@ -20,6 +29,7 @@ interface SettingsState {
   ageGroup: AgeGroup | null
   playerName: string
   playerAvatar: string
+  effectsLevel: EffectsLevel
 }
 
 interface SettingsActions {
@@ -36,7 +46,12 @@ interface SettingsActions {
   setAgeGroup: (value: AgeGroup | null) => void
   setPlayerName: (value: string) => void
   setPlayerAvatar: (value: string) => void
-  loadFromServer: (profile: { name?: string | null; avatar?: string; settings?: Record<string, unknown> | null }) => void
+  setEffectsLevel: (value: EffectsLevel) => void
+  loadFromServer: (profile: {
+    name?: string | null
+    avatar?: string
+    settings?: Record<string, unknown> | null
+  }) => void
   clearAll: () => void
 }
 
@@ -56,13 +71,16 @@ const DEFAULTS: Omit<SettingsState, '_isLoggedIn'> = {
   ageGroup: null,
   playerName: '',
   playerAvatar: '🧒',
+  effectsLevel: 'lots',
 }
 
 // Debounced DB sync for settings
 let settingsSyncTimer: ReturnType<typeof setTimeout> | undefined
 function syncSettingsToDB(data: Record<string, unknown>) {
   clearTimeout(settingsSyncTimer)
-  settingsSyncTimer = setTimeout(() => { updateSettings(data) }, 300)
+  settingsSyncTimer = setTimeout(() => {
+    updateSettings(data)?.catch?.(() => {})
+  }, 300)
 }
 
 function syncProfileToDB(data: { name?: string; avatar?: string }) {
@@ -126,8 +144,14 @@ export const useSettingsStore = create<SettingsStore>()(
         if (get()._isLoggedIn) syncProfileToDB({ avatar: value })
       },
 
+      setEffectsLevel: (value) => {
+        set({ effectsLevel: value })
+        if (get()._isLoggedIn) syncSettingsToDB({ effectsLevel: value })
+      },
+
       loadFromServer: (profile) => {
         const s = (profile.settings ?? {}) as Record<string, unknown>
+        const effectsLevel = parseEffectsLevel(s.effectsLevel)
         set({
           playerName: profile.name ?? '',
           playerAvatar: profile.avatar ?? '🧒',
@@ -141,6 +165,7 @@ export const useSettingsStore = create<SettingsStore>()(
           ...(s.fingerGuide != null && { fingerGuide: s.fingerGuide as boolean }),
           ...(s.lang != null && { lang: s.lang as Lang }),
           ...(s.ageGroup != null && { ageGroup: s.ageGroup as AgeGroup }),
+          ...(effectsLevel && { effectsLevel }),
         })
       },
 
